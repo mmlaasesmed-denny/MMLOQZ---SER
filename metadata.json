@@ -1,0 +1,6 @@
+{
+  "name": "Visual Website Builder",
+  "description": "A real-time, drag-and-drop website builder with inline text editing, custom typography spacing, layout modifications, and theme styling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
