@@ -298,6 +298,7 @@ export default function App() {
 
   // 6. Page Code Editor Modal States
   const [showCodeEditor, setShowCodeEditor] = useState(false);
+  const [showPageManagerModal, setShowPageManagerModal] = useState(false);
   const [rawJsonCode, setRawJsonCode] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
 
@@ -1574,6 +1575,13 @@ export default function App() {
                 </div>
               )}
             </div>
+
+            <button
+              onClick={() => setShowPageManagerModal(true)}
+              className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-900/40 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <span>⚙️ Administrer sider ({pages.length})</span>
+            </button>
           </div>
         </div>
 
@@ -1872,6 +1880,212 @@ export default function App() {
                   Anvend ændringer
                 </button>
               </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* 6. Page Manager Modal */}
+      {showPageManagerModal && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-950 border border-slate-800 rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl text-slate-100 font-sans">
+            
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-400">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                    Administrer Sider & URL-slugs
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-medium">
+                    Tilføj nye sider, omdøb dem og rediger URL-slugs for alle sider på dit websted.
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowPageManagerModal(false)}
+                className="text-slate-400 hover:text-slate-200 text-sm font-semibold p-1.5 hover:bg-slate-900 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
+              >
+                ✕ Luk
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 p-6 overflow-y-auto min-h-0 space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                      <th className="pb-3 pl-2">Ikon / Side</th>
+                      <th className="pb-3">Sidenavn</th>
+                      <th className="pb-3">URL Slug (Path)</th>
+                      <th className="pb-3">Forhåndsvisning af URL</th>
+                      <th className="pb-3 text-right pr-2">Handlinger</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-850">
+                    {pages.map((p) => {
+                      const iconsMap: Record<string, string> = {
+                        portfolio: '🏠',
+                        bistro: '🥐',
+                        saas: '☁️',
+                        about: '👥',
+                        terms: '⚖️',
+                        webshop: '🛒'
+                      };
+                      const pageIcon = p.slug === '' ? '🏠' : (iconsMap[p.id] || '📄');
+                      
+                      // Check for duplicate slug
+                      const hasDuplicateSlug = pages.some(other => other.id !== p.id && other.slug.toLowerCase() === p.slug.toLowerCase());
+                      const isHome = p.slug === '';
+
+                      return (
+                        <tr key={p.id} className="hover:bg-slate-900/30 transition-colors group">
+                          {/* 1. Icon */}
+                          <td className="py-3.5 pl-2 text-lg">
+                            {pageIcon}
+                          </td>
+                          
+                          {/* 2. Sidenavn input */}
+                          <td className="py-3.5 pr-4">
+                            <input
+                              type="text"
+                              value={p.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '')}
+                              onChange={(e) => {
+                                const newCleanName = e.target.value;
+                                setPages(prev => prev.map(page => page.id === p.id ? {
+                                  ...page,
+                                  name: `${pageIcon} ${newCleanName}`
+                                } : page));
+                              }}
+                              placeholder="F.eks. Amager"
+                              className="px-3 py-1.5 w-44 bg-slate-900 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-all text-white"
+                            />
+                          </td>
+
+                          {/* 3. URL Slug input */}
+                          <td className="py-3.5 pr-4">
+                            <div className="relative flex items-center">
+                              <span className="absolute left-2.5 text-slate-500 text-[11px] font-mono">/</span>
+                              <input
+                                type="text"
+                                value={p.slug}
+                                disabled={isHome}
+                                onChange={(e) => {
+                                  // Sanitize slug path: lowercase, only alphanumeric, dash, underscore, slash
+                                  const rawVal = e.target.value.toLowerCase().replace(/[^a-z0-9-_/]/g, '');
+                                  setPages(prev => prev.map(page => page.id === p.id ? {
+                                    ...page,
+                                    slug: rawVal,
+                                    theme: { ...(page.theme || {}), slug: rawVal }
+                                  } : page));
+                                }}
+                                placeholder={isHome ? '(startside)' : 'slug-path'}
+                                className={`pl-5 pr-3 py-1.5 w-40 bg-slate-900 border ${
+                                  hasDuplicateSlug ? 'border-rose-500 focus:border-rose-500' : 'border-slate-800 hover:border-slate-700 focus:border-indigo-500'
+                                } rounded-xl text-xs font-mono focus:outline-none transition-all ${
+                                  isHome ? 'text-emerald-500 cursor-not-allowed font-bold' : 'text-emerald-500'
+                                }`}
+                              />
+                            </div>
+                            {hasDuplicateSlug && (
+                              <p className="text-[9px] text-rose-500 font-medium mt-1">⚠️ Dubleret slug!</p>
+                            )}
+                          </td>
+
+                          {/* 4. Preview URL */}
+                          <td className="py-3.5 pr-4 text-xs font-mono text-slate-400">
+                            {isHome ? (
+                              <span className="text-emerald-500 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20 text-[10px]">
+                                {baseDomain || 'hjemmeside'} (Startside)
+                              </span>
+                            ) : (
+                              <span className="truncate max-w-[200px] block">
+                                {baseDomain ? `${baseDomain}/${p.slug}` : `/${p.slug}`}
+                              </span>
+                            )}
+                          </td>
+
+                          {/* 5. Handlinger */}
+                          <td className="py-3.5 text-right pr-2 space-x-1.5">
+                            {!isHome && (
+                              <button
+                                onClick={() => {
+                                  const dispName = p.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+                                  if (confirm(`Vil du gøre "${dispName}" til din startside (Hjemmeside)? Den nuværende startside vil få en anden URL.`)) {
+                                    setPageAsHomePage(p.id);
+                                  }
+                                }}
+                                className="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all border-none cursor-pointer"
+                                title="Sæt som startside"
+                              >
+                                🏠 Gør til startside
+                              </button>
+                            )}
+
+                            {pages.length > 1 && !['portfolio', 'bistro', 'saas', 'about', 'terms', 'webshop'].includes(p.id) ? (
+                              <button
+                                onClick={() => {
+                                  const dispName = p.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+                                  if (confirm(`Er du sikker på, at du vil slette siden "${dispName}"?`)) {
+                                    const cleanDelName = p.name.replace('📄 ', '').replace('🛒 ', '').trim();
+                                    const deletedNames = JSON.parse(localStorage.getItem('visual-builder-deleted-page-names') || '[]');
+                                    if (!deletedNames.includes(cleanDelName)) {
+                                      deletedNames.push(cleanDelName);
+                                      localStorage.setItem('visual-builder-deleted-page-names', JSON.stringify(deletedNames));
+                                    }
+
+                                    if (p.dbId) {
+                                      const origin = window.location.origin;
+                                      const backendBase = origin.includes('localhost') || origin.includes('127.0.0.1') ? 'http://localhost:8000' : origin;
+                                      fetch(`${backendBase}/api/layouts/${p.dbId}/`, {
+                                        method: 'DELETE'
+                                      }).catch(err => console.error("Error deleting backend layout draft:", err));
+                                    }
+
+                                    const remainingPages = pages.filter(page => page.id !== p.id);
+                                    setPages(remainingPages);
+                                    if (activePageId === p.id) {
+                                      setActivePageId(remainingPages[0].id);
+                                    }
+                                  }
+                                }}
+                                className="px-2 py-1.5 bg-rose-950/30 hover:bg-rose-900/50 text-rose-400 hover:text-rose-350 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all border-none cursor-pointer"
+                                title="Slet side"
+                              >
+                                🗑️ Slet
+                              </button>
+                            ) : (
+                              <span className="text-[9px] text-slate-500 select-none px-2 py-1">Låst side</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-slate-800 flex items-center justify-between shrink-0 bg-slate-950">
+              <button
+                onClick={handleAddPage}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-md shadow-indigo-600/10"
+              >
+                <Plus className="w-4 h-4" /> Tilføj Ny Side
+              </button>
+
+              <button
+                onClick={() => setShowPageManagerModal(false)}
+                className="px-5 py-2 bg-slate-800 hover:bg-slate-750 text-white rounded-xl text-xs font-bold transition-all border-none cursor-pointer active:scale-95"
+              >
+                Færdig
+              </button>
             </div>
 
           </div>
