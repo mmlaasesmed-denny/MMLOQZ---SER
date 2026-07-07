@@ -43,9 +43,10 @@ interface DropdownEditorProps {
   item: OverlayItem;
   selectedElement: PageElement;
   onUpdateElement: SidebarProps['onUpdateElement'];
+  pages?: any[];
 }
 
-function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: DropdownEditorProps) {
+function DropdownOptionsEditor({ item, selectedElement, onUpdateElement, pages = [] }: DropdownEditorProps) {
   const categories = item.content.split(',').map(c => c.trim()).filter(Boolean);
   const [selectedCategory, setSelectedCategory] = useState(categories[0] || '');
   
@@ -54,6 +55,7 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
   const [description, setDescription] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
+  const [pageSlug, setPageSlug] = useState('');
 
   const allLinks = item.dropdownLinks || getDefaultDropdownLinks();
   const currentCategoryLinks = allLinks.filter(l => l.parentItem.toLowerCase() === selectedCategory.toLowerCase());
@@ -70,7 +72,7 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
     if (editingLinkId) {
       const nextLinks = currentLinksList.map(l => 
         l.id === editingLinkId 
-          ? { ...l, group: group.trim() || 'General', title: title.trim(), description: description.trim(), link: linkUrl.trim() || '#' }
+          ? { ...l, group: group.trim() || 'General', title: title.trim(), description: description.trim(), link: linkUrl.trim() || '#', pageSlug: pageSlug.trim() }
           : l
       );
       updateOverlays(nextLinks);
@@ -82,7 +84,8 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
         group: group.trim() || 'General',
         title: title.trim(),
         description: description.trim(),
-        link: linkUrl.trim() || '#'
+        link: linkUrl.trim() || '#',
+        pageSlug: pageSlug.trim()
       };
       updateOverlays([...currentLinksList, newLink]);
     }
@@ -91,6 +94,7 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
     setTitle('');
     setDescription('');
     setLinkUrl('');
+    setPageSlug('');
   };
 
   const updateOverlays = (nextLinks: DropdownLink[]) => {
@@ -106,6 +110,7 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
     setTitle(link.title);
     setDescription(link.description);
     setLinkUrl(link.link);
+    setPageSlug(link.pageSlug || '');
   };
 
   const handleDeleteClick = (linkId: string) => {
@@ -117,6 +122,7 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
       setTitle('');
       setDescription('');
       setLinkUrl('');
+      setPageSlug('');
     }
   };
 
@@ -126,6 +132,7 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
     setTitle('');
     setDescription('');
     setLinkUrl('');
+    setPageSlug('');
   };
 
   const groupedLinks: { [key: string]: DropdownLink[] } = {};
@@ -183,7 +190,9 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
                       <div className="flex-1 min-w-0">
                         <div className="font-bold text-slate-755 dark:text-slate-200 truncate">{link.title}</div>
                         <div className="text-[10px] text-slate-400 truncate">{link.description || 'No description'}</div>
-                        <div className="text-[9px] text-slate-400 truncate bg-slate-150 dark:bg-slate-800 px-1 py-0.5 rounded w-max mt-1 font-mono">{link.link}</div>
+                        <div className="text-[9px] text-slate-400 truncate bg-slate-150 dark:bg-slate-800 px-1 py-0.5 rounded w-max mt-1 font-mono">
+                          Link: {link.link} {link.pageSlug && `| Side-slug: /${link.pageSlug}`}
+                        </div>
                       </div>
                       <div className="flex gap-1 shrink-0">
                         <button
@@ -262,6 +271,25 @@ function DropdownOptionsEditor({ item, selectedElement, onUpdateElement }: Dropd
             className="w-full text-xs px-2.5 py-1.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100"
             placeholder="e.g. #adgangskontrol"
           />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] text-slate-400 block font-semibold">Page Slug Link / Side-slug (Valgfri)</label>
+          <input
+            type="text"
+            value={pageSlug}
+            onChange={(e) => setPageSlug(e.target.value)}
+            className="w-full text-xs px-2.5 py-1.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-mono text-indigo-400 font-semibold"
+            placeholder="e.g. bistro-menu"
+            list="editor-pages-slug-list"
+          />
+          <datalist id="editor-pages-slug-list">
+            {pages.map(p => (
+              <option key={p.id} value={p.slug}>
+                {p.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '')} (/{p.slug || 'home'})
+              </option>
+            ))}
+          </datalist>
         </div>
 
         <div className="flex gap-2 pt-1">
@@ -1874,6 +1902,7 @@ export default function Sidebar({
                                       item={item} 
                                       selectedElement={selectedElement} 
                                       onUpdateElement={onUpdateElement} 
+                                      pages={pages}
                                     />
                                   )}
 

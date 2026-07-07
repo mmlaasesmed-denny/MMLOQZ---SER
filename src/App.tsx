@@ -1319,6 +1319,12 @@ export default function App() {
           onAddSectionBelow={() => {}}
           onAddSection={() => {}}
           viewportMode="desktop"
+          pages={pages}
+          onNavigatePage={(pageId) => {
+            setActivePageId(pageId);
+            setSelectedElementId(null);
+            setSelectedSectionId(null);
+          }}
         />
       </div>
     );
@@ -1714,6 +1720,12 @@ export default function App() {
             onAddSectionBelow={handleAddSectionBelow}
             onAddSection={handleAddNewSection}
             viewportMode={viewportMode}
+            pages={pages}
+            onNavigatePage={(pageId) => {
+              setActivePageId(pageId);
+              setSelectedElementId(null);
+              setSelectedSectionId(null);
+            }}
           />
         ) : (
           <div className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-200 dark:bg-slate-950 p-6 md:p-8 flex justify-center items-start">
@@ -1747,6 +1759,12 @@ export default function App() {
                 onAddSectionBelow={handleAddSectionBelow}
                 onAddSection={handleAddNewSection}
                 viewportMode={viewportMode}
+                pages={pages}
+                onNavigatePage={(pageId) => {
+                  setActivePageId(pageId);
+                  setSelectedElementId(null);
+                  setSelectedSectionId(null);
+                }}
               />
             </div>
           </div>

@@ -78,6 +78,7 @@ export interface DropdownLink {
   title: string;       // e.g. "Adgangskontrol"
   description?: string; // e.g. "Fleksible adgangsløsninger..."
   link: string;        // e.g. "#adgangskontrol"
+  pageSlug?: string;   // slug of another page
 }
 
 export interface OverlayItem {

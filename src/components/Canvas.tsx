@@ -160,6 +160,8 @@ interface CanvasProps {
   onChangeImageClick: (elementId: string) => void;
   onAddSectionBelow: (afterSectionId: string) => void;
   onAddSection: (layout: 'single-col' | 'two-col' | 'three-col') => void;
+  pages?: any[];
+  onNavigatePage?: (pageId: string) => void;
 }
 
 const renderListContent = (text: string, type: 'unordered' | 'ordered' | 'square' | 'checkmark', elCSS: React.CSSProperties) => {
@@ -499,7 +501,9 @@ export default function Canvas({
   onMoveElement,
   onChangeImageClick,
   onAddSectionBelow,
-  onAddSection
+  onAddSection,
+  pages = [],
+  onNavigatePage
 }: CanvasProps) {
   // Local state for mobile menu responsiveness
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -539,11 +543,34 @@ export default function Canvas({
     };
   }, [viewportMode, isPreviewMode, sections]);
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string, pageSlug?: string) => {
     if (!isPreviewMode) {
       e.preventDefault();
       return;
     }
+
+    // 1. If pageSlug is provided, navigate to that page first
+    if (pageSlug) {
+      const targetPage = pages.find(p => p.slug.toLowerCase() === pageSlug.trim().toLowerCase());
+      if (targetPage && onNavigatePage) {
+        e.preventDefault();
+        onNavigatePage(targetPage.id);
+        return;
+      }
+    }
+
+    // 2. Fallback to normal url path slug check
+    if (url && !url.startsWith('#')) {
+      const cleanUrl = url.replace(/^\//, '').trim().toLowerCase();
+      const targetPage = pages.find(p => p.slug.toLowerCase() === cleanUrl);
+      if (targetPage && onNavigatePage) {
+        e.preventDefault();
+        onNavigatePage(targetPage.id);
+        return;
+      }
+    }
+
+    // 3. Fallback to section anchor links
     if (url && url.startsWith('#')) {
       e.preventDefault();
       const targetId = url.substring(1);
@@ -1930,7 +1957,7 @@ export default function Canvas({
                                                                     <div key={link.id || lIdx}>
                                                                       <a 
                                                                         href={link.link || '#'} 
-                                                                        onClick={(e) => handleLinkClick(e, link.link)}
+                                                                        onClick={(e) => handleLinkClick(e, link.link, link.pageSlug)}
                                                                         className="font-bold text-slate-800 text-xs hover:text-indigo-600 transition-colors block no-underline"
                                                                       >
                                                                         {link.title}
@@ -2844,7 +2871,7 @@ export default function Canvas({
                                         key={link.id || lIdx}
                                         href={link.link || '#'} 
                                         onClick={(e) => {
-                                          handleLinkClick(e, link.link);
+                                          handleLinkClick(e, link.link, link.pageSlug);
                                           setIsMobileMenuOpen(false);
                                         }} 
                                         className="block text-slate-600 text-xs py-1 hover:text-slate-950 no-underline"
