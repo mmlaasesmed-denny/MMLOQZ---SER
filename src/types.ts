@@ -1,6 +1,7 @@
 export type ElementType = 'text' | 'button' | 'image' | 'divider' | 'spacer' | 'image-banner' | 'search-box' | 'webshop';
 
 export interface ElementStyles {
+  fontFamily?: string;
   fontSize?: string; // e.g., '14px', '24px', '48px'
   fontWeight?: '300' | '400' | '500' | '600' | '700' | '800';
   fontStyle?: 'normal' | 'italic';

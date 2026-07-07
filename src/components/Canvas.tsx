@@ -817,6 +817,7 @@ export default function Canvas({
   // Convert styles to inline react CSS styles safely
   const buildInlineCSS = (s: ElementStyles): React.CSSProperties => {
     return {
+      fontFamily: s.fontFamily,
       fontSize: formatStyleVal(s.fontSize),
       fontWeight: s.fontWeight,
       fontStyle: s.fontStyle,
