@@ -3,7 +3,7 @@ import {
   Palette, Type, Sliders, Box, Layers, Image as ImageIcon, 
   Trash2, Plus, ChevronUp, ChevronDown, Copy, Link, 
   AlignLeft, AlignCenter, AlignRight, AlignJustify, Sparkles, PlusCircle, Check, Monitor, Tablet, Smartphone, ShoppingBag,
-  Save
+  Save, Edit2, RotateCcw
 } from 'lucide-react';
 import { Section, PageElement, SiteTheme, ElementStyles, ElementType, OverlayItem, DropdownLink } from '../types';
 import { COLOR_THEMES, TEMPLATES } from '../templates';
@@ -24,7 +24,7 @@ interface SidebarProps {
   ) => void;
   onUpdateSection: (sectionId: string, updatedSection: Partial<Section>) => void;
   onSelectTheme: (theme: SiteTheme) => void;
-  onLoadTemplate: (templateId: string) => void;
+  onLoadTemplate: (sections: Section[], theme?: SiteTheme) => void;
   onAddElement: (sectionId: string, colId: string, type: ElementType) => void;
   onDeleteElement: (elementId: string) => void;
   onCloneElement: (elementId: string) => void;
@@ -353,10 +353,17 @@ export default function Sidebar({
   const [designFile, setDesignFile] = useState<File | null>(null);
   const [designFileName, setDesignFileName] = useState('');
 
-  // Reusable custom layouts manager states & handlers
-  const [customTemplates, setCustomTemplates] = useState<any[]>(() => {
-    const saved = localStorage.getItem('visual-builder-custom-templates');
-    return saved ? JSON.parse(saved) : [];
+  // Reusable dynamic layout presets and custom templates manager state & handlers
+  const [templatesList, setTemplatesList] = useState<any[]>(() => {
+    const saved = localStorage.getItem('visual-builder-managed-templates');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse templates list:", e);
+      }
+    }
+    return TEMPLATES;
   });
 
   const handleSaveAsTemplate = () => {
@@ -372,27 +379,61 @@ export default function Sidebar({
       theme: { ...theme }
     };
 
-    const updated = [...customTemplates, newTmpl];
-    setCustomTemplates(updated);
-    localStorage.setItem('visual-builder-custom-templates', JSON.stringify(updated));
+    const updated = [...templatesList, newTmpl];
+    setTemplatesList(updated);
+    localStorage.setItem('visual-builder-managed-templates', JSON.stringify(updated));
     alert(`🎉 Layoutet er gemt som skabelonen "${name}"!`);
   };
 
   const handleApplyCustomTemplate = (tmpl: any) => {
     if (confirm(`Vil du anvende skabelonen "${tmpl.name}" på denne side? Dette vil overskrive alt nuværende indhold på siden.`)) {
-      const customEvent = new CustomEvent('apply-custom-template', {
-        detail: { sections: tmpl.sections, theme: tmpl.theme }
-      });
-      window.dispatchEvent(customEvent);
+      onLoadTemplate(tmpl.sections, tmpl.theme);
     }
+  };
+
+  const handleRenameTemplate = (id: string, currentName: string, currentDesc: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newName = prompt("Indtast nyt navn til skabelonen:", currentName);
+    if (newName === null) return;
+    if (!newName.trim()) {
+      alert("Navnet må ikke være tomt.");
+      return;
+    }
+    const newDesc = prompt("Indtast ny beskrivelse til skabelonen:", currentDesc);
+    const updated = templatesList.map(t => {
+      if (t.id === id) {
+        return {
+          ...t,
+          name: newName.trim(),
+          description: newDesc !== null ? newDesc.trim() : t.description
+        };
+      }
+      return t;
+    });
+    setTemplatesList(updated);
+    localStorage.setItem('visual-builder-managed-templates', JSON.stringify(updated));
   };
 
   const handleDeleteCustomTemplate = (id: string, name: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm(`Er du sikker på, at du vil slette skabelonen "${name}"?`)) {
-      const updated = customTemplates.filter(t => t.id !== id);
-      setCustomTemplates(updated);
-      localStorage.setItem('visual-builder-custom-templates', JSON.stringify(updated));
+      const updated = templatesList.filter(t => t.id !== id);
+      setTemplatesList(updated);
+      localStorage.setItem('visual-builder-managed-templates', JSON.stringify(updated));
+    }
+  };
+
+  const handleRestoreDefaultTemplates = () => {
+    if (confirm("Vil du gendanne standard-skabelonerne? Dine egne gemte skabeloner vil blive bevaret, men de slettede standard-skabeloner vil komme tilbage.")) {
+      const updated = [...templatesList];
+      TEMPLATES.forEach(tmpl => {
+        if (!updated.some(t => t.id === tmpl.id)) {
+          updated.push(tmpl);
+        }
+      });
+      setTemplatesList(updated);
+      localStorage.setItem('visual-builder-managed-templates', JSON.stringify(updated));
+      alert("🎉 Standard-skabelonerne er blevet gendannet!");
     }
   };
 
@@ -3235,62 +3276,59 @@ export default function Sidebar({
         {activeTab === 'sections' && (
           <div className="space-y-6 animate-in fade-in duration-150" id="tab-layout">
             
-            {/* Quick prebuilt template application */}
-            <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Apply Template Preset</span>
-              <div className="space-y-2" id="templates-preset-selector">
-                {TEMPLATES.map(tmpl => (
-                  <button
-                    key={tmpl.id}
-                    onClick={() => {
-                      if (confirm(`Do you want to switch to "${tmpl.name}"? This replacement will clear all content in the current canvas.`)) {
-                        onLoadTemplate(tmpl.id);
-                      }
-                    }}
-                    className="w-full text-left p-3 border border-slate-100 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-xl transition-all"
-                  >
-                    <div className="font-bold text-xs text-slate-800 dark:text-slate-100">{tmpl.name}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5 leading-normal">{tmpl.description}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Custom Reusable Templates Library */}
-            <div className="space-y-3 border-t border-slate-150 dark:border-slate-850 pt-4">
+            {/* Unified Dynamic Templates Library */}
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Mine skabeloner</span>
-                <button
-                  onClick={handleSaveAsTemplate}
-                  className="px-2.5 py-1 text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors border-none cursor-pointer flex items-center gap-1 shadow-xs"
-                >
-                  <Save className="w-3 h-3" /> Gem layout
-                </button>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Skabeloner</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleRestoreDefaultTemplates}
+                    className="p-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-350 rounded-lg transition-colors border-none cursor-pointer flex items-center justify-center"
+                    title="Gendan standard-skabeloner"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={handleSaveAsTemplate}
+                    className="px-2.5 py-1 text-[10px] font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors border-none cursor-pointer flex items-center gap-1 shadow-xs"
+                  >
+                    <Save className="w-3 h-3" /> Gem layout
+                  </button>
+                </div>
               </div>
 
-              {customTemplates.length === 0 ? (
-                <div className="text-center py-4 px-2 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                  <p className="text-[10px] text-slate-400 leading-relaxed m-0">Du har ikke gemt nogen skabeloner endnu. Klik på knappen ovenfor for at gemme det nuværende layout.</p>
+              {templatesList.length === 0 ? (
+                <div className="text-center py-6 px-2 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                  <p className="text-[10px] text-slate-400 leading-relaxed m-0">Ingen skabeloner tilgængelige. Klik på "Gem layout" for at oprette en eller gendan standarder.</p>
                 </div>
               ) : (
-                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                  {customTemplates.map(tmpl => (
+                <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1" id="templates-preset-selector">
+                  {templatesList.map(tmpl => (
                     <div
                       key={tmpl.id}
                       onClick={() => handleApplyCustomTemplate(tmpl)}
-                      className="w-full text-left p-3 border border-slate-100 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-xl transition-all cursor-pointer relative group flex justify-between items-center"
+                      className="w-full text-left p-3 border border-slate-100 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-xl transition-all cursor-pointer flex justify-between items-center group relative animate-in slide-in-from-bottom-2 duration-100"
                     >
                       <div className="flex-1 min-w-0 pr-6">
                         <div className="font-bold text-xs text-slate-800 dark:text-slate-100 truncate">{tmpl.name}</div>
-                        <div className="text-[9px] text-slate-400 mt-0.5">{tmpl.description}</div>
+                        <div className="text-[9px] text-slate-400 mt-0.5 leading-normal">{tmpl.description}</div>
                       </div>
-                      <button
-                        onClick={(e) => handleDeleteCustomTemplate(tmpl.id, tmpl.name, e)}
-                        className="p-1 bg-transparent hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-400 hover:text-red-500 rounded-md transition-colors border-none cursor-pointer"
-                        title="Slet skabelon"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 bg-slate-50 dark:bg-slate-850 pl-2 rounded-lg py-1 shadow-xs">
+                        <button
+                          onClick={(e) => handleRenameTemplate(tmpl.id, tmpl.name, tmpl.description || '', e)}
+                          className="p-1 bg-transparent hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 rounded-md transition-colors border-none cursor-pointer"
+                          title="Rediger skabelonnavn"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDeleteCustomTemplate(tmpl.id, tmpl.name, e)}
+                          className="p-1 bg-transparent hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-400 hover:text-red-500 rounded-md transition-colors border-none cursor-pointer"
+                          title="Slet skabelon"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

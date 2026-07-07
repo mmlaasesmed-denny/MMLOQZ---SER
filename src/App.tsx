@@ -695,26 +695,16 @@ export default function App() {
     });
   };
 
-  // Direct confirmation loading of predefined templates
-  const handleLoadTemplate = (templateId: string) => {
-    const found = TEMPLATES.find(t => t.id === templateId);
-    if (!found) return;
-
+  // Direct confirmation loading of templates
+  const handleLoadTemplate = (sections: Section[], theme?: SiteTheme) => {
     setPages(prevPages => {
       return prevPages.map(page => {
         if (page.id !== activePageId) return page;
-        
-        let matchTheme = COLOR_THEMES[0];
-        if (templateId === 'bistro') {
-          matchTheme = COLOR_THEMES[4];
-        } else if (templateId === 'saas') {
-          matchTheme = COLOR_THEMES[3];
-        }
 
         return {
           ...page,
-          sections: ensureIndependentOverrides(JSON.parse(JSON.stringify(found.sections))),
-          theme: matchTheme
+          sections: ensureIndependentOverrides(JSON.parse(JSON.stringify(sections))),
+          theme: theme || page.theme
         };
       });
     });
