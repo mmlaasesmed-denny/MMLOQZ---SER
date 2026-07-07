@@ -1349,6 +1349,7 @@ export default function Canvas({
                                                   marginBottom: formatStyleVal(item.styles.marginBottom) || '8px',
                                                   lineHeight: item.styles.lineHeight || '1.4',
                                                   letterSpacing: formatStyleVal(item.styles.letterSpacing) || '0px',
+                                                  fontFamily: item.styles.fontFamily || el.styles.fontFamily,
                                                 }}
                                                 isPreviewMode={isPreviewMode}
                                                 isHTML={true}
@@ -1423,6 +1424,7 @@ export default function Canvas({
                                                     fontWeight: item.styles.fontWeight || '600',
                                                     width: formatStyleVal(item.styles.width) || undefined,
                                                     height: formatStyleVal(item.styles.height) || undefined,
+                                                    fontFamily: item.styles.fontFamily || el.styles.fontFamily,
                                                   }}
                                                 >
                                                   {item.content}
@@ -1482,6 +1484,7 @@ export default function Canvas({
                                           {(el.overlayTitle || !isPreviewMode) && (
                                             <h3 
                                               className={`text-white font-bold leading-tight mb-2 max-w-lg ${!el.overlayTitle ? 'italic opacity-40 text-xs font-normal' : 'text-xl md:text-2xl'}`}
+                                              style={{ fontFamily: el.styles.fontFamily }}
                                             >
                                               {el.overlayTitle || (isPreviewMode ? '' : '[Edit Overlay Title in Inspector]')}
                                             </h3>
@@ -1489,7 +1492,10 @@ export default function Canvas({
                                           
                                           {/* Overlay Subtext */}
                                           {(el.overlaySubtext || !isPreviewMode) && (
-                                            <p className={`text-slate-200 max-w-md mb-4 ${!el.overlaySubtext ? 'italic opacity-40 text-[10px]' : 'text-xs md:text-sm'}`}>
+                                            <p 
+                                              className={`text-slate-200 max-w-md mb-4 ${!el.overlaySubtext ? 'italic opacity-40 text-[10px]' : 'text-xs md:text-sm'}`}
+                                              style={{ fontFamily: el.styles.fontFamily }}
+                                            >
                                               {el.overlaySubtext || (isPreviewMode ? '' : '[Edit Overlay Subtext in Inspector]')}
                                             </p>
                                           )}
@@ -1511,11 +1517,13 @@ export default function Canvas({
                                                 placeholder={el.overlaySearchPlaceholder || "Enter your email..."}
                                                 className="flex-1 px-3 py-2 text-xs rounded bg-white/95 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-slate-350 font-sans"
                                                 onClick={(e) => e.stopPropagation()}
+                                                style={{ fontFamily: el.styles.fontFamily }}
                                               />
                                               <button 
                                                 type="submit"
                                                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-xs transition-colors shrink-0 border-none cursor-pointer"
                                                 onClick={(e) => e.stopPropagation()}
+                                                style={{ fontFamily: el.styles.fontFamily }}
                                               >
                                                 {el.overlaySearchButtonText || "Subscribe"}
                                               </button>
@@ -1539,6 +1547,7 @@ export default function Canvas({
                                               style={{
                                                 width: el.styles.width || undefined,
                                                 height: el.styles.height || undefined,
+                                                fontFamily: el.styles.fontFamily,
                                               }}
                                             >
                                               {el.overlayButtonText || "Click Here"}
@@ -2324,6 +2333,7 @@ export default function Canvas({
                                                 tagName="h4"
                                                 content={el.overlayTitle}
                                                 className="text-lg md:text-2xl font-extrabold tracking-tight text-white leading-tight cursor-text focus:outline-none"
+                                                style={{ fontFamily: el.styles.fontFamily }}
                                                 isPreviewMode={isPreviewMode}
                                                 onBlur={(newText) => {
                                                   onUpdateElement(el.id, {}, undefined, undefined, undefined, { overlayTitle: newText });
@@ -2337,6 +2347,7 @@ export default function Canvas({
                                                 tagName="p"
                                                 content={el.overlaySubtext}
                                                 className="text-xs md:text-sm text-slate-100 font-medium leading-relaxed opacity-90 cursor-text focus:outline-none"
+                                                style={{ fontFamily: el.styles.fontFamily }}
                                                 isPreviewMode={isPreviewMode}
                                                 onBlur={(newText) => {
                                                   onUpdateElement(el.id, {}, undefined, undefined, undefined, { overlaySubtext: newText });
@@ -2360,11 +2371,13 @@ export default function Canvas({
                                                   onClick={(e) => e.stopPropagation()}
                                                   placeholder={el.overlaySearchPlaceholder || 'Enter email address...'}
                                                   className="flex-1 bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-300 focus:outline-none focus:ring-1 focus:ring-white/40 transition-all font-sans"
+                                                  style={{ fontFamily: el.styles.fontFamily }}
                                                 />
                                                 <button
                                                   type="submit"
                                                   onClick={(e) => e.stopPropagation()}
                                                   className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-900 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer whitespace-nowrap border-none"
+                                                  style={{ fontFamily: el.styles.fontFamily }}
                                                 >
                                                   {el.overlaySearchButtonText || 'Subscribe'}
                                                 </button>
@@ -2380,6 +2393,7 @@ export default function Canvas({
                                                     if (!isPreviewMode) e.preventDefault();
                                                   }}
                                                   className="inline-block px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-indigo-600/20 active:scale-95 transition-all text-center"
+                                                  style={{ fontFamily: el.styles.fontFamily }}
                                                 >
                                                   {el.overlayButtonText || 'Learn More'}
                                                 </a>
