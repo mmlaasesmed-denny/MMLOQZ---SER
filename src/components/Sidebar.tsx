@@ -28,7 +28,7 @@ interface SidebarProps {
   onAddElement: (sectionId: string, colId: string, type: ElementType) => void;
   onDeleteElement: (elementId: string) => void;
   onCloneElement: (elementId: string) => void;
-  onAddSection: (layout: 'single-col' | 'two-col' | 'three-col') => void;
+  onAddSection: (layout: 'single-col' | 'two-col' | 'three-col' | 'footer') => void;
   onDeleteSection: (sectionId: string) => void;
   onMoveSection: (sectionId: string, direction: 'up' | 'down') => void;
   onMoveElement: (elementId: string, direction: 'up' | 'down') => void;
@@ -440,6 +440,25 @@ export default function Sidebar({
     });
     setTemplatesList(updated);
     localStorage.setItem('visual-builder-managed-templates', JSON.stringify(updated));
+  };
+
+  const handleUpdateTemplateDesign = (id: string, name: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm(`Vil du overskrive designet for skabelonen "${name}" med dit nuværende layout på canvas?`)) {
+      const updated = templatesList.map(t => {
+        if (t.id === id) {
+          return {
+            ...t,
+            sections: JSON.parse(JSON.stringify(sections)),
+            theme: { ...theme }
+          };
+        }
+        return t;
+      });
+      setTemplatesList(updated);
+      localStorage.setItem('visual-builder-managed-templates', JSON.stringify(updated));
+      alert(`🎉 Designet for skabelonen "${name}" er blevet opdateret!`);
+    }
   };
 
   const handleDeleteCustomTemplate = (id: string, name: string, e: React.MouseEvent) => {
@@ -893,6 +912,43 @@ export default function Sidebar({
                   </div>
                 </div>
 
+                {/* Element Type Changer */}
+                <div className="space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Element Type</span>
+                  <select
+                    value={selectedElement.type}
+                    onChange={(e) => {
+                      const nextType = e.target.value as ElementType;
+                      let contentUpdate = selectedElement.content;
+                      let srcUpdate = selectedElement.src;
+                      
+                      // Intelligently initialize content when converting type
+                      if (nextType === 'text' && !selectedElement.content) {
+                        contentUpdate = 'Ny tekstblok...';
+                      } else if (nextType === 'image' && !selectedElement.src) {
+                        srcUpdate = 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80';
+                      }
+                      
+                      onUpdateElement(
+                        selectedElement.id, 
+                        {}, 
+                        contentUpdate, 
+                        undefined, 
+                        srcUpdate, 
+                        { type: nextType }
+                      );
+                    }}
+                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-55 dark:bg-slate-950 text-slate-850 dark:text-slate-200 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 font-sans cursor-pointer"
+                  >
+                    <option value="text">Text / HTML Block</option>
+                    <option value="image">Image / Graphic</option>
+                    <option value="button">Button / Link Button</option>
+                    <option value="divider">Horizontal Divider</option>
+                    <option value="spacer">Blank Spacer</option>
+                    <option value="search-box">Search Input Box</option>
+                  </select>
+                </div>
+
                 {/* Responsive Visibility Controls */}
                 <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3" id="inspector-visibility">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Device Visibility</span>
@@ -1344,7 +1400,7 @@ export default function Sidebar({
                 )}
 
                 {/* Spacing & Typography Section (Only for Text, Buttons, and Search Box) */}
-                {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box') && (
+                {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box' || selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
                   <div className="space-y-4 border-t border-slate-100 dark:border-slate-800 pt-4" id="inspector-typography-spacing">
                     <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Typography & Spacing</h5>
 
@@ -1583,7 +1639,7 @@ export default function Sidebar({
                   <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Coloring & Borders</h5>
 
                   {/* Text Color Input */}
-                  {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box') && (
+                  {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box' || selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Text Color (Hex)</span>
@@ -2705,6 +2761,101 @@ export default function Sidebar({
                   />
                 </div>
 
+                {/* Footer Logo Type Selector */}
+                {selectedSection.name.toLowerCase().includes('foot') && (
+                  <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3" id="footer-logo-type-selector">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Footer Logo Type</span>
+                    {(() => {
+                      const firstCol = selectedSection.columns?.[0];
+                      const firstEl = firstCol?.elements?.[0];
+                      if (!firstEl) {
+                        return <p className="text-[10px] text-slate-400 italic">Tilføj et element i den første kolonne for at skifte logotype.</p>;
+                      }
+                      
+                      const isFontLogo = firstEl.type === 'text';
+                      
+                      return (
+                        <div className="space-y-1.5">
+                          <div className="flex gap-1 bg-slate-50 dark:bg-slate-950 p-0.5 rounded-lg border border-slate-205 dark:border-slate-800">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                // Toggle first element type to 'image'
+                                const updatedCols = selectedSection.columns.map((col, cIdx) => {
+                                  if (cIdx !== 0) return col;
+                                  return {
+                                    ...col,
+                                    elements: col.elements.map((el, eIdx) => {
+                                      if (eIdx !== 0) return el;
+                                      return {
+                                        ...el,
+                                        type: 'image' as ElementType,
+                                        src: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80',
+                                        content: ''
+                                      };
+                                    })
+                                  };
+                                });
+                                onUpdateSection(selectedSection.id, { columns: updatedCols });
+                              }}
+                              className={`flex-1 py-1 rounded-md text-[11px] font-semibold text-center cursor-pointer transition-all ${
+                                firstEl.type === 'image'
+                                  ? 'bg-amber-600 text-white shadow-xs'
+                                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                              }`}
+                            >
+                              Image Logo
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                // Toggle first element type to 'text'
+                                const updatedCols = selectedSection.columns.map((col, cIdx) => {
+                                  if (cIdx !== 0) return col;
+                                  return {
+                                    ...col,
+                                    elements: col.elements.map((el, eIdx) => {
+                                      if (eIdx !== 0) return el;
+                                      return {
+                                        ...el,
+                                        type: 'text' as ElementType,
+                                        content: `<div class="flex items-center gap-3 mb-4 select-none">
+  <div class="w-12 h-12 rounded-full border border-[#FFC502] flex flex-col items-center justify-center bg-white shrink-0 p-1">
+    <span class="text-slate-900 font-extrabold tracking-tighter text-xs leading-none">MM</span>
+    <svg class="w-5 h-2.5 text-[#FFC502]" fill="currentColor" viewBox="0 0 24 12">
+      <path d="M19.5 4.5c.3 0 .5.2.5.5v1h1v-1c0-.3.2-.5.5-.5s.5.2.5.5v1h1v-2c0-.3.2-.5.5-.5s.5.2.5.5v3.5c0 .3-.2.5-.5.5h-10.4c-.6 1.8-2.3 3-4.1 3-2.5 0-4.5-2-4.5-4.5S5.5 3 8 3c1.8 0 3.5 1.2 4.1 3h7.4v-1c0-.3.2-.5.5-.5zM8 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+    </svg>
+  </div>
+  <div class="flex flex-col text-left">
+    <span class="font-bold tracking-wider leading-none text-slate-800 uppercase text-lg">LÅSESMED</span>
+    <span class="text-[#FFC502] tracking-wide font-semibold text-[9px] mt-1">Døgnvagt i Storkøbenhavn</span>
+  </div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder</p>`
+                                      };
+                                    })
+                                  };
+                                });
+                                onUpdateSection(selectedSection.id, { columns: updatedCols });
+                              }}
+                              className={`flex-1 py-1 rounded-md text-[11px] font-semibold text-center cursor-pointer transition-all ${
+                                firstEl.type === 'text'
+                                  ? 'bg-amber-600 text-white shadow-xs'
+                                  : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-355'
+                              }`}
+                            >
+                              Font (Text) Logo
+                            </button>
+                          </div>
+                          <p className="text-[10px] text-slate-400 leading-normal">
+                            Switching to <strong>Image Logo</strong> allows uploading a graphic file. Switching to <strong>Font Logo</strong> uses the HTML/text brand layout with dynamic font size controls.
+                          </p>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+
                 {/* Section Visibility Controls */}
                 <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3" id="inspector-section-visibility">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Device Visibility</span>
@@ -3369,6 +3520,13 @@ export default function Sidebar({
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
+                          onClick={(e) => handleUpdateTemplateDesign(tmpl.id, tmpl.name, e)}
+                          className="p-1 bg-transparent hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-300 rounded-md transition-colors border-none cursor-pointer"
+                          title="Overskriv skabelonens design med nuværende canvas layout"
+                        >
+                          <Save className="w-3.5 h-3.5" />
+                        </button>
+                        <button
                           onClick={(e) => handleDeleteCustomTemplate(tmpl.id, tmpl.name, e)}
                           className="p-1 bg-transparent hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-400 hover:text-red-500 rounded-md transition-colors border-none cursor-pointer"
                           title="Slet skabelon"
@@ -3410,6 +3568,15 @@ export default function Sidebar({
                 >
                   <span className="flex items-center gap-1.5 font-semibold">
                     <span className="w-1 h-3 bg-indigo-500 rounded-sm"></span><span className="w-1 h-3 bg-indigo-500 rounded-sm"></span><span className="w-1 h-3 bg-indigo-500 rounded-sm"></span> Grid Feature Row (3 Cols)
+                  </span>
+                  <PlusCircle className="w-4 h-4 text-slate-400" />
+                </button>
+                <button
+                  onClick={() => onAddSection('footer')}
+                  className="flex items-center justify-between p-2.5 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 text-xs font-medium rounded-lg hover:bg-slate-50 dark:hover:bg-slate-850 transition-all text-left"
+                >
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <span className="w-1.5 h-3 bg-amber-500 rounded-sm"></span><span className="w-1 h-3 bg-indigo-500 rounded-sm"></span><span className="w-1 h-3 bg-indigo-500 rounded-sm"></span><span className="w-1 h-3 bg-indigo-500 rounded-sm"></span> MM Låsesmed Footer (4 Cols)
                   </span>
                   <PlusCircle className="w-4 h-4 text-slate-400" />
                 </button>

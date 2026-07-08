@@ -20,6 +20,8 @@ interface SaveExportControlsProps {
   onUpdatePasscode?: (newPass: string) => void;
   viewportMode: 'desktop' | 'tablet' | 'mobile';
   setViewportMode: (mode: 'desktop' | 'tablet' | 'mobile') => void;
+  activePageDbId?: number;
+  onUpdatePageDbId?: (dbId: number) => void;
 }
 
 export default function SaveExportControls({
@@ -38,7 +40,9 @@ export default function SaveExportControls({
   adminPasscode = 'admin',
   onUpdatePasscode,
   viewportMode,
-  setViewportMode
+  setViewportMode,
+  activePageDbId,
+  onUpdatePageDbId
 }: SaveExportControlsProps) {
   const [showCodeExport, setShowCodeExport] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
@@ -210,14 +214,34 @@ export default function SaveExportControls({
         }
       };
 
-      await fetch(`${targetUrl}/layouts/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(layoutPayload)
-      });
+      let layoutResp;
+      if (activePageDbId) {
+        layoutResp = await fetch(`${targetUrl}/layouts/${activePageDbId}/`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(layoutPayload)
+        });
+      }
+
+      if (!layoutResp || !layoutResp.ok) {
+        layoutResp = await fetch(`${targetUrl}/layouts/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(layoutPayload)
+        });
+        if (layoutResp.ok && onUpdatePageDbId) {
+          const newLayout = await layoutResp.json();
+          if (newLayout && newLayout.id) {
+            onUpdatePageDbId(newLayout.id);
+          }
+        }
+      }
 
       if (saveCSuccess) {
         setDjangoStatus('connected');
@@ -275,10 +299,47 @@ export default function SaveExportControls({
     if (confirm(`Do you wish to discard current work and load saved layout draft "${layoutObj.title}" from your Django backend?`)) {
       if (layoutObj.sections && layoutObj.theme) {
         onImport(layoutObj.sections, layoutObj.theme);
+        if (onUpdatePageDbId) {
+          onUpdatePageDbId(layoutObj.id);
+        }
         setShowDjangoModal(false);
       } else {
         alert('Invalid schema detected inside this Django record.');
       }
+    }
+  };
+
+  const handleUpdateInDjango = async (layoutId: number, title: string) => {
+    if (!confirm(`Er du sikker på, at du vil overskrive designet for "${title}" på serveren med dit nuværende canvas layout?`)) {
+      return;
+    }
+    const targetUrl = getCleanApiUrl(djangoApiUrl);
+    setIsDjangoLoading(true);
+    try {
+      const payload = {
+        title: title,
+        sections: sections,
+        theme: theme
+      };
+      const resp = await fetch(`${targetUrl}/layouts/${layoutId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (resp.ok) {
+        alert('Layout-designet blev opdateret på serveren!');
+        fetchDjangoLayouts(djangoApiUrl);
+      } else {
+        const errorText = await resp.text();
+        alert(`Fejl ved opdatering af layout: ${errorText}`);
+      }
+    } catch (err: any) {
+      alert(`Netværksfejl under opdatering: ${err.message}`);
+    } finally {
+      setIsDjangoLoading(false);
     }
   };
 
@@ -496,8 +557,10 @@ export default function SaveExportControls({
           ].filter(Boolean).join(' ');
 
           if (el.type === 'text') {
-            // Find sibling image in a different column of the same section
-            const siblingImage = section.columns
+            // Find sibling image in a different column of the same section (ignore for footer)
+            const isFooterSection = section.id.toLowerCase().includes('foot') || 
+                                    (section.name && section.name.toLowerCase().includes('foot'));
+            const siblingImage = isFooterSection ? null : section.columns
               .filter(c => c.id !== col.id)
               .flatMap(c => c.elements)
               .find(e => e.type === 'image');
@@ -561,9 +624,11 @@ export default function SaveExportControls({
                   ${svgContent}
                 </div>`;
             } else {
+              const heightVal = formatStyleVal(s.height);
+              const minHeightVal = heightVal ? '' : 'min-height: 220px;';
               elHTML += `
-                <div id="element-${el.id}" class="overflow-hidden ${elementVisibilityClasses}" style="margin-top: ${formatStyleVal(s.marginTop) || '0px'}; margin-bottom: ${formatStyleVal(s.marginBottom) || '0px'};">
-                  <img src="${el.src || ''}" alt="${el.alt || 'Visual'}" class="w-full object-cover" style="border-radius: ${formatStyleVal(s.borderRadius) || '8px'}; border-width: ${formatStyleVal(s.borderWidth) || '0px'}; border-color: ${s.borderColor || 'transparent'};" />
+                <div id="element-${el.id}" class="overflow-hidden ${elementVisibilityClasses}" style="margin-top: ${formatStyleVal(s.marginTop) || '0px'}; margin-bottom: ${formatStyleVal(s.marginBottom) || '0px'}; width: ${formatStyleVal(s.width) || '100%'}; height: ${heightVal || 'auto'}; ${minHeightVal}">
+                  <img src="${el.src || ''}" alt="${el.alt || 'Visual'}" class="${s.width === 'auto' ? 'w-auto' : 'w-full'} h-full ${s.width === 'auto' ? 'object-contain' : 'object-cover'}" style="border-radius: ${formatStyleVal(s.borderRadius) || '8px'}; border-width: ${formatStyleVal(s.borderWidth) || '0px'}; border-color: ${s.borderColor || 'transparent'};" />
                 </div>`;
             }
           } else if (el.type === 'divider') {
@@ -1552,6 +1617,34 @@ export default function SaveExportControls({
     }
     @media (min-width: 1024px) {
       .hide-on-desktop { display: none !important; }
+    }
+    
+    /* Logo scaling using em units relative to parent font-size */
+    div.select-none.flex {
+      gap: 0.75em !important;
+      margin-bottom: 1em !important;
+    }
+    div.select-none.flex > div.rounded-full {
+      width: 3em !important;
+      height: 3em !important;
+      padding: 0.25em !important;
+    }
+    div.select-none.flex > div.rounded-full > span {
+      font-size: 0.75em !important;
+      line-height: 1 !important;
+    }
+    div.select-none.flex > div.rounded-full > svg {
+      width: 1.25em !important;
+      height: 0.625em !important;
+    }
+    div.select-none.flex > div.flex-col > span:first-child {
+      font-size: 1.125em !important;
+      line-height: 1 !important;
+    }
+    div.select-none.flex > div.flex-col > span:last-child {
+      font-size: 0.5625em !important;
+      margin-top: 0.25em !important;
+      line-height: 1.2 !important;
     }
     ${overridesCSS}
   </style>
@@ -4167,6 +4260,13 @@ export default function SaveExportControls({
                             className="px-2.5 py-1 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-400 hover:bg-indigo-100 text-[11px] font-bold rounded-md transition-colors"
                           >
                             Load layout
+                          </button>
+                          <button
+                            onClick={() => handleUpdateInDjango(layout.id, layout.title)}
+                            className="px-2.5 py-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-450 hover:bg-emerald-100 text-[11px] font-bold rounded-md transition-colors"
+                            title="Overskriv dette layout på serveren med dit nuværende canvas design"
+                          >
+                            Overskriv design
                           </button>
                           <button
                             onClick={(e) => handleDeleteFromDjango(layout.id, e)}

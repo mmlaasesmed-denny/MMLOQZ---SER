@@ -1062,8 +1062,10 @@ export default function Canvas({
                           const isElementSelected = selectedElementId === el.id;
                           const elCSS = buildInlineCSS(el.styles);
 
-                          // Find sibling image in a different column of the same section
-                          const siblingImage = section.columns
+                          // Find sibling image in a different column of the same section (ignore for footer)
+                          const isFooterSection = section.id.toLowerCase().includes('foot') || 
+                                                  (section.name && section.name.toLowerCase().includes('foot'));
+                          const siblingImage = isFooterSection ? null : section.columns
                             .filter(c => c.id !== col.id)
                             .flatMap(c => c.elements)
                             .find(e => e.type === 'image');
@@ -1310,7 +1312,11 @@ export default function Canvas({
                                     marginBottom: formatStyleVal(el.styles.marginBottom) || '0px',
                                     width: formatStyleVal(el.styles.width) || '100%',
                                     height: formatStyleVal(el.styles.height) || undefined,
-                                    minHeight: el.styles.height ? undefined : '220px',
+                                    minHeight: el.styles.minHeight !== undefined
+                                      ? (el.styles.minHeight === 'none' ? undefined : formatStyleVal(el.styles.minHeight))
+                                      : (el.styles.height || el.id.includes('foot') || el.id.includes('logo') || (section.name && section.name.toLowerCase().includes('foot')))
+                                        ? undefined 
+                                        : '220px',
                                   }}
                                 >
                                   {el.id.startsWith('locksmith-quick-img') ? (
@@ -1321,16 +1327,17 @@ export default function Canvas({
                                         src={el.src || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80'}
                                         alt={el.alt || 'Visual Item'}
                                         referrerPolicy="no-referrer"
-                                        className="w-full h-full object-cover transition-transform duration-300"
+                                        className={`${el.styles.width === 'auto' ? 'w-auto' : 'w-full'} h-full transition-transform duration-300`}
                                         style={{ 
                                           borderRadius: formatStyleVal(el.styles.borderRadius) || '12px',
                                           borderWidth: formatStyleVal(el.styles.borderWidth) || '0px',
                                           borderColor: el.styles.borderColor || 'transparent',
+                                          objectFit: el.styles.objectFit || (el.styles.width === 'auto' ? 'contain' : 'cover'),
                                         }}
                                       />
                                   
                                   {/* Background overlay tint for readability */}
-                                  {((el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch) || (el.overlays && el.overlays.length > 0) || !isPreviewMode) && (
+                                  {((el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch) || (el.overlays && el.overlays.length > 0) || (!isPreviewMode && !el.id.includes('foot') && !el.id.includes('logo') && !(section.name && section.name.toLowerCase().includes('foot')) && (el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch))) && (
                                     <div 
                                       className="absolute inset-0 transition-opacity pointer-events-none"
                                       style={{
@@ -1342,7 +1349,7 @@ export default function Canvas({
                                   )}
 
                                   {/* Overlay elements content wrapper */}
-                                  {((el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch) || (el.overlays && el.overlays.length > 0) || !isPreviewMode) && (
+                                   {((el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch) || (el.overlays && el.overlays.length > 0) || (!isPreviewMode && !el.id.includes('foot') && !el.id.includes('logo') && !(section.name && section.name.toLowerCase().includes('foot')) && (el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch))) && (
                                     <div 
                                       className={`absolute inset-0 p-6 flex flex-col ${
                                         viewportMode === 'desktop' ? (
@@ -1625,9 +1632,9 @@ export default function Canvas({
                                     <div 
                                       className="absolute inset-0 transition-opacity pointer-events-none"
                                       style={{
-                                        backgroundColor: '#0f172a',
-                                        opacity: 0.85
-}}
+                                        backgroundColor: el.overlayBgColor || 'transparent',
+                                        opacity: el.overlayBgOpacity !== undefined ? el.overlayBgOpacity / 100 : 0
+                                      }}
                                     />
                                     <div className={`relative z-10 w-full flex ${
                                       viewportMode === 'desktop' 

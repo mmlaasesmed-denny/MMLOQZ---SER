@@ -49,7 +49,7 @@ ROOT_URLCONF = 'django_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True, # Crucial so Django Rest Framework can locate its browsing template components
         'OPTIONS': {
             'context_processors': [
@@ -90,6 +90,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -116,3 +120,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST_USER = 'your-email@gmail.com'
 # EMAIL_HOST_PASSWORD = 'your-app-password'
 # DEFAULT_FROM_EMAIL = 'MM Låsesmed <info@mmlaasesmed.dk>'
+
+# Shipmondo API Settings (reads from environment variables or uses placeholder values)
+SHIPMONDO_API_USER = os.getenv('SHIPMONDO_API_USER', 'test_user')
+SHIPMONDO_API_KEY = os.getenv('SHIPMONDO_API_KEY', 'test_key')
+

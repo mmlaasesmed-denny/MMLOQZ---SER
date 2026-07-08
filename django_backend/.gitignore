@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+db.sqlite3
+
+# Environments
+venv/
+ENV/
+env/
+
+# Static compilation
+staticfiles/
+
+# OS files
+.DS_Store
+Thumbs.db

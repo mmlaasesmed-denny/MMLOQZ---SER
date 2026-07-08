@@ -24,6 +24,8 @@ export interface ElementStyles {
   marginRight?: string;
   width?: string;
   height?: string;
+  minHeight?: string;
+  objectFit?: 'cover' | 'contain' | 'fill' | 'none';
   wordSpacing?: string;
 }
 

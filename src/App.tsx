@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Section, PageElement, SiteTheme, ElementStyles, ElementType } from './types';
+import { Section, PageElement, SiteTheme, ElementStyles, ElementType, Column } from './types';
 import { TEMPLATES, COLOR_THEMES } from './templates';
 import Canvas from './components/Canvas';
 import Sidebar from './components/Sidebar';
@@ -56,8 +56,18 @@ const ensureElementOverrides = (el: PageElement): PageElement => {
   const stylesTablet = isButton ? migratePaddingToEm(el.stylesTablet) : el.stylesTablet;
   const stylesMobile = isButton ? migratePaddingToEm(el.stylesMobile) : el.stylesMobile;
 
+  let overlayBgColor = el.overlayBgColor;
+  let overlayBgOpacity = el.overlayBgOpacity;
+
+  if (el.type === 'image-banner' && el.overlayBgColor === '#0f172a' && el.overlayBgOpacity === 75) {
+    overlayBgColor = '#000000';
+    overlayBgOpacity = 0;
+  }
+
   return {
     ...el,
+    overlayBgColor,
+    overlayBgOpacity,
     styles: styles || {},
     stylesTablet: stylesTablet || (styles ? { ...styles } : {}),
     stylesMobile: stylesMobile || (styles ? { ...styles } : {}),
@@ -948,15 +958,13 @@ export default function App() {
         };
       });
     });
-
-    handleSelectSection(newSecId);
   };
 
   // Add section to bottom of stage
-  const handleAddNewSection = (layout: 'single-col' | 'two-col' | 'three-col') => {
+  const handleAddNewSection = (layout: 'single-col' | 'two-col' | 'three-col' | 'footer') => {
     const targetPageId = getRenderedPage().id;
     const newSecId = `section-${Date.now()}`;
-    const columnsArr = [];
+    const columnsArr: Column[] = [];
 
     if (layout === 'single-col') {
       columnsArr.push({
@@ -969,20 +977,121 @@ export default function App() {
         { id: `${newSecId}-col-1`, width: 'md:w-1/2', elements: [] },
         { id: `${newSecId}-col-2`, width: 'md:w-1/2', elements: [] }
       );
-    } else {
+    } else if (layout === 'three-col') {
       columnsArr.push(
         { id: `${newSecId}-col-1`, width: 'md:w-1/3', elements: [] },
         { id: `${newSecId}-col-2`, width: 'md:w-1/3', elements: [] },
         { id: `${newSecId}-col-3`, width: 'md:w-1/3', elements: [] }
       );
+    } else if (layout === 'footer') {
+      const col1Id = `${newSecId}-col-1`;
+      const col2Id = `${newSecId}-col-2`;
+      const col3Id = `${newSecId}-col-3`;
+      const col4Id = `${newSecId}-col-4`;
+      columnsArr.push(
+        {
+          id: col1Id,
+          width: 'md:w-4/12',
+          elements: [
+            {
+              id: `${col1Id}-el-logo`,
+              type: 'text',
+              content: `<div class="flex items-center gap-3 mb-4 select-none">
+  <div class="w-12 h-12 rounded-full border border-[#FFC502] flex flex-col items-center justify-center bg-white shrink-0 p-1">
+    <span class="text-slate-900 font-extrabold tracking-tighter text-xs leading-none">MM</span>
+    <svg class="w-5 h-2.5 text-[#FFC502]" fill="currentColor" viewBox="0 0 24 12">
+      <path d="M19.5 4.5c.3 0 .5.2.5.5v1h1v-1c0-.3.2-.5.5-.5s.5.2.5.5v1h1v-2c0-.3.2-.5.5-.5s.5.2.5.5v3.5c0 .3-.2.5-.5.5h-10.4c-.6 1.8-2.3 3-4.1 3-2.5 0-4.5-2-4.5-4.5S5.5 3 8 3c1.8 0 3.5 1.2 4.1 3h7.4v-1c0-.3.2-.5.5-.5zM8 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+    </svg>
+  </div>
+  <div class="flex flex-col text-left">
+    <span class="font-bold tracking-wider leading-none text-slate-800 uppercase text-lg">LÅSESMED</span>
+    <span class="text-[#FFC502] tracking-wide font-semibold text-[9px] mt-1">Døgnvagt i Storkøbenhavn</span>
+  </div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder</p>`,
+              styles: {
+                fontSize: '12px',
+                lineHeight: '1.6',
+                color: '#64748B'
+              }
+            }
+          ]
+        },
+        {
+          id: col2Id,
+          width: 'md:w-2/12',
+          elements: [
+            {
+              id: `${col2Id}-el-areas`,
+              type: 'text',
+              content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Områder</h4>
+<ul class="space-y-2 text-xs text-slate-500">
+  <li>KØBENHAVN</li>
+  <li>AMAGER</li>
+  <li>VALBY</li>
+  <li>RØDOVRE</li>
+  <li>HVIDOVRE</li>
+</ul>`,
+              styles: {
+                fontSize: '12px',
+                lineHeight: '2.0',
+                color: '#64748B'
+              }
+            }
+          ]
+        },
+        {
+          id: col3Id,
+          width: 'md:w-3/12',
+          elements: [
+            {
+              id: `${col3Id}-el-address`,
+              type: 'text',
+              content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Adresse</h4>
+<div class="space-y-2 text-xs text-slate-500">
+  <p>Kulvej 10, 2 TV</p>
+  <p>2450 København</p>
+  <p>Denmark</p>
+</div>`,
+              styles: {
+                fontSize: '12px',
+                lineHeight: '1.8',
+                color: '#64748B'
+              }
+            }
+          ]
+        },
+        {
+          id: col4Id,
+          width: 'md:w-3/12',
+          elements: [
+            {
+              id: `${col4Id}-el-info`,
+              type: 'text',
+              content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Information</h4>
+<ul class="space-y-2 text-xs text-slate-500">
+  <li>Om os</li>
+  <li>Karriere</li>
+  <li>+45 31 11 11 15</li>
+  <li>info@mmlaasesmed.dk</li>
+</ul>`,
+              styles: {
+                fontSize: '12px',
+                lineHeight: '1.8',
+                color: '#64748B'
+              }
+            }
+          ]
+        }
+      );
     }
 
     const newSection: Section = {
       id: newSecId,
-      name: `Vertical Row (${layout})`,
-      layout,
+      name: layout === 'footer' ? 'Footer sektion' : `Vertical Row (${layout})`,
+      layout: layout === 'footer' ? 'custom' : layout,
       paddingY: 'md',
-      backgroundColor: 'transparent',
+      backgroundColor: layout === 'footer' ? '#ffffff' : 'transparent',
       textColor: theme.text,
       columns: columnsArr
     };
@@ -1415,6 +1524,10 @@ export default function App() {
         }}
         viewportMode={viewportMode}
         setViewportMode={setViewportMode}
+        activePageDbId={activePage.dbId}
+        onUpdatePageDbId={(dbId) => {
+          setPages(prev => prev.map(p => p.id === activePage.id ? { ...p, dbId } : p));
+        }}
       />
 
       {/* 1.5 CMS Page Selector Bar */}

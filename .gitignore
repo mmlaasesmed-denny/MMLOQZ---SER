@@ -6,3 +6,12 @@ coverage/
 *.log
 .env*
 !.env.example
+temp_restore/
+temp_restore_rebuilt/
+reconstructed_canvas_*.tsx
+reconstructed_sidebar_*.tsx
+.antigravity/
+__pycache__/
+*.pyc
+.vscode/
+

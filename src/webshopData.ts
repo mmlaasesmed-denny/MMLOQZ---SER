@@ -4,6 +4,7 @@ export interface WebshopCategory {
   icon: string;
   description: string;
   subcatIds: string[];
+  image?: string;
 }
 
 export interface WebshopSubcategory {
@@ -45,21 +46,24 @@ export const WEBSHOP_CATEGORIES: WebshopCategory[] = [
     name: 'Låse & Cylindre',
     icon: '🔒',
     description: 'Mekanisk og elektronisk dør- og ejendomssikring i højeste sikkerhedsklasse.',
-    subcatIds: ['systemlase', 'haengelaase', 'smartlocks']
+    subcatIds: ['systemlase', 'haengelaase', 'smartlocks'],
+    image: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=600&auto=format&fit=crop&q=80'
   },
   {
     id: 'adgangskontrol',
     name: 'Adgangskontrol & Alarm',
     icon: '🛡️',
     description: 'Moderne kodelåse, videoporttelefoner og CCTV overvågning til hjemmet og kontoret.',
-    subcatIds: ['doertelefoner', 'kodelaase', 'overvaagning']
+    subcatIds: ['doertelefoner', 'kodelaase', 'overvaagning'],
+    image: 'https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?w=600&auto=format&fit=crop&q=80'
   },
   {
     id: 'pengeskabe',
     name: 'Pengeskabe & Brandskabe',
     icon: '🗄️',
     description: 'Indbrudssikre og brandsikre pengeskabe til sikker opbevaring af værdier og dokumenter.',
-    subcatIds: ['vaerdiskabe', 'brandskabe', 'noegleskabe']
+    subcatIds: ['vaerdiskabe', 'brandskabe', 'noegleskabe'],
+    image: 'https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600&auto=format&fit=crop&q=80'
   }
 ];
 

@@ -9,3 +9,49 @@
 @media (min-width: 1024px) {
   .hide-on-desktop { display: none !important; }
 }
+
+/* Logo scaling using em units relative to parent font-size */
+.whitespace-pre-wrap div.select-none.flex,
+[contenteditable] div.select-none.flex,
+section div.select-none.flex {
+  gap: 0.75em !important;
+  margin-bottom: 1em !important;
+}
+
+.whitespace-pre-wrap div.select-none.flex > div.rounded-full,
+[contenteditable] div.select-none.flex > div.rounded-full,
+section div.select-none.flex > div.rounded-full {
+  width: 3em !important;
+  height: 3em !important;
+  padding: 0.25em !important;
+}
+
+.whitespace-pre-wrap div.select-none.flex > div.rounded-full > span,
+[contenteditable] div.select-none.flex > div.rounded-full > span,
+section div.select-none.flex > div.rounded-full > span {
+  font-size: 0.75em !important;
+  line-height: 1 !important;
+}
+
+.whitespace-pre-wrap div.select-none.flex > div.rounded-full > svg,
+[contenteditable] div.select-none.flex > div.rounded-full > svg,
+section div.select-none.flex > div.rounded-full > svg {
+  width: 1.25em !important;
+  height: 0.625em !important;
+}
+
+.whitespace-pre-wrap div.select-none.flex > div.flex-col > span:first-child,
+[contenteditable] div.select-none.flex > div.flex-col > span:first-child,
+section div.select-none.flex > div.flex-col > span:first-child {
+  font-size: 1.125em !important;
+  line-height: 1 !important;
+}
+
+.whitespace-pre-wrap div.select-none.flex > div.flex-col > span:last-child,
+[contenteditable] div.select-none.flex > div.flex-col > span:last-child,
+section div.select-none.flex > div.flex-col > span:last-child {
+  font-size: 0.5625em !important;
+  margin-top: 0.25em !important;
+  line-height: 1.2 !important;
+}
+

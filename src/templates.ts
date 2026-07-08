@@ -1237,8 +1237,8 @@ export const TEMPLATES: { id: string; name: string; description: string; section
                 showOverlaySearch: true,
                 overlaySearchPlaceholder: 'Indtast din e-mail adresse...',
                 overlaySearchButtonText: 'Tilmeld dig',
-                overlayBgColor: '#0f172a',
-                overlayBgOpacity: 75,
+                overlayBgColor: '#000000',
+                overlayBgOpacity: 0,
                 styles: {
                   borderRadius: '0px',
                   marginTop: '0px',
@@ -1264,7 +1264,19 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'locksmith-foot-logo',
                 type: 'text',
-                content: 'Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder.',
+                content: `<div class="flex items-center gap-3 mb-4 select-none">
+  <div class="w-12 h-12 rounded-full border border-[#FFC502] flex flex-col items-center justify-center bg-white shrink-0 p-1">
+    <span class="text-slate-900 font-extrabold tracking-tighter text-xs leading-none">MM</span>
+    <svg class="w-5 h-2.5 text-[#FFC502]" fill="currentColor" viewBox="0 0 24 12">
+      <path d="M19.5 4.5c.3 0 .5.2.5.5v1h1v-1c0-.3.2-.5.5-.5s.5.2.5.5v1h1v-2c0-.3.2-.5.5-.5s.5.2.5.5v3.5c0 .3-.2.5-.5.5h-10.4c-.6 1.8-2.3 3-4.1 3-2.5 0-4.5-2-4.5-4.5S5.5 3 8 3c1.8 0 3.5 1.2 4.1 3h7.4v-1c0-.3.2-.5.5-.5zM8 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+    </svg>
+  </div>
+  <div class="flex flex-col text-left">
+    <span class="font-bold tracking-wider leading-none text-slate-800 uppercase text-lg">LÅSESMED</span>
+    <span class="text-[#FFC502] tracking-wide font-semibold text-[9px] mt-1">Døgnvagt i Storkøbenhavn</span>
+  </div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder</p>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '1.6',
@@ -1280,7 +1292,14 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'locksmith-foot-t2',
                 type: 'text',
-                content: 'Services\nPrivat\nErhverv\nForeninger\nIndbrudssikring',
+                content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Områder</h4>
+<ul class="space-y-2 text-xs text-slate-500">
+  <li>KØBENHAVN</li>
+  <li>AMAGER</li>
+  <li>VALBY</li>
+  <li>RØDOVRE</li>
+  <li>HVIDOVRE</li>
+</ul>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '2.0',
@@ -1296,7 +1315,12 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'locksmith-foot-t3',
                 type: 'text',
-                content: 'Adresse\nKulvej 10, 2 TV\n2450 København SV\nDenmark',
+                content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Adresse</h4>
+<div class="space-y-2 text-xs text-slate-500">
+  <p>Kulvej 10, 2 TV</p>
+  <p>2450 København</p>
+  <p>Denmark</p>
+</div>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '1.8',
@@ -1312,7 +1336,13 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'locksmith-foot-t4',
                 type: 'text',
-                content: 'Information\nOm os\nKarriere\nKontakt\n📞 31 11 11 15',
+                content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Information</h4>
+<ul class="space-y-2 text-xs text-slate-500">
+  <li>Om os</li>
+  <li>Karriere</li>
+  <li>+45 31 11 11 15</li>
+  <li>info@mmlaasesmed.dk</li>
+</ul>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '1.8',
@@ -1330,52 +1360,6 @@ export const TEMPLATES: { id: string; name: string; description: string; section
     name: '🛒 Webshop',
     description: 'Danish Locksmith eCommerce webshop template with dynamic categories grid.',
     sections: [
-      {
-        id: 'webshop-nav',
-        name: 'Header Navigation',
-        layout: 'two-col',
-        paddingY: 'sm',
-        backgroundColor: '#0f172a',
-        textColor: '#ffffff',
-        columns: [
-          {
-            id: 'webshop-nav-c1',
-            width: 'md:w-4/12',
-            elements: [
-              {
-                id: 'webshop-nav-logo',
-                type: 'text',
-                content: '🔑 MM LÅSESMED',
-                styles: {
-                  fontSize: '18px',
-                  fontWeight: '800',
-                  letterSpacing: '1px',
-                  color: '#fbbf24',
-                  lineHeight: '1.2'
-                }
-              }
-            ]
-          },
-          {
-            id: 'webshop-nav-c2',
-            width: 'md:w-8/12',
-            elements: [
-              {
-                id: 'webshop-nav-menu',
-                type: 'text',
-                content: 'Hjem   •   Services   •   Priser   •   Webshop',
-                styles: {
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  textAlign: 'right',
-                  color: '#94a3b8',
-                  wordSpacing: '6px'
-                }
-              }
-            ]
-          }
-        ]
-      },
       {
         id: 'webshop-main-sec',
         name: 'Webshop Store',
@@ -1416,7 +1400,19 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'webshop-foot-logo',
                 type: 'text',
-                content: 'Låsesystemer af høj kvalitet lavet af professionelle låsesmede. Designet til moderne sikkerhedsløsninger.',
+                content: `<div class="flex items-center gap-3 mb-4 select-none">
+  <div class="w-12 h-12 rounded-full border border-[#FFC502] flex flex-col items-center justify-center bg-white shrink-0 p-1">
+    <span class="text-slate-900 font-extrabold tracking-tighter text-xs leading-none">MM</span>
+    <svg class="w-5 h-2.5 text-[#FFC502]" fill="currentColor" viewBox="0 0 24 12">
+      <path d="M19.5 4.5c.3 0 .5.2.5.5v1h1v-1c0-.3.2-.5.5-.5s.5.2.5.5v1h1v-2c0-.3.2-.5.5-.5s.5.2.5.5v3.5c0 .3-.2.5-.5.5h-10.4c-.6 1.8-2.3 3-4.1 3-2.5 0-4.5-2-4.5-4.5S5.5 3 8 3c1.8 0 3.5 1.2 4.1 3h7.4v-1c0-.3.2-.5.5-.5zM8 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+    </svg>
+  </div>
+  <div class="flex flex-col text-left">
+    <span class="font-bold tracking-wider leading-none text-slate-800 uppercase text-lg">LÅSESMED</span>
+    <span class="text-[#FFC502] tracking-wide font-semibold text-[9px] mt-1">Døgnvagt i Storkøbenhavn</span>
+  </div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder</p>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '1.6',
@@ -1432,7 +1428,14 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'webshop-foot-t2',
                 type: 'text',
-                content: 'Services\nPrivat\nErhverv\nForeninger\nWebshop',
+                content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Områder</h4>
+<ul class="space-y-2 text-xs text-slate-500">
+  <li>KØBENHAVN</li>
+  <li>AMAGER</li>
+  <li>VALBY</li>
+  <li>RØDOVRE</li>
+  <li>HVIDOVRE</li>
+</ul>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '2.0',
@@ -1448,7 +1451,12 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'webshop-foot-t3',
                 type: 'text',
-                content: 'Adresse\nKulvej 10, 2 TV\n2450 København SV\nDenmark',
+                content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Adresse</h4>
+<div class="space-y-2 text-xs text-slate-500">
+  <p>Kulvej 10, 2 TV</p>
+  <p>2450 København</p>
+  <p>Denmark</p>
+</div>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '1.8',
@@ -1464,7 +1472,13 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'webshop-foot-t4',
                 type: 'text',
-                content: 'Information\nOm os\nKarriere\nKontakt\n📞 31 11 11 15',
+                content: `<h4 class="font-bold text-slate-800 text-sm mb-3">Information</h4>
+<ul class="space-y-2 text-xs text-slate-500">
+  <li>Om os</li>
+  <li>Karriere</li>
+  <li>+45 31 11 11 15</li>
+  <li>info@mmlaasesmed.dk</li>
+</ul>`,
                 styles: {
                   fontSize: '12px',
                   lineHeight: '1.8',
