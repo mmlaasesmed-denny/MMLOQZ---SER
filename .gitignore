@@ -14,4 +14,4 @@ reconstructed_sidebar_*.tsx
 __pycache__/
 *.pyc
 .vscode/
-
+verify_sync.py

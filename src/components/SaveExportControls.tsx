@@ -58,6 +58,56 @@ export default function SaveExportControls({
   const [newLayoutTitle, setNewLayoutTitle] = useState('My Custom Website Draft');
   const [isDjangoLoading, setIsDjangoLoading] = useState(false);
 
+  // Deployment Sync Check States
+  const [deployCheckStatus, setDeployCheckStatus] = useState<'idle' | 'checking' | 'success' | 'warning' | 'error'>('idle');
+  const [deployInfo, setDeployInfo] = useState<{
+    localCommit?: string;
+    remoteCommit?: string;
+    localDbMd5?: string;
+    remoteDbMd5?: string;
+    errorMsg?: string;
+  } | null>(null);
+
+  const handleVerifyDeploymentSync = async () => {
+    setDeployCheckStatus('checking');
+    try {
+      // 1. Fetch from Local Django Backend
+      const localResp = await fetch(`http://localhost:8000/api/deploy-status/`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!localResp.ok) throw new Error("Local Django backend did not respond successfully.");
+      const localData = await localResp.json();
+
+      // 2. Fetch from Production Django Backend (test.mmlaasesmed.dk)
+      const remoteResp = await fetch(`https://test.mmlaasesmed.dk/api/deploy-status/`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!remoteResp.ok) throw new Error("Production Django backend did not respond successfully.");
+      const remoteData = await remoteResp.json();
+
+      setDeployInfo({
+        localCommit: localData.git_commit,
+        remoteCommit: remoteData.git_commit,
+        localDbMd5: localData.db_md5,
+        remoteDbMd5: remoteData.db_md5
+      });
+
+      const commitMatch = localData.git_commit === remoteData.git_commit;
+      const dbMatch = localData.db_md5 === remoteData.db_md5;
+
+      if (commitMatch && dbMatch) {
+        setDeployCheckStatus('success');
+      } else {
+        setDeployCheckStatus('warning');
+      }
+    } catch (err: any) {
+      console.error("Failed to verify deployment sync status:", err);
+      setDeployCheckStatus('error');
+      setDeployInfo({ errorMsg: err.message || "Failed to fetch deployment details from both environments." });
+    }
+  };
+
+
   // Run initial background connection check to Django
   React.useEffect(() => {
     const savedUrl = localStorage.getItem('visual-builder-django-url');
@@ -4155,6 +4205,80 @@ export default function SaveExportControls({
                     {djangoMsg && <span className="opacity-80 block mt-0.5">{djangoMsg}</span>}
                   </div>
                 </div>
+              </div>
+
+              {/* Deployment Synchronization Status Check (Admin only) */}
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 mt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                    <Database className="w-3.5 h-3.5 text-indigo-500" /> Deployment Sync Status
+                  </label>
+                  {(window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) && (
+                    <button
+                      onClick={handleVerifyDeploymentSync}
+                      disabled={deployCheckStatus === 'checking'}
+                      className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline hover:font-bold lowercase pointer-events-auto cursor-pointer border-none bg-transparent animate-none"
+                    >
+                      {deployCheckStatus === 'checking' ? 'verifying...' : 'verify production sync'}
+                    </button>
+                  )}
+                </div>
+                
+                {!(window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? (
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Viewing from <strong>Production</strong> server. To verify if this environment matches your local development files and SQLite database exactly, open the app on your local computer to run the verification console.
+                  </p>
+                ) : deployCheckStatus === 'idle' ? (
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Verify whether your local codebase and SQLite database match the production server in real-time.
+                  </p>
+                ) : deployCheckStatus === 'checking' ? (
+                  <div className="text-[11px] text-slate-400 animate-pulse">
+                    Connecting to local and production APIs, comparing Git commit hashes and DB checksums...
+                  </div>
+                ) : deployCheckStatus === 'error' ? (
+                  <div className="p-3 bg-rose-50 dark:bg-rose-950/10 border border-rose-200 dark:border-rose-900/30 text-rose-800 dark:text-rose-300 rounded-lg text-[11px] font-mono leading-normal">
+                    <strong>Connection Error:</strong> {deployInfo?.errorMsg || "Unable to check environments. Ensure local Django server is running on port 8000."}
+                  </div>
+                ) : (
+                  <div className="space-y-2.5 font-mono text-[11px] leading-normal text-slate-700 dark:text-slate-350">
+                    <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+                      <span className="text-[10px] uppercase font-extrabold text-slate-500 w-24 shrink-0">Git Commits:</span>
+                      <div className="flex-1 flex flex-col gap-0.5">
+                        <span className="truncate">Local: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.localCommit?.substring(0, 10)}...</code></span>
+                        <span className="truncate">Server: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.remoteCommit?.substring(0, 10)}...</code></span>
+                      </div>
+                      {deployInfo?.localCommit === deployInfo?.remoteCommit ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓ SYNCED</span>
+                      ) : (
+                        <span className="text-rose-500 font-bold shrink-0">✗ MISMATCH</span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+                      <span className="text-[10px] uppercase font-extrabold text-slate-500 w-24 shrink-0">Database MD5:</span>
+                      <div className="flex-1 flex flex-col gap-0.5">
+                        <span className="truncate">Local: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.localDbMd5?.substring(0, 12)}...</code></span>
+                        <span className="truncate">Server: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.remoteDbMd5?.substring(0, 12)}...</code></span>
+                      </div>
+                      {deployInfo?.localDbMd5 === deployInfo?.remoteDbMd5 ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓ SYNCED</span>
+                      ) : (
+                        <span className="text-rose-500 font-bold shrink-0">✗ MISMATCH</span>
+                      )}
+                    </div>
+
+                    {deployCheckStatus === 'success' ? (
+                      <div className="p-2 bg-emerald-50 dark:bg-emerald-950/15 border border-emerald-250 dark:border-emerald-900/35 text-emerald-800 dark:text-emerald-400 rounded-lg text-center font-bold font-sans text-[10px] uppercase tracking-wider">
+                        🎉 Code and Database match 100%!
+                      </div>
+                    ) : (
+                      <div className="p-2 bg-rose-50 dark:bg-rose-950/15 border border-rose-250 dark:border-rose-900/35 text-rose-800 dark:text-rose-450 rounded-lg text-center font-bold font-sans text-[10px] uppercase tracking-wider">
+                        ⚠️ Warning: Environments differ. Deploy or replicate data.
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Administrator Passcode Configuration */}

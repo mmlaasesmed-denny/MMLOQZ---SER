@@ -242,3 +242,50 @@ def get_shipmondo_delivery_options(request):
         "home_delivery": home_delivery_carriers
     })
 
+
+import hashlib
+import os
+import subprocess
+
+@api_view(['GET'])
+def deploy_status(request):
+    """
+    API view to return the current Git commit hash and database MD5 checksum.
+    Used by the admin settings panel to verify deployment sync status.
+    """
+    # 1. Get Git Commit
+    git_commit = "unknown"
+    try:
+        # Run git rev-parse HEAD in the directory of the settings file
+        cwd = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        res = subprocess.run(["git", "rev-parse", "HEAD"], cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        git_commit = res.stdout.decode('utf-8').strip()
+    except Exception as e:
+        git_commit = f"Error: {str(e)}"
+
+    # 2. Get Database MD5 Checksum
+    db_md5 = "unknown"
+    try:
+        # Locate db.sqlite3 relative to project root
+        cwd = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        db_path = os.path.join(cwd, "db.sqlite3")
+        if os.path.exists(db_path):
+            hasher = hashlib.md5()
+            with open(db_path, 'rb') as f:
+                buf = f.read(65536)
+                while len(buf) > 0:
+                    hasher.update(buf)
+                    buf = f.read(65536)
+            db_md5 = hasher.hexdigest()
+        else:
+            db_md5 = "Database file not found"
+    except Exception as e:
+        db_md5 = f"Error: {str(e)}"
+
+    return Response({
+        "git_commit": git_commit,
+        "db_md5": db_md5,
+        "environment": "production" if "test.mmlaasesmed.dk" in request.get_host() else "local"
+    }, status=status.HTTP_200_OK)
+
+
