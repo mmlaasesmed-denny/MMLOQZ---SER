@@ -15,3 +15,5 @@ __pycache__/
 *.pyc
 .vscode/
 verify_sync.py
+local_deploy.sh
+
