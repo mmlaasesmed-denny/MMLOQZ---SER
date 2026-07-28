@@ -1417,47 +1417,8 @@ export default function Sidebar({
                         </select>
                       </div>
 
-                      {/* Logo Font Size Slider */}
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
-                              <span>Logo Størrelse (Logo Size)</span>
-                              <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.logoFontSize || 18)}px</span>
-                            </div>
-                            <div className="flex gap-2 items-center">
-                              <input
-                                type="range"
-                                min="12"
-                                max="40"
-                                value={selectedElement.settings?.logoFontSize || 18}
-                                onChange={(e) => {
-                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                    settings: {
-                                      ...(selectedElement.settings || {}),
-                                      logoFontSize: parseInt(e.target.value)
-                                    }
-                                  });
-                                }}
-                                className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
-                              />
-                              <input
-                                type="text"
-                                value={selectedElement.settings?.logoFontSize || 18}
-                                onChange={(e) => {
-                                  const val = parseInt(e.target.value) || 18;
-                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                    settings: {
-                                      ...(selectedElement.settings || {}),
-                                      logoFontSize: val
-                                    }
-                                  });
-                                }}
-                                className="w-12 text-[10px] px-1 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded font-sans text-center text-slate-800 dark:text-slate-200"
-                                placeholder="18px"
-                              />
-                            </div>
-                          </div>
                         </div>
-                      </div>
+                      )}
                       
                       {/* Logo Font Size Slider (Applies to both Text and Image now) */}
                       <div className="space-y-1 mt-6">
