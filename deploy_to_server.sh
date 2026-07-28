@@ -56,7 +56,7 @@ fi
 echo "[4/4] Uploading frontend assets directly to server and restarting..."
 scp -i $SSH_KEY -r django_backend/static/assets $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/django_backend/static/
 scp -i $SSH_KEY django_backend/templates/index.html $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/django_backend/templates/index.html
-ssh -n -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST "sudo systemctl restart gunicorn"
+ssh -n -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_DIR/django_backend && source ../dprojectenv/bin/activate && python manage.py collectstatic --noinput && sudo systemctl restart gunicorn"
 
 echo "============================================="
 echo "     PRODUCTION DEPLOYMENT COMPLETED         "
