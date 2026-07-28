@@ -99,7 +99,8 @@ export default function WebshopComponent({
   const badge3Image = s.badge3Image || '🛡️';
   const badge4Image = s.badge4Image || '⭐️';
   const badgeSize = s.badgeSize ? parseInt(String(s.badgeSize).replace('px', '')) : 30;
-
+  const badgeTitleSize = s.badgeTitleSize ? parseInt(String(s.badgeTitleSize)) : 12;
+  const badgeTextSize = s.badgeTextSize ? parseInt(String(s.badgeTextSize)) : 10;
   const updateSetting = (key: string, value: string) => {
     if (onUpdateElement && el) {
       onUpdateElement(el.id, {}, undefined, undefined, undefined, {
@@ -2377,7 +2378,8 @@ export default function WebshopComponent({
                     )}
                   </div>
                   <h5 
-                    className="text-xs font-black uppercase text-slate-900 tracking-wider outline-none focus:bg-slate-100 px-1 rounded"
+                    className="font-black uppercase text-slate-900 tracking-wider outline-none focus:bg-slate-100 px-1 rounded"
+                    style={{ fontSize: `${badgeTitleSize}px` }}
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
                     onBlur={(e) => updateSetting(badge.tKey, e.currentTarget.innerText)}
@@ -2385,7 +2387,8 @@ export default function WebshopComponent({
                     {badge.title}
                   </h5>
                   <p 
-                    className="text-[10px] text-slate-500 leading-relaxed max-w-[200px] outline-none focus:bg-slate-100 px-1 rounded"
+                    className="text-slate-500 leading-relaxed max-w-[200px] outline-none focus:bg-slate-100 px-1 rounded"
+                    style={{ fontSize: `${badgeTextSize}px` }}
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
                     onBlur={(e) => updateSetting(badge.dKey, e.currentTarget.innerText)}

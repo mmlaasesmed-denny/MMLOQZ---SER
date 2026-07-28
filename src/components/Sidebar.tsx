@@ -1495,6 +1495,56 @@ export default function Sidebar({
                         </div>
                       </div>
 
+                      {/* Badge Title Size Slider */}
+                      <div className="space-y-1 mt-4">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                          <span>Trust Badges Titel Størrelse</span>
+                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.badgeTitleSize || 12)}px</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <input
+                            type="range"
+                            min="8"
+                            max="36"
+                            value={selectedElement.settings?.badgeTitleSize || 12}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  badgeTitleSize: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Badge Text Size Slider */}
+                      <div className="space-y-1 mt-4">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                          <span>Trust Badges Tekst Størrelse</span>
+                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.badgeTextSize || 10)}px</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <input
+                            type="range"
+                            min="8"
+                            max="24"
+                            value={selectedElement.settings?.badgeTextSize || 10}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  badgeTextSize: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+                      </div>
+
                       {/* Search Placeholder */}
                       <div className="space-y-1">
                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Søgefelt placeholder</label>
