@@ -2193,49 +2193,52 @@ export default function WebshopComponent({
             </div>
 
             {/* Dynamic Categories Banners */}
-            <div className="space-y-8">
+            <div className="space-y-6 pb-6">
               {categories.map((cat, index) => {
-                const icon = cat.icon || '📦';
                 const imgUrl = cat.image || 'https://images.unsplash.com/photo-1558002038-1055907df827?w=600&auto=format&fit=crop&q=80';
                 const isEven = index % 2 === 0;
                 
                 return (
                   <div 
                     key={cat.id} 
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 border border-slate-100 rounded-3xl overflow-hidden p-6 md:p-8 items-center text-left hover:shadow-md transition-shadow"
+                    className="flex flex-col md:flex-row bg-slate-50 min-h-[320px]"
                   >
                     {isEven ? (
                       <>
-                        <div className="flex items-center justify-center bg-white rounded-2xl p-4 border border-slate-150 h-56">
+                        <div className="w-full md:w-[35%] h-64 md:h-auto relative shrink-0">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
-                            className={`max-h-full max-w-full object-contain rounded-xl ${!isPreviewMode ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                            className={`absolute inset-0 w-full h-full object-cover ${!isPreviewMode ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
                             onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
                         </div>
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">{icon}</span>
-                            <h4 
-                              className="text-2xl font-extrabold text-slate-900 leading-tight uppercase tracking-tight outline-none focus:bg-slate-100 px-1 rounded"
+                        <div className="w-full md:w-[65%] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
+                          <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
+                            <span 
+                              className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
                               contentEditable={!isPreviewMode}
                               suppressContentEditableWarning
                               onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerText)}
                               onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
                             >
                               {cat.name}
-                            </h4>
+                            </span>
+                            {cat.description && (
+                              <>
+                                <span className="font-medium mx-1.5">-</span>
+                                <span 
+                                  className="font-medium outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
+                                  contentEditable={!isPreviewMode}
+                                  suppressContentEditableWarning
+                                  onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerText)}
+                                  onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                                >
+                                  {cat.description}
+                                </span>
+                              </>
+                            )}
                           </div>
-                          <p 
-                            className="text-slate-500 text-xs font-semibold leading-relaxed outline-none focus:bg-slate-100 px-1 rounded"
-                            contentEditable={!isPreviewMode}
-                            suppressContentEditableWarning
-                            onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerText)}
-                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                          >
-                            {cat.description}
-                          </p>
                           <button 
                             onClick={() => {
                               setSelectedCatId(cat.id);
@@ -2245,7 +2248,7 @@ export default function WebshopComponent({
                               setSelectedProductId(null);
                               if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
                             }}
-                            className="px-6 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-colors border-none cursor-pointer"
+                            className="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-sm lg:text-base rounded-sm transition-colors border-none cursor-pointer"
                           >
                             {bt('Se produkter', 'See products')}
                           </button>
@@ -2253,28 +2256,32 @@ export default function WebshopComponent({
                       </>
                     ) : (
                       <>
-                        <div className="space-y-4 order-2 md:order-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl">{icon}</span>
-                            <h4 
-                              className="text-2xl font-extrabold text-slate-900 leading-tight uppercase tracking-tight outline-none focus:bg-slate-100 px-1 rounded"
+                        <div className="w-full md:w-[65%] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 md:order-1">
+                          <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
+                            <span 
+                              className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
                               contentEditable={!isPreviewMode}
                               suppressContentEditableWarning
                               onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerText)}
                               onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
                             >
                               {cat.name}
-                            </h4>
+                            </span>
+                            {cat.description && (
+                              <>
+                                <span className="font-medium mx-1.5">-</span>
+                                <span 
+                                  className="font-medium outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
+                                  contentEditable={!isPreviewMode}
+                                  suppressContentEditableWarning
+                                  onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerText)}
+                                  onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                                >
+                                  {cat.description}
+                                </span>
+                              </>
+                            )}
                           </div>
-                          <p 
-                            className="text-slate-500 text-xs font-semibold leading-relaxed outline-none focus:bg-slate-100 px-1 rounded"
-                            contentEditable={!isPreviewMode}
-                            suppressContentEditableWarning
-                            onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerText)}
-                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                          >
-                            {cat.description}
-                          </p>
                           <button 
                             onClick={() => {
                               setSelectedCatId(cat.id);
@@ -2284,16 +2291,16 @@ export default function WebshopComponent({
                               setSelectedProductId(null);
                               if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
                             }}
-                            className="px-6 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-colors border-none cursor-pointer"
+                            className="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-sm lg:text-base rounded-sm transition-colors border-none cursor-pointer"
                           >
                             {bt('Se produkter', 'See products')}
                           </button>
                         </div>
-                        <div className="flex items-center justify-center bg-white rounded-2xl p-4 border border-slate-150 h-56 order-1 md:order-2">
+                        <div className="w-full md:w-[35%] h-64 md:h-auto relative shrink-0 order-1 md:order-2">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
-                            className={`max-h-full max-w-full object-contain rounded-xl ${!isPreviewMode ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                            className={`absolute inset-0 w-full h-full object-cover ${!isPreviewMode ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
                             onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
                         </div>
