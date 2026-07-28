@@ -1457,7 +1457,82 @@ export default function Sidebar({
                             </div>
                           </div>
                         </div>
-                      )}
+                      </div>
+                      
+                      {/* Logo Font Size Slider (Applies to both Text and Image now) */}
+                      <div className="space-y-1 mt-6">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                          <span>Logo Størrelse (Header Logo)</span>
+                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.logoFontSize || 18)}</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <input
+                            type="range"
+                            min="10"
+                            max="72"
+                            value={selectedElement.settings?.logoFontSize || 18}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  logoFontSize: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Footer Logo Size Slider */}
+                      <div className="space-y-1 mt-4">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                          <span>Footer Logo Størrelse</span>
+                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.footerLogoFontSize || 14)}</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <input
+                            type="range"
+                            min="10"
+                            max="72"
+                            value={selectedElement.settings?.footerLogoFontSize || 14}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  footerLogoFontSize: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Badge Size Slider */}
+                      <div className="space-y-1 mt-4">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                          <span>Trust Badges Størrelse (Ikoner)</span>
+                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.badgeSize || 30)}px</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <input
+                            type="range"
+                            min="20"
+                            max="120"
+                            value={selectedElement.settings?.badgeSize ? parseInt(String(selectedElement.settings.badgeSize).replace('px', '')) : 30}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  badgeSize: e.target.value
+                                }
+                              });
+                            }}
+                            className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+                      </div>
 
                       {/* Search Placeholder */}
                       <div className="space-y-1">

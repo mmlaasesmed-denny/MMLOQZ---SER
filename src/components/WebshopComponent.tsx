@@ -5494,55 +5494,187 @@ export default function WebshopComponent({
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo Column */}
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0">
-                <span className="text-amber-455 font-extrabold text-xs">MM</span>
-              </div>
-              <h4 className="text-sm font-black text-slate-900 leading-none uppercase">MM LÅSESMED</h4>
-            </div>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-xs">
-              Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder.
+            {(() => {
+              const fLogoType = s.footerLogoType || s.logoType || 'text';
+              const fLogoFontSize = s.footerLogoFontSize ? Number(s.footerLogoFontSize) : 14;
+              const fLogoSrc = s.footerLogoSrc || s.logoSrc || '';
+              const ratio = fLogoFontSize / 14;
+
+              return (
+                <div className="flex items-center gap-3">
+                  {fLogoType === 'image' && fLogoSrc ? (
+                    <div className="relative group">
+                      <div 
+                        className={`flex items-center justify-center shrink-0 ${!isPreviewMode ? 'cursor-pointer outline-dashed outline-1 outline-transparent hover:outline-slate-300' : ''}`}
+                        onClick={(e) => {
+                          if (!isPreviewMode) {
+                            e.stopPropagation();
+                            promptEditImage('setting', '', 'footerLogoSrc');
+                            // Ensure it's treated as image type when uploaded
+                            updateSetting('footerLogoType', 'image');
+                          }
+                        }}
+                      >
+                        <img src={fLogoSrc} alt="Footer Logo" className="object-contain" style={{ height: `${40 * ratio}px` }} />
+                      </div>
+                      {!isPreviewMode && (
+                        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-white border border-slate-200 rounded-md shadow-sm p-1 z-50">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); updateSetting('footerLogoFontSize', String(Math.max(10, fLogoFontSize - 2))); }}
+                            className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                          >
+                            -
+                          </button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); updateSetting('footerLogoFontSize', String(Math.min(72, fLogoFontSize + 2))); }}
+                            className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div 
+                      className="w-10 h-10 rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
+                      style={{ width: `${40 * ratio}px`, height: `${40 * ratio}px` }}
+                    >
+                      <span 
+                        className="text-amber-455 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
+                        style={{ fontSize: `${12 * ratio}px` }}
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) => updateSetting('footerLogoBadge', e.currentTarget.innerText)}
+                      >
+                        {s.footerLogoBadge || s.logoBadge || 'MM'}
+                      </span>
+                    </div>
+                  )}
+                  {(!fLogoType || fLogoType === 'text') && (
+                    <h4 
+                      className="font-black text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
+                      style={{ fontSize: `${fLogoFontSize}px` }}
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('footerLogoText', e.currentTarget.innerText)}
+                    >
+                      {s.footerLogoText || s.logoText || 'MM LÅSESMED'}
+                    </h4>
+                  )}
+                  {/* Invisible dropzone to switch from text to image */}
+                  {!isPreviewMode && fLogoType !== 'image' && (
+                    <button 
+                      className="text-[8px] bg-slate-100 px-1 py-0.5 rounded ml-2 text-slate-400 hover:text-slate-600 cursor-pointer border border-slate-200"
+                      onClick={(e) => { e.stopPropagation(); updateSetting('footerLogoType', 'image'); promptEditImage('setting', '', 'footerLogoSrc'); }}
+                    >
+                      Billede
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
+            <p 
+              className="text-xs text-slate-400 leading-relaxed max-w-xs outline-none focus:bg-slate-50 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerDesc', e.currentTarget.innerText)}
+            >
+              {s.footerDesc || 'Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder.'}
             </p>
           </div>
 
           {/* Areas Column */}
           <div>
-            <h5 className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3">Områder</h5>
-            <ul className="text-xs text-slate-500 space-y-1.5 list-none p-0">
-              <li>København</li>
-              <li>Amager</li>
-              <li>Valby</li>
-              <li>Rødovre</li>
-              <li>Hvidovre</li>
+            <h5 
+              className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3 outline-none focus:bg-slate-100 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerCol2Title', e.currentTarget.innerText)}
+            >
+              {s.footerCol2Title || 'Områder'}
+            </h5>
+            <ul 
+              className="text-xs text-slate-500 space-y-1.5 list-none p-0 outline-none focus:bg-slate-50 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerCol2Items', e.currentTarget.innerText)}
+            >
+              {(s.footerCol2Items || 'København\nAmager\nValby\nRødovre\nHvidovre').split('\n').map((item: string, i: number) => (
+                <li key={i}>{item}</li>
+              ))}
             </ul>
           </div>
 
           {/* Address Column */}
           <div>
-            <h5 className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3">Adresse</h5>
-            <ul className="text-xs text-slate-505 space-y-1.5 list-none p-0">
-              <li>Kulvej 10, 2 TV</li>
-              <li>2450 København</li>
-              <li>Denmark</li>
+            <h5 
+              className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3 outline-none focus:bg-slate-100 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerCol3Title', e.currentTarget.innerText)}
+            >
+              {s.footerCol3Title || 'Adresse'}
+            </h5>
+            <ul 
+              className="text-xs text-slate-505 space-y-1.5 list-none p-0 outline-none focus:bg-slate-50 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerCol3Items', e.currentTarget.innerText)}
+            >
+              {(s.footerCol3Items || 'Kulvej 10, 2 TV\n2450 København\nDenmark').split('\n').map((item: string, i: number) => (
+                <li key={i}>{item}</li>
+              ))}
             </ul>
           </div>
 
           {/* Info Column */}
           <div>
-            <h5 className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3">Information</h5>
-            <ul className="text-xs text-slate-505 space-y-1.5 list-none p-0">
-              <li>Om os</li>
-              <li>Karriere</li>
-              <li>+45 31 11 11 15</li>
-              <li><a href="mailto:info@mmlaasesmed.dk" className="text-amber-500 hover:underline">info@mmlaasesmed.dk</a></li>
+            <h5 
+              className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3 outline-none focus:bg-slate-100 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerCol4Title', e.currentTarget.innerText)}
+            >
+              {s.footerCol4Title || 'Information'}
+            </h5>
+            <ul 
+              className="text-xs text-slate-505 space-y-1.5 list-none p-0 outline-none focus:bg-slate-50 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerCol4Items', e.currentTarget.innerText)}
+            >
+              {(s.footerCol4Items || 'Om os\nKarriere\n+45 31 11 11 15\ninfo@mmlaasesmed.dk').split('\n').map((item: string, i: number) => (
+                <li key={i}>{item}</li>
+              ))}
             </ul>
           </div>
         </div>
         <div className="border-t border-slate-100 mt-8 pt-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] text-slate-400">
-          <span>Copyright © 2019 MM-COMMERCE. All Rights Reserved.</span>
+          <span
+            className="outline-none focus:bg-slate-50 px-1 rounded"
+            contentEditable={!isPreviewMode}
+            suppressContentEditableWarning
+            onBlur={(e) => updateSetting('footerCopyright', e.currentTarget.innerText)}
+          >
+            {s.footerCopyright || 'Copyright © 2019 MM-COMMERCE. All Rights Reserved.'}
+          </span>
           <div className="flex gap-3">
-            <span className="hover:underline cursor-pointer">Terms Of Use</span>
-            <span className="hover:underline cursor-pointer">Privacy Policy</span>
+            <span 
+              className="hover:underline cursor-pointer outline-none focus:bg-slate-50 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerTerms', e.currentTarget.innerText)}
+            >
+              {s.footerTerms || 'Terms Of Use'}
+            </span>
+            <span 
+              className="hover:underline cursor-pointer outline-none focus:bg-slate-50 px-1 rounded"
+              contentEditable={!isPreviewMode}
+              suppressContentEditableWarning
+              onBlur={(e) => updateSetting('footerPrivacy', e.currentTarget.innerText)}
+            >
+              {s.footerPrivacy || 'Privacy Policy'}
+            </span>
           </div>
         </div>
       </footer>
