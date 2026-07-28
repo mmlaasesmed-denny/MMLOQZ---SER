@@ -210,8 +210,9 @@ const renderQuickMenuIcon = (el: PageElement) => {
   if (el.id.includes('img4')) IconComponent = ShieldCheck;
 
   const iconSize = styles.fontSize || '24px';
-  const containerWidth = styles.width || '56px';
-  const containerHeight = styles.height || '56px';
+  const sizeNum = parseInt(iconSize) || 24;
+  const containerWidth = styles.width || `${Math.round(sizeNum * 2.3)}px`;
+  const containerHeight = styles.height || `${Math.round(sizeNum * 2.3)}px`;
   const bgColor = styles.backgroundColor || '#0f172a';
   const borderColor = styles.borderColor || '#334155';
   const iconColor = styles.color || '#f59e0b';
@@ -223,6 +224,8 @@ const renderQuickMenuIcon = (el: PageElement) => {
       style={{
         width: containerWidth,
         height: containerHeight,
+        fontSize: iconSize,
+        color: iconColor,
         backgroundColor: bgColor,
         borderColor: borderColor,
         borderWidth: styles.borderWidth || '1px',
@@ -231,9 +234,8 @@ const renderQuickMenuIcon = (el: PageElement) => {
       }}
     >
       <IconComponent 
+        size={parseInt(iconSize) || 24}
         style={{
-          width: iconSize,
-          height: iconSize,
           color: iconColor,
         }}
         className="transition-colors group-hover:text-amber-400"
@@ -344,16 +346,30 @@ const CollapsibleTextContainer = ({
   // Measure the text content height
   useEffect(() => {
     if (containerRef.current) {
+      // Temporarily clear inline max-height to measure full height
+      const prevMaxHeight = containerRef.current.style.maxHeight;
+      containerRef.current.style.maxHeight = 'none';
       setTextHeight(containerRef.current.scrollHeight);
+      containerRef.current.style.maxHeight = prevMaxHeight;
     }
-  }, [content, listType, elCSS, viewportMode, siblingImageHeight]);
+  }, [content, listType, elCSS, viewportMode, siblingImageHeight, isExpanded]);
 
   const limit = siblingImageHeight !== null ? siblingImageHeight : parseInt(readMoreHeight || '200');
   const isReadMoreEnabled = enableReadMore || siblingImageHeight !== null;
   const hasOverflow = textHeight > limit;
   const shouldCollapse = isReadMoreEnabled && hasOverflow;
 
-  const displayHeight = shouldCollapse && !isExpanded ? `${limit}px` : 'auto';
+  // Clean fixed height styles from user text settings to allow height to grow
+  const cleanedElCSS = { ...elCSS };
+  if (shouldCollapse) {
+    delete cleanedElCSS.height;
+    delete cleanedElCSS.maxHeight;
+  }
+
+  // Use pixel height for smooth transition instead of 'auto'
+  const displayHeight = shouldCollapse
+    ? (isExpanded ? `${textHeight + 40}px` : `${limit}px`)
+    : 'auto';
 
   // Fade overlay background color
   let fadeColor = sectionBg;
@@ -369,15 +385,15 @@ const CollapsibleTextContainer = ({
           maxHeight: displayHeight,
           overflow: shouldCollapse && !isExpanded ? 'hidden' : 'visible',
           position: 'relative',
-          transition: 'max-height 0.25s ease-out'
+          transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }}
       >
         {listType && listType !== 'none' ? (
-          renderListContent(content, listType, elCSS)
+          renderListContent(content, listType, cleanedElCSS)
         ) : (
           <div 
             className="whitespace-pre-wrap outline-hidden" 
-            style={elCSS}
+            style={cleanedElCSS}
             dangerouslySetInnerHTML={{ __html: content || '<span class="italic text-slate-400">Dobbeltklik for at tilføje tekst her...</span>' }}
           />
         )}
@@ -505,6 +521,7 @@ export default function Canvas({
   pages = [],
   onNavigatePage
 }: CanvasProps) {
+  const isVisitorMode = !window.location.pathname.includes('admin-editor');
   // Local state for mobile menu responsiveness
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState<string | null>(null);
@@ -841,6 +858,13 @@ export default function Canvas({
     return val;
   };
 
+  const safeFontSize = (val: any, defaultVal: string = '14px'): string => {
+    if (val === undefined || val === null || val === '') return defaultVal;
+    const str = String(val).trim();
+    if (/^\d+$/.test(str)) return `${str}px`;
+    return str;
+  };
+
   // Convert styles to inline react CSS styles safely
   const buildInlineCSS = (s: ElementStyles): React.CSSProperties => {
     return {
@@ -1021,22 +1045,28 @@ export default function Canvas({
                 )}
                 <div className={`${section.fullWidth ? 'max-w-none w-full' : 'max-w-6xl mx-auto'} relative z-10`} style={{ zIndex: 1 }}>
                   <div className={`flex items-start justify-between ${
-                    viewportMode === 'desktop' 
-                      ? 'flex-col md:flex-row gap-8 md:gap-12' 
-                      : 'flex-col gap-6 w-full'
+                    section.id === 'locksmith-quick-menu'
+                      ? 'flex-row gap-2 w-full justify-around'
+                      : (viewportMode === 'desktop' 
+                          ? 'flex-col md:flex-row gap-8 md:gap-12' 
+                          : 'flex-col gap-6 w-full')
                   }`}>
                     {section.columns.map((col) => {
-                      const colWidthClass = viewportMode === 'desktop'
-                        ? (col.customWidth 
-                            ? '' 
-                            : ((col.width === 'flex-1' || col.width === 'md:flex-1' || !col.width || col.width === '') ? 'md:flex-1' : col.width))
-                        : 'w-full';
+                      const colWidthClass = section.id === 'locksmith-quick-menu'
+                        ? 'flex-1'
+                        : (viewportMode === 'desktop'
+                            ? (col.customWidth 
+                                ? '' 
+                                : ((col.width === 'flex-1' || col.width === 'md:flex-1' || !col.width || col.width === '') ? 'md:flex-1' : col.width))
+                            : 'w-full');
                       
-                      const colStyle = viewportMode === 'desktop'
-                        ? (col.customWidth 
-                            ? { flex: 'none', width: col.customWidth } 
-                            : ((col.width === 'flex-1' || col.width === 'md:flex-1' || !col.width || col.width === '') ? { flex: '1 1 0%' } : undefined))
-                        : { flex: 'none', width: '100%' };
+                      const colStyle = section.id === 'locksmith-quick-menu'
+                        ? { flex: '1 1 0%' }
+                        : (viewportMode === 'desktop'
+                            ? (col.customWidth 
+                                ? { flex: 'none', width: col.customWidth } 
+                                : ((col.width === 'flex-1' || col.width === 'md:flex-1' || !col.width || col.width === '') ? { flex: '1 1 0%' } : undefined))
+                            : { flex: 'none', width: '100%' });
 
                       return (
                         <div 
@@ -1646,6 +1676,13 @@ export default function Canvas({
                                           tagName="h3"
                                           content={el.overlayTitle || 'Tilmeld dig vores nyhedsbrev og modtag tilbud'}
                                           className="text-xl md:text-2xl font-extrabold text-white tracking-wide leading-tight outline-hidden"
+                                          style={{
+                                            fontFamily: el.styles.fontFamily,
+                                            fontSize: formatStyleVal(el.styles.fontSize) || undefined,
+                                            fontWeight: el.styles.fontWeight || undefined,
+                                            fontStyle: el.styles.fontStyle || undefined,
+                                            color: el.styles.color || undefined
+                                          }}
                                           isPreviewMode={isPreviewMode}
                                           onBlur={(newText) => {
                                             onUpdateElement(el.id, {}, undefined, undefined, undefined, { overlayTitle: newText });
@@ -1659,6 +1696,10 @@ export default function Canvas({
                                           tagName="p"
                                           content={el.overlaySubtext || 'Få ugentlige sikkerhedstips og eksklusive rabatter direkte i din indbakke.'}
                                           className="text-slate-400 text-xs md:text-sm mt-1 font-medium outline-hidden"
+                                          style={{
+                                            fontFamily: el.styles.fontFamily,
+                                            fontStyle: el.styles.fontStyle || undefined
+                                          }}
                                           isPreviewMode={isPreviewMode}
                                           onBlur={(newText) => {
                                             onUpdateElement(el.id, {}, undefined, undefined, undefined, { overlaySubtext: newText });
@@ -1769,7 +1810,76 @@ export default function Canvas({
                                         (viewportMode === 'desktop' && menuOverlay.visibleOnDesktop === false)
                                       );
 
-                                      const logoVisibilityClasses = logoOverlay ? [
+                                      const isMobileViewport = viewportMode === 'mobile' || (viewportMode === 'desktop' && typeof window !== 'undefined' && window.innerWidth < 768);
+                                       const isTabletViewport = viewportMode === 'tablet' || (viewportMode === 'desktop' && typeof window !== 'undefined' && window.innerWidth >= 768 && window.innerWidth < 1024);
+                                       
+                                       const dBgColor = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerBgColorMobile || menuOverlay?.settings?.drawerBgColor || '#0f172a')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerBgColorTablet || menuOverlay?.settings?.drawerBgColor || '#0f172a')
+                                           : (menuOverlay?.settings?.drawerBgColor || '#0f172a');
+                                           
+                                       const dTextColor = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerTextColorMobile || menuOverlay?.settings?.drawerTextColor || '#ffffff')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerTextColorTablet || menuOverlay?.settings?.drawerTextColor || '#ffffff')
+                                           : (menuOverlay?.settings?.drawerTextColor || '#ffffff');
+                                           
+                                       const dFontSize = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerFontSizeMobile || menuOverlay?.settings?.drawerFontSize || 14)
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerFontSizeTablet || menuOverlay?.settings?.drawerFontSize || 14)
+                                           : (menuOverlay?.settings?.drawerFontSize || 14);
+
+                                       const dFontWeight = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerFontWeightMobile || menuOverlay?.settings?.drawerFontWeight || 'bold')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerFontWeightTablet || menuOverlay?.settings?.drawerFontWeight || 'bold')
+                                           : (menuOverlay?.settings?.drawerFontWeight || 'bold');
+
+                                       const dFontStyle = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerFontStyleMobile || menuOverlay?.settings?.drawerFontStyle || 'normal')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerFontStyleTablet || menuOverlay?.settings?.drawerFontStyle || 'normal')
+                                           : (menuOverlay?.settings?.drawerFontStyle || 'normal');
+
+                                       const dLinkFontSize = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerLinkFontSizeMobile || menuOverlay?.settings?.drawerLinkFontSize || 12)
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerLinkFontSizeTablet || menuOverlay?.settings?.drawerLinkFontSize || 12)
+                                           : (menuOverlay?.settings?.drawerLinkFontSize || 12);
+
+                                       const dLinkFontWeight = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerLinkFontWeightMobile || menuOverlay?.settings?.drawerLinkFontWeight || 'normal')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerLinkFontWeightTablet || menuOverlay?.settings?.drawerLinkFontWeight || 'normal')
+                                           : (menuOverlay?.settings?.drawerLinkFontWeight || 'normal');
+
+                                       const dLinkFontStyle = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerLinkFontStyleMobile || menuOverlay?.settings?.drawerLinkFontStyle || 'normal')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerLinkFontStyleTablet || menuOverlay?.settings?.drawerLinkFontStyle || 'normal')
+                                           : (menuOverlay?.settings?.drawerLinkFontStyle || 'normal');
+
+                                       const dGroupFontSize = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerGroupFontSizeMobile || menuOverlay?.settings?.drawerGroupFontSize || 10)
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerGroupFontSizeTablet || menuOverlay?.settings?.drawerGroupFontSize || 10)
+                                           : (menuOverlay?.settings?.drawerGroupFontSize || 10);
+
+                                       const dGroupFontWeight = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerGroupFontWeightMobile || menuOverlay?.settings?.drawerGroupFontWeight || 'bold')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerGroupFontWeightTablet || menuOverlay?.settings?.drawerGroupFontWeight || 'bold')
+                                           : (menuOverlay?.settings?.drawerGroupFontWeight || 'bold');
+
+                                       const dGroupFontStyle = isMobileViewport
+                                         ? (menuOverlay?.settings?.drawerGroupFontStyleMobile || menuOverlay?.settings?.drawerGroupFontStyle || 'normal')
+                                         : isTabletViewport
+                                           ? (menuOverlay?.settings?.drawerGroupFontStyleTablet || menuOverlay?.settings?.drawerGroupFontStyle || 'normal')
+                                           : (menuOverlay?.settings?.drawerGroupFontStyle || 'normal');
+                                       
+                                       const logoVisibilityClasses = logoOverlay ? [
                                         logoOverlay.visibleOnDesktop === false ? 'hide-on-desktop' : '',
                                         logoOverlay.visibleOnTablet === false ? 'hide-on-tablet' : '',
                                         logoOverlay.visibleOnMobile === false ? 'hide-on-mobile' : ''
@@ -1906,7 +2016,7 @@ export default function Canvas({
                                                   opacity: (!isPreviewMode && isMenuHiddenInViewport) ? 0.35 : undefined
                                                 }}
                                               >
-                                                {menuOverlay.content.split(',').map((itemStr, index) => {
+                                                {(menuOverlay.settings?.menuContentDesktop || menuOverlay.content).split(',').map((itemStr, index) => {
                                                   const item = itemStr.trim();
                                                   const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
                                                   
@@ -1914,9 +2024,11 @@ export default function Canvas({
                                                     <div key={index} className="relative group/menu flex items-center h-full py-2">
                                                       {hasDropdown ? (
                                                         <button 
-                                                          className="flex items-center gap-1.5 text-slate-100 hover:text-amber-400 font-bold transition-colors uppercase tracking-wider cursor-pointer border-none bg-transparent"
+                                                          className="flex items-center gap-1.5 text-slate-100 hover:text-amber-400 transition-colors uppercase tracking-wider cursor-pointer border-none bg-transparent"
                                                           style={{
                                                             fontSize: formatStyleVal(menuOverlay.styles.fontSize) || '11px',
+                                                            fontWeight: menuOverlay.styles.fontWeight || 'bold',
+                                                            fontStyle: menuOverlay.styles.fontStyle || 'normal',
                                                           }}
                                                         >
                                                           {item} <span className="text-[9px] text-slate-400 group-hover/menu:text-amber-400 transition-colors">▼</span>
@@ -1958,19 +2070,20 @@ export default function Canvas({
                                                             
                                                             return groupNames.map((gName, gIdx) => (
                                                               <div key={gIdx} className="flex-1 space-y-3.5">
-                                                                <h5 className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest">{gName}</h5>
+                                                                <h5 className="font-extrabold text-indigo-600 uppercase tracking-widest" style={{ fontSize: safeFontSize(menuOverlay.settings?.dropdownGroupFontSize, '10px') }}>{gName}</h5>
                                                                 <div className="space-y-3">
                                                                   {groups[gName].map((link, lIdx) => (
                                                                     <div key={link.id || lIdx}>
                                                                       <a 
                                                                         href={link.link || '#'} 
                                                                         onClick={(e) => handleLinkClick(e, link.link, link.pageSlug)}
-                                                                        className="font-bold text-slate-800 text-xs hover:text-indigo-600 transition-colors block no-underline"
+                                                                        className="font-bold text-slate-800 hover:text-indigo-600 transition-colors block no-underline"
+                                                                        style={{ fontFamily: menuOverlay.styles?.fontFamily, fontSize: safeFontSize(menuOverlay.settings?.dropdownFontSize, '12px') }}
                                                                       >
                                                                         {link.title}
                                                                       </a>
                                                                       {link.description && (
-                                                                        <span className="text-[10px] text-slate-400 block mt-0.5">{link.description}</span>
+                                                                        <span className="text-slate-400 block mt-0.5" style={{ fontSize: safeFontSize(menuOverlay.settings?.dropdownDescFontSize, '10px') }}>{link.description}</span>
                                                                       )}
                                                                     </div>
                                                                   ))}
@@ -1980,22 +2093,45 @@ export default function Canvas({
                                                           })()}
 
                                                           {/* Yellow Highlight Contact Box (Mockup right col) */}
-                                                          <div className="w-[220px] bg-amber-400 text-slate-900 rounded-xl p-4 flex flex-col justify-between shrink-0 shadow-inner">
-                                                            <div>
-                                                              <h6 className="font-extrabold text-sm uppercase tracking-wide border-b border-slate-900/15 pb-1.5 mb-2">Kontakt</h6>
-                                                              <p className="text-[10px] leading-relaxed font-semibold">
-                                                                Kulvej 10, 2 TV<br />
-                                                                2450 København SV<br />
-                                                                Denmark
-                                                              </p>
-                                                              <p className="text-[10px] font-semibold mt-2 hover:underline">
-                                                                info@mmlaasesmed.dk
-                                                              </p>
-                                                            </div>
-                                                            <a href="tel:31111115" className="block text-center bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[10px] py-2 px-3 rounded-lg mt-4 transition-colors uppercase tracking-wider">
-                                                              📞 +45 31 11 11 15
-                                                            </a>
-                                                          </div>
+                                                          {(() => {
+                                                            const contactTitle = menuOverlay.settings?.contactTitle || "Kontakt";
+                                                            const contactText = menuOverlay.settings?.contactText || "Kulvej 10, 2 TV\n2450 København SV\nDenmark";
+                                                            const contactEmail = menuOverlay.settings?.contactEmail || "info@mmlaasesmed.dk";
+                                                            const contactPhone = menuOverlay.settings?.contactPhone || "+45 31 11 11 15";
+                                                            
+                                                            return (
+                                                              <div className="w-[220px] bg-amber-400 text-slate-900 rounded-xl p-4 flex flex-col justify-between shrink-0 shadow-inner">
+                                                                <div>
+                                                                  <h6 
+                                                                    className="font-extrabold uppercase tracking-wide border-b border-slate-900/15 pb-1.5 mb-2"
+                                                                    style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTitleFontSize, '14px') }}
+                                                                  >
+                                                                    {contactTitle}
+                                                                  </h6>
+                                                                  <p className="leading-relaxed font-semibold" style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTextFontSize, '10px') }}>
+                                                                    {contactText.split('\n').map((line, i) => (
+                                                                      <React.Fragment key={i}>
+                                                                        {line}
+                                                                        <br />
+                                                                      </React.Fragment>
+                                                                    ))}
+                                                                  </p>
+                                                                  {contactEmail && (
+                                                                    <p className="font-semibold mt-2 hover:underline" style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTextFontSize, '10px') }}>
+                                                                      {contactEmail}
+                                                                    </p>
+                                                                  )}
+                                                                </div>
+                                                                <a 
+                                                                  href={`tel:${contactPhone.replace(/\s+/g, '')}`} 
+                                                                  className="block text-center bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2 px-3 rounded-lg mt-4 transition-colors uppercase tracking-wider no-underline"
+                                                                  style={{ fontSize: safeFontSize(menuOverlay.settings?.contactBtnFontSize, '10px') }}
+                                                                >
+                                                                  📞 {contactPhone}
+                                                                </a>
+                                                              </div>
+                                                            );
+                                                          })()}
                                                         </div>
                                                       )}
                                                     </div>
@@ -2025,76 +2161,141 @@ export default function Canvas({
 
                                               {/* Mobile Drawer Overlay */}
                                               {isMobileMenuOpen && (
-                                                <div 
-                                                  className={`absolute left-0 right-0 top-full mx-6 mt-2 bg-slate-950/95 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-4 text-left z-50 ${menuVisibilityClasses} ${
-                                                    viewportMode === 'desktop' ? 'md:hidden' : 'hidden'
-                                                  }`}
-                                                  style={{
-                                                    fontSize: formatStyleVal(menuOverlay.styles.fontSize) || '14px',
-                                                    opacity: (!isPreviewMode && isMenuHiddenInViewport) ? 0.35 : undefined
-                                                  }}
-                                                >
-                                                  {menuOverlay.content.split(',').map((itemStr, index) => {
-                                                    const item = itemStr.trim();
-                                                    const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
-                                                    return (
-                                                      <div key={index} className="border-b border-white/5 pb-2 last:border-none last:pb-0">
-                                                        <div className="font-bold text-slate-100 uppercase tracking-wider py-1">
-                                                          {item}
-                                                        </div>
-                                                        {hasDropdown && (
-                                                          <div className="pl-4 mt-2 space-y-2">
-                                                            {item === 'Erhverv' && (
-                                                              <>
-                                                                <div className="text-amber-400 font-extrabold text-[10px] uppercase tracking-wider mt-1">Sikkerhed & Adgang</div>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Adgangskontrol</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Elektroniske dørgreb</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Dormakaba Exivo</a>
-                                                                <div className="text-amber-400 font-extrabold text-[10px] uppercase tracking-wider mt-2">Låse & Sikring</div>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Indbrudssikring</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Låsesystemer</a>
-                                                              </>
-                                                            )}
-                                                            {item === 'Privat' && (
-                                                              <>
-                                                                <div className="text-amber-400 font-extrabold text-[10px] uppercase tracking-wider mt-1">Hjemmeservice</div>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Låseservice</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Sikkerhedstjek</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Ruko / ASSA ABLOY</a>
-                                                                <div className="text-amber-400 font-extrabold text-[10px] uppercase tracking-wider mt-2">Forebyggelse</div>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Indbrudssikring</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Nøglekopiering</a>
-                                                              </>
-                                                            )}
-                                                            {item === 'Boligforeninger' && (
-                                                              <>
-                                                                <div className="text-amber-400 font-extrabold text-[10px] uppercase tracking-wider mt-1">Ejendomsservice</div>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Systemlåse</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Dørtelefoner</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Vedligeholdelse</a>
-                                                                <div className="text-amber-400 font-extrabold text-[10px] uppercase tracking-wider mt-2">Administration</div>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Nøglesystemer</a>
-                                                                <a href="#" className="block text-slate-300 text-xs py-0.5 hover:text-white">Postkasseanlæg</a>
-                                                              </>
-                                                            )}
-                                                          </div>
-                                                        )}
-                                                      </div>
-                                                    );
-                                                  })}
-                                                  {/* Mobile Contact Box */}
-                                                  <div className="bg-amber-400 text-slate-900 rounded-xl p-4 mt-2 flex flex-col gap-2">
-                                                    <div className="font-extrabold text-xs uppercase tracking-wide">Kontakt</div>
-                                                    <div className="text-[10px] leading-relaxed font-semibold">
-                                                      Kulvej 10, 2 TV, 2450 København SV<br />
-                                                      info@mmlaasesmed.dk
-                                                    </div>
-                                                    <a href="tel:31111115" className="block text-center bg-slate-900 text-white font-extrabold text-[10px] py-2 px-3 rounded-lg transition-colors uppercase tracking-wider">
-                                                      📞 +45 31 11 11 15
-                                                    </a>
-                                                  </div>
-                                                </div>
-                                              )}
+                                                 <div 
+                                                   className={`absolute left-0 right-0 top-full mx-6 mt-2 border border-slate-100/10 rounded-2xl p-6 shadow-2xl flex flex-col gap-4 text-left z-50 ${menuVisibilityClasses} ${
+                                                     viewportMode === 'desktop' ? 'md:hidden' : 'hidden'
+                                                   }`}
+                                                   style={{
+                                                     backgroundColor: dBgColor,
+                                                     color: dTextColor,
+                                                     opacity: (!isPreviewMode && isMenuHiddenInViewport) ? 0.35 : undefined
+                                                   }}
+                                                 >
+                                                   {(menuOverlay.settings?.menuContentMobile || menuOverlay.settings?.menuContentTablet || menuOverlay.settings?.menuContentDesktop || menuOverlay.content).split(',').map((itemStr, index) => {
+                                                     const item = itemStr.trim();
+                                                     const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
+                                                     return (
+                                                       <div key={index} className="border-b border-slate-100/10 pb-2 last:border-none last:pb-0">
+                                                         <div 
+                                                           className="uppercase tracking-wider py-1"
+                                                           style={{
+                                                             fontSize: safeFontSize(dFontSize, '14px'),
+                                                             fontWeight: dFontWeight,
+                                                             fontStyle: dFontStyle,
+                                                             color: dTextColor
+                                                           }}
+                                                         >
+                                                           {item}
+                                                         </div>
+                                                         {hasDropdown && (
+                                                           <div className="pl-4 mt-2 space-y-2">
+                                                             {(() => {
+                                                               const allLinks = menuOverlay.dropdownLinks || getDefaultDropdownLinks();
+                                                               const filteredLinks = allLinks.filter(l => l.parentItem.toLowerCase() === item.toLowerCase());
+                                                               
+                                                               const groups: { [key: string]: DropdownLink[] } = {};
+                                                               filteredLinks.forEach(link => {
+                                                                 const g = link.group || 'General';
+                                                                 if (!groups[g]) groups[g] = [];
+                                                                 groups[g].push(link);
+                                                               });
+                                                               
+                                                               const groupNames = Object.keys(groups);
+                                                               if (groupNames.length === 0) {
+                                                                 return (
+                                                                   <div className="text-slate-400 text-xs py-0.5 italic">
+                                                                     No sub-pages added yet.
+                                                                   </div>
+                                                                 );
+                                                               }
+                                                               
+                                                               return groupNames.map((gName, gIdx) => (
+                                                                 <div key={gIdx} className={gIdx > 0 ? 'mt-2' : ''}>
+                                                                   <div 
+                                                                     className="uppercase tracking-wider flex items-center gap-1 mb-1"
+                                                                     style={{
+                                                                       fontSize: safeFontSize(dGroupFontSize, '10px'),
+                                                                       fontWeight: dGroupFontWeight,
+                                                                       fontStyle: dGroupFontStyle,
+                                                                       color: dTextColor
+                                                                     }}
+                                                                   >
+                                                                     <span className="w-1.5 h-1.5 rounded-full bg-[#FFC502]" /> {gName}
+                                                                   </div>
+                                                                   <div className="pl-2.5 space-y-1">
+                                                                     {groups[gName].map((link, lIdx) => (
+                                                                       <a 
+                                                                         key={link.id || lIdx}
+                                                                         href={link.link || '#'} 
+                                                                         onClick={(e) => {
+                                                                           handleLinkClick(e, link.link, link.pageSlug);
+                                                                           setIsMobileMenuOpen(false);
+                                                                         }} 
+                                                                         className="block hover:text-white no-underline"
+                                                                         style={{
+                                                                           fontSize: safeFontSize(dLinkFontSize, '12px'),
+                                                                           fontWeight: dLinkFontWeight,
+                                                                           fontStyle: dLinkFontStyle,
+                                                                           color: isMobileViewport
+                                                                             ? (menuOverlay.settings?.drawerLinkColorMobile || '#94a3b8')
+                                                                             : isTabletViewport
+                                                                               ? (menuOverlay.settings?.drawerLinkColorTablet || '#94a3b8')
+                                                                               : (menuOverlay.settings?.drawerLinkColor || '#94a3b8')
+                                                                         }}
+                                                                       >
+                                                                         {link.title}
+                                                                       </a>
+                                                                     ))}
+                                                                   </div>
+                                                                 </div>
+                                                               ));
+                                                             })()}
+                                                           </div>
+                                                         )}
+                                                       </div>
+                                                     );
+                                                   })}
+                                                   {/* Mobile Contact Box */}
+                                                   {(() => {
+                                                     const contactTitle = menuOverlay.settings?.contactTitle || "Kontakt";
+                                                     const contactText = menuOverlay.settings?.contactText || "Kulvej 10, 2 TV\\n2450 København SV\\nDenmark";
+                                                     const contactEmail = menuOverlay.settings?.contactEmail || "info@mmlaasesmed.dk";
+                                                     const contactPhone = menuOverlay.settings?.contactPhone || "+45 31 11 11 15";
+                                                     
+                                                     return (
+                                                       <div className="bg-amber-400 text-slate-900 rounded-xl p-4 mt-2 flex flex-col gap-2">
+                                                         <div 
+                                                           className="font-extrabold uppercase tracking-wide"
+                                                           style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTitleFontSize, '12px') }}
+                                                         >
+                                                           {contactTitle}
+                                                         </div>
+                                                         <div 
+                                                           className="leading-relaxed font-semibold"
+                                                           style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTextFontSize, '10px') }}
+                                                         >
+                                                           {contactText.split('\\n').map((line, i) => (
+                                                             <React.Fragment key={i}>
+                                                               {line}
+                                                               <br />
+                                                             </React.Fragment>
+                                                           ))}
+                                                           {contactEmail && (
+                                                             <div className="mt-1 hover:underline">{contactEmail}</div>
+                                                           )}
+                                                         </div>
+                                                         <a 
+                                                           href={`tel:${contactPhone.replace(/\\s+/g, '')}`} 
+                                                           className="block text-center bg-slate-900 text-white font-extrabold py-2 px-3 rounded-lg transition-colors uppercase tracking-wider no-underline"
+                                                           style={{ fontSize: safeFontSize(menuOverlay.settings?.contactBtnFontSize, '10px') }}
+                                                         >
+                                                           📞 {contactPhone}
+                                                         </a>
+                                                       </div>
+                                                     );
+                                                   })()}
+                                                 </div>
+                                               )}
                                             </div>
                                           )}
                                         </div>
@@ -2514,6 +2715,7 @@ export default function Canvas({
                                 <div 
                                   className="w-full transition-all"
                                   style={{
+                                    fontFamily: el.styles?.fontFamily,
                                     marginTop: el.styles?.marginTop,
                                     marginBottom: el.styles?.marginBottom,
                                     paddingTop: el.styles?.paddingTop,
@@ -2661,94 +2863,204 @@ export default function Canvas({
       </div>
 
       {/* Mobile-specific navigation components */}
-      {viewportMode !== 'desktop' && (
-        <>
-          {/* Fixed Bottom Navigation Bar */}
-          <div 
-            style={{
-              position: 'fixed',
-              bottom: '0px',
-              left: stageLeft !== null && stageWidth !== null ? `${stageLeft + stageWidth / 2}px` : (isPreviewMode ? '50%' : 'calc(50% + 160px)'),
-              transform: 'translateX(-50%)',
-              width: stageWidth !== null ? `${stageWidth}px` : (viewportMode === 'mobile' ? '375px' : '768px'),
-              maxWidth: '100%',
-              backgroundColor: '#FFC502',
-              color: '#0f172a',
-              height: '64px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-around',
-              boxShadow: '0 -4px 10px rgba(0, 0, 0, 0.15)',
-              zIndex: 100,
-              borderTop: '1px solid rgba(15, 23, 42, 0.1)',
-              borderTopLeftRadius: '16px',
-              borderTopRightRadius: '16px',
-            }}
-            className="pointer-events-auto shadow-lg"
-          >
-            <button 
-              onClick={() => {
-                const scrollContainer = document.getElementById('builder-canvas-wrapper') || document.querySelector('.overflow-y-auto') || window;
-                scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5"
-            >
-              <Home className="w-5 h-5 text-slate-900" />
-              <span className="text-[10px] font-bold">Hjem</span>
-            </button>
-            
-            <button 
-              onClick={() => {
-                alert("Shop function coming soon!");
-              }}
-              className="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5"
-            >
-              <ShoppingCart className="w-5 h-5 text-slate-900" />
-              <span className="text-[10px] font-bold">Shop</span>
-            </button>
-            
-            <a 
-              href="tel:31111115"
-              className="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5 no-underline animate-pulse"
-            >
-              <Phone className="w-5 h-5 text-slate-900" />
-              <span className="text-[10px] font-bold">31111115</span>
-            </a>
-            
-            <button 
-              onClick={() => {
-                setIsMobileMenuOpen(true);
-              }}
-              className="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5"
-            >
-              <Menu className="w-5 h-5 text-slate-900" />
-              <span className="text-[10px] font-bold">Menu</span>
-            </button>
-          </div>
+      {viewportMode !== 'desktop' && (() => {
+        const menuOverlay = findMenuOverlay();
+        const isMobileViewport = viewportMode === 'mobile';
+        
+        // Bottom bar styling settings
+        const bottomBarBgColor = isMobileViewport
+          ? (menuOverlay?.settings?.bottomBarBgColorMobile || menuOverlay?.settings?.bottomBarBgColor || '#FFC502')
+          : (menuOverlay?.settings?.bottomBarBgColorTablet || menuOverlay?.settings?.bottomBarBgColor || '#FFC502');
+          
+        const bottomBarTextColor = isMobileViewport
+          ? (menuOverlay?.settings?.bottomBarTextColorMobile || menuOverlay?.settings?.bottomBarTextColor || '#0f172a')
+          : (menuOverlay?.settings?.bottomBarTextColorTablet || menuOverlay?.settings?.bottomBarTextColor || '#0f172a');
+          
+        const bottomBarFontSize = isMobileViewport
+          ? (menuOverlay?.settings?.bottomBarFontSizeMobile || menuOverlay?.settings?.bottomBarFontSize || 10)
+          : (menuOverlay?.settings?.bottomBarFontSizeTablet || menuOverlay?.settings?.bottomBarFontSize || 10);
+          
+        const bottomBarFontWeight = isMobileViewport
+          ? (menuOverlay?.settings?.bottomBarFontWeightMobile || menuOverlay?.settings?.bottomBarFontWeight || 'bold')
+          : (menuOverlay?.settings?.bottomBarFontWeightTablet || menuOverlay?.settings?.bottomBarFontWeight || 'bold');
+          
+        const bottomBarFontStyle = isMobileViewport
+          ? (menuOverlay?.settings?.bottomBarFontStyleMobile || menuOverlay?.settings?.bottomBarFontStyle || 'normal')
+          : (menuOverlay?.settings?.bottomBarFontStyleTablet || menuOverlay?.settings?.bottomBarFontStyle || 'normal');
+          
+        const defaultItems = [
+          { label: 'Hjem', link: '#', icon: 'home' },
+          { label: 'Shop', link: '#shop', icon: 'shop' },
+          { label: '31111115', link: 'tel:31111115', icon: 'phone' },
+          { label: 'Menu', link: 'menu', icon: 'menu' }
+        ];
+        
+        const bottomBarItems = isMobileViewport
+          ? (menuOverlay?.settings?.bottomBarItemsMobile || menuOverlay?.settings?.bottomBarItems || defaultItems)
+          : (menuOverlay?.settings?.bottomBarItemsTablet || menuOverlay?.settings?.bottomBarItems || defaultItems);
+          
+        const renderBottomBarIcon = (iconName: string, className: string = "w-5 h-5") => {
+          switch (iconName) {
+            case 'home': return <Home className={className} />;
+            case 'shop': return <ShoppingCart className={className} />;
+            case 'phone': return <Phone className={className} />;
+            case 'menu': return <Menu className={className} />;
+            default: return <HelpCircle className={className} />;
+          }
+        };
 
-          {/* Full-Screen Drawer Menu */}
-          {isMobileMenuOpen && (
+        const bottomBarFontFamily = isMobileViewport
+          ? (menuOverlay?.settings?.bottomBarFontFamilyMobile || menuOverlay?.settings?.bottomBarFontFamily || menuOverlay?.styles?.fontFamily)
+          : (menuOverlay?.settings?.bottomBarFontFamilyTablet || menuOverlay?.settings?.bottomBarFontFamily || menuOverlay?.styles?.fontFamily);
+          
+        const drawerFontFamily = isMobileViewport
+          ? (menuOverlay?.settings?.drawerFontFamilyMobile || menuOverlay?.settings?.drawerFontFamily || menuOverlay?.styles?.fontFamily)
+          : (menuOverlay?.settings?.drawerFontFamilyTablet || menuOverlay?.settings?.drawerFontFamily || menuOverlay?.styles?.fontFamily);
+
+        const drawerBgColor = isMobileViewport
+          ? (menuOverlay?.settings?.drawerBgColorMobile || menuOverlay?.settings?.drawerBgColor || '#ffffff')
+          : (menuOverlay?.settings?.drawerBgColorTablet || menuOverlay?.settings?.drawerBgColor || '#ffffff');
+        const drawerTextColor = isMobileViewport
+          ? (menuOverlay?.settings?.drawerTextColorMobile || menuOverlay?.settings?.drawerTextColor || '#0f172a')
+          : (menuOverlay?.settings?.drawerTextColorTablet || menuOverlay?.settings?.drawerTextColor || '#0f172a');
+        const drawerFontSize = isMobileViewport
+          ? (menuOverlay?.settings?.drawerFontSizeMobile || menuOverlay?.settings?.drawerFontSize || 14)
+          : (menuOverlay?.settings?.drawerFontSizeTablet || menuOverlay?.settings?.drawerFontSize || 14);
+        const drawerFontWeight = isMobileViewport
+          ? (menuOverlay?.settings?.drawerFontWeightMobile || menuOverlay?.settings?.drawerFontWeight || 'bold')
+          : (menuOverlay?.settings?.drawerFontWeightTablet || menuOverlay?.settings?.drawerFontWeight || 'bold');
+        const drawerFontStyle = isMobileViewport
+          ? (menuOverlay?.settings?.drawerFontStyleMobile || menuOverlay?.settings?.drawerFontStyle || 'normal')
+          : (menuOverlay?.settings?.drawerFontStyleTablet || menuOverlay?.settings?.drawerFontStyle || 'normal');
+        const drawerLinkFontSize = isMobileViewport
+          ? (menuOverlay?.settings?.drawerLinkFontSizeMobile || menuOverlay?.settings?.drawerLinkFontSize || 12)
+          : (menuOverlay?.settings?.drawerLinkFontSizeTablet || menuOverlay?.settings?.drawerLinkFontSize || 12);
+        const drawerLinkFontWeight = isMobileViewport
+          ? (menuOverlay?.settings?.drawerLinkFontWeightMobile || menuOverlay?.settings?.drawerLinkFontWeight || 'normal')
+          : (menuOverlay?.settings?.drawerLinkFontWeightTablet || menuOverlay?.settings?.drawerLinkFontWeight || 'normal');
+        const drawerLinkFontStyle = isMobileViewport
+          ? (menuOverlay?.settings?.drawerLinkFontStyleMobile || menuOverlay?.settings?.drawerLinkFontStyle || 'normal')
+          : (menuOverlay?.settings?.drawerLinkFontStyleTablet || menuOverlay?.settings?.drawerLinkFontStyle || 'normal');
+        const drawerGroupFontSize = isMobileViewport
+          ? (menuOverlay?.settings?.drawerGroupFontSizeMobile || menuOverlay?.settings?.drawerGroupFontSize || 10)
+          : (menuOverlay?.settings?.drawerGroupFontSizeTablet || menuOverlay?.settings?.drawerGroupFontSize || 10);
+        const drawerGroupFontWeight = isMobileViewport
+          ? (menuOverlay?.settings?.drawerGroupFontWeightMobile || menuOverlay?.settings?.drawerGroupFontWeight || 'bold')
+          : (menuOverlay?.settings?.drawerGroupFontWeightTablet || menuOverlay?.settings?.drawerGroupFontWeight || 'bold');
+        const drawerGroupFontStyle = isMobileViewport
+          ? (menuOverlay?.settings?.drawerGroupFontStyleMobile || menuOverlay?.settings?.drawerGroupFontStyle || 'normal')
+          : (menuOverlay?.settings?.drawerGroupFontStyleTablet || menuOverlay?.settings?.drawerGroupFontStyle || 'normal');
+        const drawerCategories = (isMobileViewport
+          ? (menuOverlay?.settings?.menuContentMobile || menuOverlay?.content)
+          : (menuOverlay?.settings?.menuContentTablet || menuOverlay?.content)) || '';
+        
+        return (
+          <>
+            {/* Fixed Bottom Navigation Bar */}
             <div 
               style={{
                 position: 'fixed',
-                top: '0px',
                 bottom: '0px',
-                left: stageLeft !== null && stageWidth !== null ? `${stageLeft + stageWidth / 2}px` : (isPreviewMode ? '50%' : 'calc(50% + 160px)'),
+                left: isVisitorMode ? '50%' : (stageLeft !== null && stageWidth !== null ? `${stageLeft + stageWidth / 2}px` : (isPreviewMode ? '50%' : 'calc(50% + 160px)')),
                 transform: 'translateX(-50%)',
                 width: stageWidth !== null ? `${stageWidth}px` : (viewportMode === 'mobile' ? '375px' : '768px'),
                 maxWidth: '100%',
-                backgroundColor: '#ffffff',
-                color: '#0f172a',
-                zIndex: 110,
+                backgroundColor: bottomBarBgColor,
+                color: bottomBarTextColor,
+                height: '64px',
                 display: 'flex',
-                flexDirection: 'column',
-                boxShadow: '0 -10px 25px rgba(0,0,0,0.15), 0 10px 25px rgba(0,0,0,0.15)',
-                overflowY: 'auto',
+                alignItems: 'center',
+                justifyContent: 'space-around',
+                boxShadow: '0 -4px 10px rgba(0, 0, 0, 0.15)',
+                zIndex: 100,
+                borderTop: '1px solid rgba(15, 23, 42, 0.1)',
+                borderTopLeftRadius: '16px',
+                borderTopRightRadius: '16px',
               }}
-              className="pointer-events-auto"
+              className="pointer-events-auto shadow-lg"
             >
-              {/* Header */}
-              <div className="p-6 flex justify-between items-center border-b border-slate-100 bg-white sticky top-0 z-10">
+              {bottomBarItems.map((btn: any, btnIdx: number) => {
+                const styleObj = {
+                  fontFamily: bottomBarFontFamily,
+                  fontSize: safeFontSize(bottomBarFontSize, '10px'),
+                  fontWeight: bottomBarFontWeight,
+                  fontStyle: bottomBarFontStyle,
+                  color: bottomBarTextColor
+                };
+                
+                if (btn.link === 'menu') {
+                  return (
+                    <button 
+                      key={btnIdx}
+                      onClick={() => {
+                        setIsMobileMenuOpen(true);
+                      }}
+                      style={styleObj}
+                      className="flex flex-col items-center justify-center flex-1 py-2 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5"
+                    >
+                      {renderBottomBarIcon(btn.icon, "w-5 h-5")}
+                      <span className="font-bold" style={{ fontFamily: bottomBarFontFamily, fontSize: safeFontSize(bottomBarFontSize, "10px"), fontWeight: bottomBarFontWeight, fontStyle: bottomBarFontStyle }}>{btn.label}</span>
+                    </button>
+                  );
+                }
+                
+                if (btn.link.startsWith('tel:')) {
+                  return (
+                    <a 
+                      key={btnIdx}
+                      href={btn.link}
+                      style={styleObj}
+                      className="flex flex-col items-center justify-center flex-1 py-2 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5 no-underline animate-pulse"
+                    >
+                      {renderBottomBarIcon(btn.icon, "w-5 h-5")}
+                      <span className="font-bold" style={{ fontFamily: bottomBarFontFamily, fontSize: safeFontSize(bottomBarFontSize, "10px"), fontWeight: bottomBarFontWeight, fontStyle: bottomBarFontStyle }}>{btn.label}</span>
+                    </a>
+                  );
+                }
+                
+                return (
+                  <a 
+                    key={btnIdx}
+                    href={btn.link || '#'}
+                    onClick={(e) => {
+                      handleLinkClick(e, btn.link);
+                    }}
+                    style={styleObj}
+                    className="flex flex-col items-center justify-center flex-1 py-2 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5 no-underline"
+                  >
+                    {renderBottomBarIcon(btn.icon, "w-5 h-5")}
+                    <span className="font-bold" style={{ fontSize: safeFontSize(bottomBarFontSize, "10px"), fontWeight: bottomBarFontWeight, fontStyle: bottomBarFontStyle }}>{btn.label}</span>
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* Full-Screen Drawer Menu */}
+            {isMobileMenuOpen && (
+              <div 
+                style={{
+                  position: 'fixed',
+                  top: '0px',
+                  bottom: '0px',
+                  left: isVisitorMode ? '50%' : (stageLeft !== null && stageWidth !== null ? `${stageLeft + stageWidth / 2}px` : (isPreviewMode ? '50%' : 'calc(50% + 160px)')),
+                  transform: 'translateX(-50%)',
+                  width: stageWidth !== null ? `${stageWidth}px` : (viewportMode === 'mobile' ? '375px' : '768px'),
+                  maxWidth: '100%',
+                  backgroundColor: drawerBgColor,
+                  color: drawerTextColor,
+                  zIndex: 110,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  boxShadow: '0 -10px 25px rgba(0,0,0,0.15), 0 10px 25px rgba(0,0,0,0.15)',
+                  overflowY: 'auto',
+                }}
+                className="pointer-events-auto"
+              >
+                {/* Header */}
+                <div 
+                  className="p-6 flex justify-between items-center border-b border-slate-100 sticky top-0 z-10"
+                  style={{ backgroundColor: drawerBgColor, borderColor: 'rgba(15, 23, 42, 0.08)' }}
+                >
                 {/* Logo */}
                 {(() => {
                   const logoOverlay = findLogoOverlay();
@@ -2784,7 +3096,10 @@ export default function Canvas({
                         <span className="text-[#FFC502] font-black text-xs">MM</span>
                       </div>
                       <div className="flex flex-col text-left">
-                        <span className="font-extrabold tracking-wider leading-none text-slate-900 uppercase text-base flex items-center gap-1">
+                        <span 
+                          className="font-extrabold tracking-wider leading-none uppercase text-base flex items-center gap-1"
+                          style={{ color: drawerTextColor }}
+                        >
                           LÅSESMED <Key className="w-3.5 h-3.5 text-[#FFC502] fill-[#FFC502]" />
                         </span>
                         <span className="text-[8px] text-[#FFC502] bg-slate-900 px-1.5 rounded-sm tracking-wide font-bold leading-normal mt-0.5 w-max">
@@ -2807,7 +3122,8 @@ export default function Canvas({
                 {/* Close button */}
                 <button 
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 rounded-full hover:bg-slate-100 border-none bg-transparent cursor-pointer transition-colors text-slate-900"
+                  className="p-2 rounded-full hover:bg-black/5 border-none bg-transparent cursor-pointer transition-colors"
+                  style={{ color: drawerTextColor }}
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -2819,7 +3135,7 @@ export default function Canvas({
                   const menuOverlay = findMenuOverlay();
                   if (!menuOverlay) return <div className="text-center text-slate-400 text-sm">No navigation items found.</div>;
                   
-                  const items = menuOverlay.content.split(',').map(itemStr => itemStr.trim()).filter(Boolean);
+                  const items = drawerCategories.split(',').map(itemStr => itemStr.trim()).filter(Boolean);
                   return items.map((item, idx) => {
                     const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
                     const isExpanded = activeMobileDropdown === item;
@@ -2829,16 +3145,30 @@ export default function Canvas({
                         {hasDropdown ? (
                           <button
                             onClick={() => setActiveMobileDropdown(isExpanded ? null : item)}
-                            className="w-full text-left py-2 flex justify-between items-center text-slate-950 font-bold uppercase tracking-wider border-none bg-transparent cursor-pointer hover:text-[#FFC502] transition-colors"
+                            className="w-full text-left py-2 flex justify-between items-center font-bold uppercase tracking-wider border-none bg-transparent cursor-pointer hover:text-[#FFC502] transition-colors"
+                            style={{
+                              fontFamily: drawerFontFamily,
+                              fontSize: safeFontSize(drawerFontSize, '14px'),
+                              fontWeight: drawerFontWeight,
+                              fontStyle: drawerFontStyle,
+                              color: drawerTextColor
+                            }}
                           >
-                            <span className="text-sm">{item}</span>
+                            <span>{item}</span>
                             <span className="text-lg font-mono text-slate-500">{isExpanded ? '−' : '+'}</span>
                           </button>
                         ) : (
                           <a
                             href="#"
                             onClick={(e) => { e.preventDefault(); setIsMobileMenuOpen(false); }}
-                            className="block py-2 text-slate-950 font-bold uppercase tracking-wider text-sm hover:text-[#FFC502] transition-colors no-underline"
+                            className="block py-2 font-bold uppercase tracking-wider hover:text-[#FFC502] transition-colors no-underline"
+                            style={{
+                              fontFamily: drawerFontFamily,
+                              fontSize: safeFontSize(drawerFontSize, '14px'),
+                              fontWeight: drawerFontWeight,
+                              fontStyle: drawerFontStyle,
+                              color: drawerTextColor
+                            }}
                           >
                             {item}
                           </a>
@@ -2869,7 +3199,16 @@ export default function Canvas({
                               
                               return groupNames.map((gName, gIdx) => (
                                 <div key={gIdx} className={gIdx > 0 ? 'mt-2' : ''}>
-                                  <div className="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider flex items-center gap-1 mb-1">
+                                  <div 
+                                    className="uppercase tracking-wider flex items-center gap-1 mb-1"
+                                    style={{
+                                      fontFamily: drawerFontFamily,
+                                      fontSize: safeFontSize(drawerGroupFontSize, '10px'),
+                                      fontWeight: drawerGroupFontWeight,
+                                      fontStyle: drawerGroupFontStyle,
+                                      color: drawerTextColor
+                                    }}
+                                  >
                                     <span className="w-1.5 h-1.5 rounded-full bg-[#FFC502]" /> {gName}
                                   </div>
                                   <div className="pl-2.5 space-y-1">
@@ -2881,7 +3220,15 @@ export default function Canvas({
                                           handleLinkClick(e, link.link, link.pageSlug);
                                           setIsMobileMenuOpen(false);
                                         }} 
-                                        className="block text-slate-600 text-xs py-1 hover:text-slate-950 no-underline"
+                                        className="block hover:text-slate-950 no-underline"
+                                        style={{
+                                          fontSize: safeFontSize(drawerLinkFontSize, '12px'),
+                                          fontWeight: drawerLinkFontWeight,
+                                          fontStyle: drawerLinkFontStyle,
+                                          color: isMobileViewport
+                                            ? (menuOverlay?.settings?.drawerLinkColorMobile || '#475569')
+                                            : (menuOverlay?.settings?.drawerLinkColorTablet || '#475569')
+                                        }}
                                       >
                                         {link.title}
                                       </a>
@@ -2901,24 +3248,41 @@ export default function Canvas({
               {/* Footer Contact Card */}
               <div className="p-6 bg-slate-50 border-t border-slate-100 mt-auto">
                 <div className="bg-[#FFC502] text-slate-950 rounded-2xl p-5 flex flex-col gap-3 shadow-lg">
-                  <div className="font-extrabold text-xs uppercase tracking-wider text-slate-900">Kontakt</div>
-                  <div className="text-xs leading-relaxed font-semibold text-slate-900">
-                    Kulvej 10, 2 TV, 2450 København SV<br />
-                    info@mmlaasesmed.dk
-                  </div>
-                  <a 
-                    href="tel:31111115" 
-                    className="flex items-center justify-center gap-2 bg-slate-950 text-white hover:bg-slate-900 font-extrabold text-xs py-3 px-4 rounded-xl transition-all uppercase tracking-wider shadow-sm hover:shadow-md cursor-pointer no-underline mt-2"
-                  >
-                    <Phone className="w-4 h-4 text-[#FFC502]" />
-                    <span>+45 31 11 11 15</span>
-                  </a>
+                  {(() => {
+                    const menuOverlay = findMenuOverlay();
+                    const contactText = menuOverlay?.settings?.contactText || "Kulvej 10, 2 TV\n2450 København SV\nDenmark";
+                    const contactEmail = menuOverlay?.settings?.contactEmail || "info@mmlaasesmed.dk";
+                    const contactPhone = menuOverlay?.settings?.contactPhone || "+45 31 11 11 15";
+                    const contactTitle = menuOverlay?.settings?.contactTitle || "Kontakt";
+                    return (
+                      <>
+                        <div className="font-extrabold uppercase tracking-wider text-slate-900" style={{ fontSize: `${menuOverlay?.settings?.contactTitleFontSize || 12}px` }}>{contactTitle}</div>
+                        <div className="leading-relaxed font-semibold text-slate-900" style={{ fontSize: `${menuOverlay?.settings?.contactTextFontSize || 10}px` }}>
+                          {contactText.split('\n').map((line, i) => (
+                            <React.Fragment key={i}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))}
+                          {contactEmail && <p className="mt-1">{contactEmail}</p>}
+                        </div>
+                        <a 
+                          href={`tel:${contactPhone.replace(/\s+/g, '')}`} 
+                          className="flex items-center justify-center gap-2 bg-slate-950 text-white hover:bg-slate-900 font-extrabold text-xs py-3 px-4 rounded-xl transition-all uppercase tracking-wider shadow-sm hover:shadow-md cursor-pointer no-underline mt-2"
+                        >
+                          <Phone className="w-4 h-4 text-[#FFC502]" />
+                          <span>{contactPhone}</span>
+                        </a>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
           )}
-        </>
-      )}
+          </>
+        );
+      })()}
 
       {/* Floating Selection Tooltip for Inline Links & Formatting */}
       {selectionRect && (

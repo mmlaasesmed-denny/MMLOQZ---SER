@@ -113,6 +113,171 @@ const ensureIndependentOverrides = (sections: Section[]): Section[] => {
   });
 };
 
+const ensureWebshopPagesExist = (loadedPages: SinglePageCMS[]): SinglePageCMS[] => {
+  const webshopPagesTemplates = [
+    { id: 'webshop-home', name: '🛒 Webshop - Hjem', slug: 'shop', forcedView: 'categories' },
+    { id: 'webshop-product', name: '🛒 Webshop - Produkt Visning', slug: 'shop-product', forcedView: 'product-detail' },
+    { id: 'webshop-cart', name: '🛒 Webshop - Kurv (Cart)', slug: 'shop-cart', forcedView: 'cart' },
+    { id: 'webshop-checkout', name: '🛒 Webshop - Kasse (Checkout)', slug: 'shop-checkout', forcedView: 'checkout' },
+    { id: 'webshop-account', name: '🛒 Webshop - Profil / Log ind', slug: 'shop-account', forcedView: 'login' },
+  ];
+  
+  const nextPages = [...loadedPages];
+  const homepage = nextPages.find(p => p.id === 'portfolio') || nextPages[0];
+
+  webshopPagesTemplates.forEach(tpl => {
+    const exists = nextPages.some(p => p.id === tpl.id || p.slug === tpl.slug);
+    if (!exists) {
+      // Find standard webshop sections
+      const defaultWebshopTemplate = TEMPLATES.find(t => t.id === 'webshop');
+      const defaultSections = defaultWebshopTemplate 
+        ? JSON.parse(JSON.stringify(defaultWebshopTemplate.sections)) 
+        : [];
+      
+      // Update the main store section to be full width with no top/bottom gap
+      const webshopStoreSection = defaultSections.find((s: any) => s.id === 'webshop-main-sec') || defaultSections[0];
+      if (webshopStoreSection) {
+        webshopStoreSection.fullWidth = true;
+        webshopStoreSection.paddingY = 'none';
+      }
+
+      // Copy header and footer from homepage for design consistency
+      const pageSections: any[] = [];
+      if (homepage && homepage.sections.length > 0) {
+        // Copy homepage header (first section)
+        const homeHeader = JSON.parse(JSON.stringify(homepage.sections[0]));
+        homeHeader.id = `${homeHeader.id}-${tpl.id}`;
+        pageSections.push(homeHeader);
+      }
+
+      // Add the full-width webshop store section in the middle
+      pageSections.push(...defaultSections);
+
+      if (homepage && homepage.sections.length > 1) {
+        // Copy homepage footer (last section)
+        const homeFooter = JSON.parse(JSON.stringify(homepage.sections[homepage.sections.length - 1]));
+        homeFooter.id = `${homeFooter.id}-${tpl.id}`;
+        // Prevent duplicate footers if defaultSections already contains a footer
+        const hasWebshopFooter = defaultSections.some((s: any) => s.id === 'webshop-foot' || s.name.toLowerCase().includes('foot'));
+        if (!hasWebshopFooter) {
+          pageSections.push(homeFooter);
+        }
+      }
+
+      // Map forcedView and webshopMappings settings
+      const updatedSections = pageSections.map((sec: any) => {
+        return {
+          ...sec,
+          columns: sec.columns.map((col: any) => {
+            return {
+              ...col,
+              elements: col.elements.map((el: any) => {
+                if (el.type === 'webshop') {
+                  return {
+                    ...el,
+                    settings: {
+                      ...(el.settings || {}),
+                      forcedView: tpl.forcedView,
+                      webshopMappings: {
+                        shopHome: 'webshop-home',
+                        productDetail: 'webshop-product',
+                        categoryDetail: 'webshop-product',
+                        cart: 'webshop-cart',
+                        checkout: 'webshop-checkout',
+                        login: 'webshop-account',
+                        searchResults: 'webshop-home'
+                      }
+                    }
+                  };
+                }
+                return el;
+              })
+            };
+          })
+        };
+      });
+
+      nextPages.push({
+        id: tpl.id,
+        name: tpl.name,
+        slug: tpl.slug,
+        sections: ensureIndependentOverrides(updatedSections),
+        theme: homepage ? homepage.theme : COLOR_THEMES[0]
+      });
+    }
+  });
+
+  // For existing pages, force fullWidth: true, paddingY: 'none', and ensure image-based logos
+  const defaultLogoSrc = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=120&h=120&q=80';
+
+  return nextPages.map(page => {
+    const tpl = webshopPagesTemplates.find(t => t.id === page.id);
+    return {
+      ...page,
+      sections: page.sections.map(sec => {
+        const isMainWebshopSec = sec.id === 'webshop-main-sec' || sec.columns.some(c => c.elements.some(e => e.type === 'webshop'));
+        const updatedSec = isMainWebshopSec ? {
+          ...sec,
+          fullWidth: true,
+          paddingY: 'none' as any
+        } : sec;
+
+        return {
+          ...updatedSec,
+          columns: updatedSec.columns.map(col => ({
+            ...col,
+            elements: col.elements.map(el => {
+              // Convert text-based overlay logos to image-based logos
+              let updatedOverlays = el.overlays;
+              if (el.overlays && el.overlays.length > 0) {
+                updatedOverlays = el.overlays.map((o: any) => {
+                  if (o.type === 'logo' && !o.src) {
+                    return {
+                      ...o,
+                      src: defaultLogoSrc,
+                      styles: {
+                        ...o.styles,
+                        fontSize: '32px',
+                        width: '60px',
+                        borderRadius: '8px'
+                      }
+                    };
+                  }
+                  return o;
+                });
+              }
+
+              if (el.type === 'webshop') {
+                return {
+                  ...el,
+                  overlays: updatedOverlays,
+                  settings: {
+                    ...(el.settings || {}),
+                    forcedView: tpl ? tpl.forcedView : el.settings?.forcedView,
+                    webshopMappings: {
+                      shopHome: 'webshop-home',
+                      productDetail: 'webshop-product',
+                      categoryDetail: 'webshop-product',
+                      cart: 'webshop-cart',
+                      checkout: 'webshop-checkout',
+                      login: 'webshop-account',
+                      searchResults: 'webshop-home'
+                    }
+                  }
+                };
+              }
+              return {
+                ...el,
+                overlays: updatedOverlays
+              };
+            })
+          }))
+        };
+      })
+    };
+  });
+};
+
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
@@ -120,19 +285,20 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((p: any) => ({
-            ...p,
-            sections: ensureIndependentOverrides(p.sections || []),
-            slug: p.slug !== undefined ? p.slug : (p.id === 'portfolio' ? '' : p.id)
-          }));
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id && parsed[0].sections) {
+            const loaded = parsed.map((p: any) => ({
+              ...p,
+              sections: ensureIndependentOverrides(p.sections || []),
+              slug: p.slug !== undefined ? p.slug : (p.id === 'portfolio' ? '' : p.id)
+            }));
+            return ensureWebshopPagesExist(loaded);
         }
       } catch (err) {
         console.error("Local caching parse failure:", err);
       }
     }
     // Initialize with 5 distinct pages from our preconfigured TEMPLATES
-    return TEMPLATES.map(t => {
+    const defaults = TEMPLATES.map(t => {
       let defaultSlug = t.id;
       if (t.id === 'portfolio') defaultSlug = '';
       else if (t.id === 'bistro') defaultSlug = 'bistro-menu';
@@ -149,6 +315,7 @@ export default function App() {
         theme: t.id === 'bistro' ? COLOR_THEMES[4] : (t.id === 'saas' ? COLOR_THEMES[3] : COLOR_THEMES[0])
       };
     });
+    return ensureWebshopPagesExist(defaults);
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
@@ -159,8 +326,232 @@ export default function App() {
     return localStorage.getItem('visual-builder-base-domain') || 'www.mmlaasesmed.dk';
   });
 
+  const [visitorViewport, setVisitorViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+
+  useEffect(() => {
+    const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
+    const isEditor = currentPath === 'admin-editor';
+    if (isEditor) return;
+
+    const handleResize = () => {
+      const w = window.innerWidth;
+      if (w < 768) {
+        setVisitorViewport('mobile');
+      } else if (w < 1024) {
+        setVisitorViewport('tablet');
+      } else {
+        setVisitorViewport('desktop');
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasRemoteChanges, setHasRemoteChanges] = useState(false);
+  const [remotePagesData, setRemotePagesData] = useState<SinglePageCMS[] | null>(null);
+  
+  // 1.2 Edit locking and auto-sync states
+  const [editLock, setEditLock] = useState<{ user: string; expiresAt: number } | null>(null);
+  const [currentSessionId] = useState(() => {
+    const saved = localStorage.getItem('visual-builder-session-id');
+    if (saved) return saved;
+    const newId = Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('visual-builder-session-id', newId);
+    return newId;
+  });
+  const [editorUsername, setEditorUsername] = useState(() => {
+    return localStorage.getItem('visual-builder-username') || `Bruger_${Math.floor(Math.random() * 1000)}`;
+  });
+  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(() => {
+    return localStorage.getItem('visual-builder-auto-save') === 'true';
+  });
+
+  // Helper to acquire/refresh edit lock on Django server
+  const refreshEditLock = async () => {
+    try {
+      const djangoUrl = localStorage.getItem('visual-builder-django-url') || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+      const targetUrl = djangoUrl.replace(/\/$/, '') + '/layouts/';
+      const title = `LOCK_${activePageId}`;
+      
+      const layoutsResp = await fetch(targetUrl);
+      if (layoutsResp.ok) {
+        const layoutsList = await layoutsResp.json();
+        const existingLock = layoutsList.find((l: any) => l.title === title);
+        
+        const lockPayload = {
+          title: title,
+          sections: [],
+          theme: {
+            sessionId: currentSessionId,
+            user: editorUsername,
+            timestamp: Date.now()
+          }
+        };
+
+        if (existingLock) {
+          await fetch(`${targetUrl}${existingLock.id}/`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(lockPayload)
+          });
+        } else {
+          await fetch(targetUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(lockPayload)
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('[LOCK] Failed to acquire edit lock:', err);
+    }
+  };
+
+  // Background polling loop to detect remote changes and edit locks from other users
+  useEffect(() => {
+    const checkForRemoteUpdates = async () => {
+      try {
+        const djangoUrl = localStorage.getItem('visual-builder-django-url') || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+        const resp = await fetch(`${djangoUrl.replace(/\/$/, '')}/layouts/`);
+        if (resp.ok) {
+          const layouts = await resp.json();
+          
+          // 1. Check for active edit lock on current page
+          const lockTitle = `LOCK_${activePageId}`;
+          const activeLock = layouts.find((l: any) => l.title === lockTitle);
+          if (activeLock && activeLock.theme) {
+            const { sessionId, user, timestamp } = activeLock.theme;
+            if (sessionId !== currentSessionId && (Date.now() - timestamp < 120000)) {
+              setEditLock({ user: user || 'En anden bruger', expiresAt: timestamp + 120000 });
+            } else {
+              setEditLock(null);
+            }
+          } else {
+            setEditLock(null);
+          }
+
+          // 2. Check for remote layout changes
+          const globalState = layouts.find((l: any) => l.title === 'GLOBAL_CMS_PAGES');
+          if (globalState && globalState.sections) {
+            const data = globalState.sections;
+            // Validate schema
+            if (Array.isArray(data) && data.length > 0 && data[0].id && data[0].sections) {
+              const currentStr = JSON.stringify(pages);
+              const remoteStr = JSON.stringify(data);
+              if (currentStr !== remoteStr) {
+                setRemotePagesData(data);
+                setHasRemoteChanges(true);
+              } else {
+                setHasRemoteChanges(false);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[POLL] Background check failed:', err);
+      }
+    };
+
+    checkForRemoteUpdates();
+    const interval = setInterval(checkForRemoteUpdates, 8000);
+    return () => clearInterval(interval);
+  }, [pages, activePageId, currentSessionId]);
+
+  // Debounced Auto-Save & Lock Refresh Trigger on edits
+  useEffect(() => {
+    if (hasRemoteChanges || pages.length === 0) return;
+
+    // Refresh lock metadata in database
+    refreshEditLock();
+
+    if (!isAutoSaveEnabled) return;
+
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const djangoUrl = localStorage.getItem('visual-builder-django-url') || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+        const targetUrl = djangoUrl.replace(/\/$/, '') + '/layouts/';
+        
+        const layoutsResp = await fetch(targetUrl);
+        if (layoutsResp.ok) {
+          const layoutsList = await layoutsResp.json();
+          const existingGlobal = layoutsList.find((l: any) => l.title === 'GLOBAL_CMS_PAGES');
+          
+          const globalPayload = {
+            title: 'GLOBAL_CMS_PAGES',
+            sections: pages,
+            theme: { autoSaved: true, timestamp: Date.now() }
+          };
+
+          if (existingGlobal) {
+            await fetch(`${targetUrl}${existingGlobal.id}/`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(globalPayload)
+            });
+          } else {
+            await fetch(targetUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(globalPayload)
+            });
+          }
+          console.log('[AUTO-SAVE] Automatically synced pages state to Django server.');
+        }
+      } catch (err) {
+        console.warn('[AUTO-SAVE] Failed to auto-save to Django:', err);
+      }
+    }, 3000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [pages, isAutoSaveEnabled]);
+
+  const handleApplyRemoteChanges = () => {
+    if (remotePagesData) {
+      setPages(remotePagesData);
+      setHasRemoteChanges(false);
+      setRemotePagesData(null);
+      alert('Sider og layouts er nu synkroniseret med serveren!');
+    }
+  };
+
   // 2. Derive Current Page Sections and Theme (Downstream friendly)
   const activePage = pages.find(p => p.id === activePageId) || pages[0];
+
+  // Load pages state from Django backend on startup to keep users in sync
+  useEffect(() => {
+    const syncFromDjango = async () => {
+      try {
+        const djangoUrl = localStorage.getItem('visual-builder-django-url') || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+        const resp = await fetch(`${djangoUrl.replace(/\/$/, '')}/layouts/`);
+        if (resp.ok) {
+          const layouts = await resp.json();
+          const globalState = layouts.find((l: any) => l.title === 'GLOBAL_CMS_PAGES');
+          if (globalState && globalState.sections) {
+            const data = globalState.sections;
+            if (Array.isArray(data) && data.length > 0 && data[0].id && data[0].sections) {
+              setPages(ensureWebshopPagesExist(data));
+              console.log('[SYNC] Successfully synchronized pages state from Django backend!');
+            } else {
+              console.warn('[SYNC] GLOBAL_CMS_PAGES record found but data structure is invalid. Skipping load.');
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[SYNC] Failed to fetch pages state from Django backend on startup, falling back to local cache.', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    syncFromDjango();
+  }, []);
+
+  // Dynamically update the browser tab title based on the active page name/title
+  useEffect(() => {
+    const pageDisplayName = activePage.title || activePage.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+    document.title = pageDisplayName ? `${pageDisplayName} | MM Låsesmed` : "MM Låsesmed";
+  }, [activePage.id, activePage.name, activePage.title]);
 
   // Dynamically resolve the sections and theme to render (handling Webshop custom templates)
   const getRenderLayout = () => {
@@ -436,7 +827,12 @@ export default function App() {
                   saas: "Technical SaaS Cloud Page",
                   about: "Creative Team Profiles",
                   terms: "Technical SLA Policy & Terms",
-                  webshop: "Webshop"
+                  webshop: "Webshop",
+                  'webshop-home': "Webshop - Hjem",
+                  'webshop-product': "Webshop - Produkt Visning",
+                  'webshop-cart': "Webshop - Kurv (Cart)",
+                  'webshop-checkout': "Webshop - Kasse (Checkout)",
+                  'webshop-account': "Webshop - Profil / Log ind"
                 };
                 
                 for (const [id, defaultTitle] of Object.entries(defaultNames)) {
@@ -486,7 +882,7 @@ export default function App() {
                 }
               });
               
-              return updatedPages;
+              return ensureWebshopPagesExist(updatedPages);
             });
           }
         }
@@ -524,6 +920,78 @@ export default function App() {
   const handleSelectSection = (sectionId: string) => {
     setSelectedSectionId(sectionId);
     setSelectedElementId(null);
+  };
+
+  const syncLogoAcrossAllPages = (logoType: 'text' | 'image', src?: string, content?: string, height?: string) => {
+    setPages(prevPages => {
+      return prevPages.map(page => {
+        return {
+          ...page,
+          sections: page.sections.map(section => {
+            return {
+              ...section,
+              columns: section.columns.map(col => {
+                return {
+                  ...col,
+                  elements: col.elements.map(el => {
+                    // 1. Direct logo element
+                    if (el.id.toLowerCase().includes('logo')) {
+                      return {
+                        ...el,
+                        type: logoType,
+                        src: src !== undefined ? src : el.src,
+                        content: content !== undefined ? content : el.content,
+                        styles: {
+                          ...el.styles,
+                          height: height || el.styles?.height
+                        }
+                      };
+                    }
+                    
+                    // 2. Overlay logo element
+                    let updatedOverlays = el.overlays;
+                    if (el.overlays && el.overlays.length > 0) {
+                      updatedOverlays = el.overlays.map(o => {
+                        if (o.type === 'logo') {
+                          return {
+                            ...o,
+                            src: logoType === 'image' ? (src || o.src) : undefined,
+                            content: content !== undefined ? content : o.content,
+                            styles: {
+                              ...o.styles,
+                              fontSize: height || o.styles?.fontSize
+                            }
+                          };
+                        }
+                        return o;
+                      });
+                    }
+
+                    // 3. Webshop element setting logo
+                    let updatedSettings = el.settings;
+                    if (el.type === 'webshop') {
+                      updatedSettings = {
+                        ...(el.settings || {}),
+                        logoType: logoType,
+                        logoSrc: src !== undefined ? src : el.settings?.logoSrc,
+                        logoText: content !== undefined ? content : el.settings?.logoText,
+                        logoHeight: height ? parseInt(height) : el.settings?.logoHeight
+                      };
+                    }
+
+                    return {
+                      ...el,
+                      overlays: updatedOverlays,
+                      settings: updatedSettings
+                    };
+                  })
+                };
+              })
+            };
+          })
+        };
+      });
+    });
   };
 
   // Mutator helper for updating customizable styles or direct string values
@@ -583,6 +1051,31 @@ export default function App() {
         };
       });
     });
+
+    // Sync logo updates globally across all pages
+    const isDirectLogo = elementId.toLowerCase().includes('logo');
+    const logoOverlay = updatedFields?.overlays?.find(o => o.type === 'logo');
+    const isWebshopLogoUpdate = elementId.toLowerCase().includes('webshop') && (updatedFields?.settings?.logoSrc !== undefined || updatedFields?.settings?.logoText !== undefined || updatedFields?.settings?.logoType !== undefined);
+
+    if (isDirectLogo) {
+      const logoType = updatedFields?.type === 'image' || updatedSrc !== undefined ? 'image' : 'text';
+      const src = updatedSrc;
+      const content = updatedContent;
+      const height = updatedStyles?.height;
+      syncLogoAcrossAllPages(logoType, src, content, height);
+    } else if (logoOverlay) {
+      const logoType = logoOverlay.src ? 'image' : 'text';
+      const src = logoOverlay.src;
+      const content = logoOverlay.content;
+      const height = logoOverlay.styles?.fontSize;
+      syncLogoAcrossAllPages(logoType, src, content, height);
+    } else if (isWebshopLogoUpdate) {
+      const logoType = updatedFields?.settings?.logoType || 'text';
+      const src = updatedFields?.settings?.logoSrc;
+      const content = updatedFields?.settings?.logoText;
+      const height = updatedFields?.settings?.logoHeight ? `${updatedFields.settings.logoHeight}px` : undefined;
+      syncLogoAcrossAllPages(logoType, src, content, height);
+    }
   };
 
   // Mutator helper for Section properties
@@ -1373,6 +1866,28 @@ export default function App() {
           );
           handleUpdateElement(elementId, {}, undefined, undefined, undefined, { overlays: nextOverlays });
         }
+      } else if (activeImageId.includes('-settings-')) {
+        const [elementId, settingKey] = activeImageId.split('-settings-');
+        let foundElement: PageElement | null = null;
+        for (const section of sections) {
+          for (const col of section.columns) {
+            const el = col.elements.find(e => e.id === elementId);
+            if (el) {
+              foundElement = el;
+              break;
+            }
+          }
+          if (foundElement) break;
+        }
+
+        if (foundElement) {
+          handleUpdateElement(elementId, {}, undefined, undefined, undefined, {
+            settings: {
+              ...(foundElement.settings || {}),
+              [settingKey]: url
+            }
+          });
+        }
       } else {
         handleUpdateElement(activeImageId, {}, undefined, undefined, url);
       }
@@ -1405,6 +1920,19 @@ export default function App() {
 
 
 
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex flex-col items-center justify-center bg-slate-900 text-white font-sans" id="builder-loading-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+          <div className="text-xs font-semibold uppercase tracking-widest text-slate-400 animate-pulse">
+            Indlæser hjemmeside...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
   const isEditorPath = currentPath === 'admin-editor';
 
@@ -1427,7 +1955,7 @@ export default function App() {
           onChangeImageClick={() => {}}
           onAddSectionBelow={() => {}}
           onAddSection={() => {}}
-          viewportMode="desktop"
+          viewportMode={visitorViewport}
           pages={pages}
           onNavigatePage={(pageId) => {
             setActivePageId(pageId);
@@ -1517,6 +2045,7 @@ export default function App() {
         setIsAdmin={setIsAdmin}
         activePageSlug={activePage.slug}
         activePageName={activePage.name}
+        activePageTitle={activePage.title}
         adminPasscode={adminPasscode}
         onUpdatePasscode={(newPass) => {
           setAdminPasscode(newPass);
@@ -1528,7 +2057,37 @@ export default function App() {
         onUpdatePageDbId={(dbId) => {
           setPages(prev => prev.map(p => p.id === activePage.id ? { ...p, dbId } : p));
         }}
+        pages={pages}
+        isAutoSaveEnabled={isAutoSaveEnabled}
+        setIsAutoSaveEnabled={setIsAutoSaveEnabled}
+        editorUsername={editorUsername}
+        setEditorUsername={setEditorUsername}
       />
+
+      {editLock && (
+        <div className="bg-rose-600 text-white font-bold px-6 py-2.5 flex items-center justify-between gap-4 z-30 shadow-md">
+          <div className="flex items-center gap-2 text-xs">
+            <span>🔒</span>
+            <span>OBS: <strong>{editLock.user}</strong> redigerer denne side lige nu! Dine ændringer kan overskrive deres arbejde.</span>
+          </div>
+          <span className="text-[10px] bg-slate-900/30 px-2 py-0.5 rounded-lg border border-white/10 uppercase tracking-widest font-mono">LÅST</span>
+        </div>
+      )}
+
+      {hasRemoteChanges && (
+        <div className="bg-amber-500 text-slate-950 font-bold px-6 py-2.5 flex items-center justify-between gap-4 z-30 shadow-md animate-pulse">
+          <div className="flex items-center gap-2 text-xs">
+            <span>🔄</span>
+            <span>En anden bruger har lavet ændringer på serveren! Dine lokale sider stemmer ikke overens med databasen.</span>
+          </div>
+          <button 
+            onClick={handleApplyRemoteChanges}
+            className="bg-slate-950 hover:bg-slate-900 text-white text-[11px] px-3 py-1 rounded-lg font-bold transition-all shadow-xs cursor-pointer"
+          >
+            Hent ændringer nu (Load updates)
+          </button>
+        </div>
+      )}
 
       {/* 1.5 CMS Page Selector Bar */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-2.5 flex flex-wrap items-center justify-between gap-4 z-20 shadow-xs" id="cms-page-selector-bar">
@@ -1600,7 +2159,7 @@ export default function App() {
                           terms: '⚖️',
                           webshop: '🛒'
                         };
-                        const dispName = p.id === 'webshop' ? 'Webshop' : (p.name.startsWith('📄 ') || p.name.startsWith('🏠 ') || p.name.startsWith('👥 ') || p.name.startsWith('⚖️ ') || p.name.startsWith('🥐 ') || p.name.startsWith('☁️ ') ? p.name.slice(2) : p.name);
+                        const dispName = p.id.startsWith('webshop-') || p.id === 'webshop' ? p.name.replace(/^🛒\s/, '') : (p.name.startsWith('📄 ') || p.name.startsWith('🏠 ') || p.name.startsWith('👥 ') || p.name.startsWith('⚖️ ') || p.name.startsWith('🥐 ') || p.name.startsWith('☁️ ') ? p.name.slice(2) : p.name);
                         return (
                           <div
                             key={p.id}
@@ -1619,7 +2178,7 @@ export default function App() {
                               }}
                               className="flex-1 text-left text-xs font-semibold flex items-center gap-2 border-none bg-transparent cursor-pointer p-0.5 animate-none"
                             >
-                              <span>{p.slug === '' ? '🏠' : (iconsMap[p.id] || '📄')}</span>
+                              <span>{p.slug === '' ? '🏠' : (p.id.startsWith('webshop-') ? '🛒' : (iconsMap[p.id] || '📄'))}</span>
                               <div className="truncate text-left">
                                 <p className="font-bold leading-tight">{dispName}</p>
                                 <p className="text-[9px] text-slate-400 font-mono">/{p.slug || '(startside)'}</p>
@@ -1630,7 +2189,7 @@ export default function App() {
                               <span className="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                                 {p.sections.flatMap(s => s.columns.flatMap(c => c.elements)).length}
                               </span>
-                              {pages.length > 1 && !['portfolio', 'bistro', 'saas', 'about', 'terms', 'webshop'].includes(p.id) && (
+                              {pages.length > 1 && !['portfolio', 'bistro', 'saas', 'about', 'terms', 'webshop'].includes(p.id) && !p.id.startsWith('webshop-') && (
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1810,7 +2369,14 @@ export default function App() {
             isGeneratingAI={isGeneratingAI}
             onChangeImageClick={handleChangeImageClick}
             viewportMode={viewportMode}
+            onChangeViewportMode={setViewportMode}
             pages={pages}
+            activePageId={activePageId}
+            onNavigatePage={(pageId) => {
+              setActivePageId(pageId);
+              setSelectedElementId(null);
+              setSelectedSectionId(null);
+            }}
           />
         )}
 
@@ -2053,6 +2619,7 @@ export default function App() {
                     <tr className="border-b border-slate-800 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
                       <th className="pb-3 pl-2">Ikon / Side</th>
                       <th className="pb-3">Sidenavn</th>
+                      <th className="pb-3">HTML Sidetitel (SEO)</th>
                       <th className="pb-3">URL Slug (Path)</th>
                       <th className="pb-3">Forhåndsvisning af URL</th>
                       <th className="pb-3 text-right pr-2">Handlinger</th>
@@ -2094,6 +2661,23 @@ export default function App() {
                                 } : page));
                               }}
                               placeholder="F.eks. Amager"
+                              className="px-3 py-1.5 w-44 bg-slate-900 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-all text-white"
+                            />
+                          </td>
+                          
+                          {/* 2b. HTML Title input */}
+                          <td className="py-3.5 pr-4">
+                            <input
+                              type="text"
+                              value={p.title || ''}
+                              onChange={(e) => {
+                                const newTitle = e.target.value;
+                                setPages(prev => prev.map(page => page.id === p.id ? {
+                                  ...page,
+                                  title: newTitle
+                                } : page));
+                              }}
+                              placeholder="F.eks. Låsesmed København"
                               className="px-3 py-1.5 w-44 bg-slate-900 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 rounded-xl text-xs font-semibold focus:outline-none transition-all text-white"
                             />
                           </td>

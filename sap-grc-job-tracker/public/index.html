@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAP GRC Job & Visa Sponsorship Tracker (UK)</title>
+  <!-- Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="user-mode">
+  
+  <!-- Main Glass container -->
+  <div class="app-container">
+    
+    <!-- TOP NAVBAR -->
+    <header class="glass-header">
+      <div class="logo-area">
+        <div class="pulse-indicator active" id="scraper-pulse"></div>
+        <div class="brand">
+          <h1>SAP GRC UK</h1>
+          <span class="sub-brand">Visa Sponsorship Tracker</span>
+        </div>
+      </div>
+      
+      <div class="quick-stats">
+        <div class="stat-badge">
+          <i data-lucide="shield-check" class="text-emerald"></i>
+          <div>
+            <span class="badge-label">Sponsors Cached</span>
+            <span class="badge-value" id="stat-sponsors">0</span>
+          </div>
+        </div>
+        <div class="stat-badge">
+          <i data-lucide="briefcase" class="text-indigo"></i>
+          <div>
+            <span class="badge-label">Jobs Scanned</span>
+            <span class="badge-value" id="stat-jobs">0</span>
+          </div>
+        </div>
+        <div class="stat-badge">
+          <i data-lucide="mail" class="text-violet"></i>
+          <div>
+            <span class="badge-label">Alert Email</span>
+            <span class="badge-value" id="stat-email">Not Configured</span>
+          </div>
+        </div>
+        <div class="stat-badge">
+          <i data-lucide="activity" class="text-amber"></i>
+          <div>
+            <span class="badge-label">Status</span>
+            <span class="badge-value" id="stat-status">Idle</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Light/Dark Theme">
+          <i data-lucide="sun" id="theme-icon"></i>
+        </button>
+        <button id="btn-dev-toggle" class="btn-icon" title="Toggle Settings & Logs Mode">
+          <i data-lucide="settings"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT GRID -->
+    <div class="content-grid">
+      
+      <!-- LEFT COLUMN: CONTROLS & SETTINGS -->
+      <aside class="sidebar-panel">
+        
+        <!-- CARD 1: NOTIFICATION EMAIL -->
+        <section class="glass-card premium-card">
+          <div class="card-header">
+            <i data-lucide="bell" class="header-icon text-violet"></i>
+            <h2>Job Alerts Setup</h2>
+          </div>
+          <p class="card-desc">Enter your email. The tracker checks for new SAP GRC jobs 24/7/365 and emails you immediately when a licensed UK sponsor posts a vacancy.</p>
+          
+          <form id="email-setup-form" class="form-group">
+            <label for="email-input">Notification Recipient Email</label>
+            <div class="input-with-button">
+              <input type="email" id="email-input" placeholder="name@example.com" required>
+              <button type="submit" class="btn btn-violet">
+                <i data-lucide="save"></i> Save
+              </button>
+            </div>
+          </form>
+          
+          <div class="test-email-action dev-only">
+            <button id="btn-test-email" class="btn btn-outline-violet w-full">
+              <i data-lucide="send"></i> Send Test Alert Email
+            </button>
+          </div>
+        </section>
+
+        <!-- CARD 2: SCRAPER SETTINGS -->
+        <section class="glass-card">
+          <div class="card-header">
+            <i data-lucide="sliders" class="header-icon text-indigo"></i>
+            <h2>Configuration</h2>
+          </div>
+          
+          <form id="settings-form" class="form-group gap-y-4">
+            
+            <div class="switch-group">
+              <div>
+                <label class="switch-title">Auto Background Scanner</label>
+                <p class="switch-desc">Run periodic background jobs</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="check-active-scraper" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label for="input-interval">Checking Interval (Hours)</label>
+              <input type="number" id="input-interval" min="1" max="168" value="12" required>
+            </div>
+            
+            <div class="form-row">
+              <label>SAP Security Domains</label>
+              <div class="checkbox-grid" id="domains-grid">
+                <label class="checkbox-container">
+                  SAP GRC
+                  <input type="checkbox" name="domain" value="SAP GRC">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  SAP IAG
+                  <input type="checkbox" name="domain" value="SAP IAG">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  SAP Security & Auth
+                  <input type="checkbox" name="domain" value="SAP Security & Authorizations">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  SAP Cyber Security
+                  <input type="checkbox" name="domain" value="SAP Cyber Security">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  SAP IDM
+                  <input type="checkbox" name="domain" value="SAP IDM">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  SAP S/4HANA Security
+                  <input type="checkbox" name="domain" value="SAP S/4HANA Security">
+                  <span class="checkmark"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label>Experience Levels</label>
+              <div class="checkbox-grid" id="experience-grid">
+                <label class="checkbox-container">
+                  Junior (0-3 yrs)
+                  <input type="checkbox" name="experience" value="Junior (0-3 years)">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  Mid-Level (3-6 yrs)
+                  <input type="checkbox" name="experience" value="Mid-Level (3-6 years)">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  Senior / Lead (6+ yrs)
+                  <input type="checkbox" name="experience" value="Senior / Lead (6+ years)">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  Manager / Architect
+                  <input type="checkbox" name="experience" value="Manager / Architect">
+                  <span class="checkmark"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label>Job Types</label>
+              <div class="checkbox-grid" id="types-grid">
+                <label class="checkbox-container">
+                  Permanent
+                  <input type="checkbox" name="job-type" value="Permanent">
+                  <span class="checkmark"></span>
+                </label>
+                <label class="checkbox-container">
+                  Contract / Freelance
+                  <input type="checkbox" name="job-type" value="Contract">
+                  <span class="checkmark"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="switch-group" style="margin-top: 10px;">
+              <div>
+                <label class="switch-title">Visa Sponsors Only</label>
+                <p class="switch-desc">Filter alerts for verified sponsors</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="check-only-sponsored-alerts">
+                <span class="slider"></span>
+              </label>
+            </div>
+            
+            <button type="submit" class="btn btn-indigo w-full" style="margin-top: 10px;">
+              <i data-lucide="check-circle"></i> Save Settings
+            </button>
+          </form>
+        </section>
+
+        <!-- CARD 3: SMTP EMAIL SERVER -->
+        <section class="glass-card dev-only">
+          <div class="card-header collapsible-trigger" id="smtp-header-trigger">
+            <i data-lucide="server" class="header-icon text-amber"></i>
+            <h2>SMTP Credentials</h2>
+            <i data-lucide="chevron-down" class="collapse-chevron"></i>
+          </div>
+          
+          <div class="collapsible-content collapsed" id="smtp-content-panel">
+            <p class="card-desc">Provide your email account details so the tracker can send outgoing alert emails to your inbox. (e.g. Gmail App Password).</p>
+            <form id="smtp-form" class="form-group gap-y-3">
+              <div class="form-row">
+                <label for="smtp-host">SMTP Host</label>
+                <input type="text" id="smtp-host" placeholder="smtp.gmail.com" required>
+              </div>
+              <div class="form-row-group">
+                <div class="form-row col-8">
+                  <label for="smtp-port">Port</label>
+                  <input type="number" id="smtp-port" value="587" required>
+                </div>
+                <div class="form-row col-4 justify-end">
+                  <label class="checkbox-container">
+                    SSL/TLS
+                    <input type="checkbox" id="smtp-secure">
+                    <span class="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label for="smtp-user">SMTP Username (Email)</label>
+                <input type="text" id="smtp-user" placeholder="your_email@gmail.com" required>
+              </div>
+              <div class="form-row">
+                <label for="smtp-pass">SMTP Password / App Key</label>
+                <input type="password" id="smtp-pass" placeholder="••••••••••••••••" required>
+              </div>
+              <button type="submit" class="btn btn-amber w-full">
+                <i data-lucide="key"></i> Save SMTP Details
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- CARD 4: API KEYS (ADZUNA / REED) -->
+        <section class="glass-card dev-only">
+          <div class="card-header collapsible-trigger" id="api-header-trigger">
+            <i data-lucide="key-round" class="header-icon text-emerald"></i>
+            <h2>API Keys & Integrations</h2>
+            <i data-lucide="chevron-down" class="collapse-chevron"></i>
+          </div>
+          
+          <div class="collapsible-content collapsed" id="api-content-panel">
+            <p class="card-desc">Add keys for Adzuna and Reed to search UK job boards. If empty, the app falls back to Gemini Search Grounding.</p>
+            <form id="api-keys-form" class="form-group gap-y-3">
+              <div class="form-row">
+                <label for="adzuna-id">Adzuna App ID</label>
+                <input type="text" id="adzuna-id" placeholder="Adzuna App ID">
+              </div>
+              <div class="form-row">
+                <label for="adzuna-key">Adzuna App Key</label>
+                <input type="password" id="adzuna-key" placeholder="Adzuna App Key">
+              </div>
+              <div class="form-row">
+                <label for="reed-key">Reed API Key</label>
+                <input type="password" id="reed-key" placeholder="Reed API Key">
+              </div>
+              <div class="form-row">
+                <label for="gemini-key">Gemini API Key (Custom)</label>
+                <input type="password" id="gemini-key" placeholder="Overrides default Gemini key">
+              </div>
+              <button type="submit" class="btn btn-emerald w-full">
+                <i data-lucide="save"></i> Save API Credentials
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- CARD 5: GOV.UK DATABASE SYNC -->
+        <section class="glass-card dev-only">
+          <div class="card-header">
+            <i data-lucide="refresh-cw" class="header-icon text-cyan"></i>
+            <h2>UK Sponsor Database</h2>
+          </div>
+          <p class="card-desc" id="sponsor-sync-time">Last synchronized: Never</p>
+          <button id="btn-sync-sponsors" class="btn btn-outline-cyan w-full">
+            <i data-lucide="download-cloud"></i> Sync GOV.UK Sponsors List
+          </button>
+        </section>
+      </aside>
+      
+      <!-- RIGHT COLUMN: RESULTS FEED & LOGS -->
+      <main class="main-panel">
+        
+        <!-- CONTROL BAR -->
+        <div class="actions-bar">
+          <div class="tabs-container">
+            <button class="tab-btn active" data-tab="jobs">
+              <i data-lucide="briefcase"></i> Matches Feed
+            </button>
+            <button class="tab-btn" data-tab="sponsors-search">
+              <i data-lucide="search"></i> Sponsor Directory
+            </button>
+            <button class="tab-btn dev-only" data-tab="logs">
+              <i data-lucide="terminal"></i> Tracker Logs
+            </button>
+          </div>
+          
+          <button id="btn-run-scrape" class="btn btn-indigo btn-glow">
+            <i data-lucide="play"></i> Scan for Jobs Now
+          </button>
+        </div>
+        
+        <!-- TAB 1: JOBS FEED -->
+        <div class="tab-content active" id="tab-jobs">
+          <div class="feed-header">
+            <h2>Discovered UK Jobs</h2>
+            <div class="filter-toggle">
+              <label class="checkbox-container">
+                Visa-Sponsored Matches Only
+                <input type="checkbox" id="check-only-sponsored" checked>
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="search-box-container" style="margin-bottom: 16px;">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="job-search-input" class="search-input" placeholder="Search discovered jobs by title, company, type, or location...">
+          </div>
+          
+          <div class="jobs-list" id="jobs-container">
+            <!-- Loader -->
+            <div class="loader-container">
+              <div class="spinner"></div>
+              <p>Scanning tracker database...</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- TAB 2: SPONSORS DIRECTORY -->
+        <div class="tab-content" id="tab-sponsors-search">
+          <div class="feed-header">
+            <h2>UK Sponsor Directory</h2>
+            <p class="section-subtitle">Search the cached official GOV.UK register (~142,000+ licensed visa sponsors).</p>
+          </div>
+          
+          <div class="search-box-container">
+            <input type="text" id="sponsor-search-input" placeholder="Type company name or city (e.g. Accenture, London)..." class="search-input">
+            <i data-lucide="search" class="search-icon"></i>
+          </div>
+          
+          <div class="sponsors-results-container" id="sponsors-container">
+            <div class="empty-state">
+              <i data-lucide="search"></i>
+              <p>Enter a query above to search the UK Home Office licensed sponsor register.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- TAB 3: TRACKER LOGS -->
+        <div class="tab-content" id="tab-logs">
+          <div class="feed-header">
+            <h2>Real-time Process Logs</h2>
+            <p class="section-subtitle">Monitor background jobs, scraper runs, matching processes, and mail delivery logs.</p>
+          </div>
+          
+          <div class="logs-console" id="logs-console-container">
+            <div class="log-line text-slate">Connecting to log stream...</div>
+          </div>
+        </div>
+        
+      </main>
+      
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="toast" id="toast-message">
+    <i data-lucide="info" class="toast-icon"></i>
+    <span class="toast-text">Settings updated successfully!</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

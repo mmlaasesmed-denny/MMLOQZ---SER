@@ -22,6 +22,12 @@ interface SaveExportControlsProps {
   setViewportMode: (mode: 'desktop' | 'tablet' | 'mobile') => void;
   activePageDbId?: number;
   onUpdatePageDbId?: (dbId: number) => void;
+  activePageTitle?: string;
+  pages?: any[];
+  isAutoSaveEnabled?: boolean;
+  setIsAutoSaveEnabled?: (enabled: boolean) => void;
+  editorUsername?: string;
+  setEditorUsername?: (username: string) => void;
 }
 
 export default function SaveExportControls({
@@ -481,6 +487,8 @@ export default function SaveExportControls({
       return null;
     };
 
+    const menuOverlay = findMenuOverlay();
+
     const buildCSSPropertiesString = (styles: any, important = false) => {
       const formatted = (prop: string | undefined) => formatStyleVal(prop);
       const suffix = important ? ' !important' : '';
@@ -560,10 +568,11 @@ export default function SaveExportControls({
     }
 
     const fontImport = 
-      theme.fontFamily === 'serif' ? '@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap");' :
-      theme.fontFamily === 'mono' ? '@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap");' :
-      theme.fontFamily === 'display' ? '@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Inter:wght@400;500;600&display=swap");' :
-      '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");';
+      '@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@300..700&family=Space+Grotesk:wght@300..700&display=swap");\n' +
+      (theme.fontFamily === 'serif' ? '@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap");' :
+       theme.fontFamily === 'mono' ? '@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap");' :
+       theme.fontFamily === 'display' ? '@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Inter:wght@400;500;600&display=swap");' :
+       '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");');
 
     const fontClass = 
       theme.fontFamily === 'serif' ? 'font-serif' :
@@ -657,20 +666,23 @@ export default function SaveExportControls({
           } else if (el.type === 'image') {
             if (el.id.startsWith('locksmith-quick-img')) {
               let svgContent = '';
-              const iconSize = s.fontSize || '24px';
-              const iconColor = s.color || '#f59e0b';
               if (el.id.includes('img2')) {
-                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2" style="width: ${iconSize}; height: ${iconSize};"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 18h12"/><path d="M6 14h12"/><path d="M6 10h12"/><path d="M6 6h12"/><path d="M3 22h18"/></svg>`;
+                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2" style="width: 1em; height: 1em;"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 18h12"/><path d="M6 14h12"/><path d="M6 10h12"/><path d="M6 6h12"/><path d="M3 22h18"/></svg>`;
               } else if (el.id.includes('img3')) {
-                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-landmark" style="width: ${iconSize}; height: ${iconSize};"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><path d="m12 2-8 6h16Z"/><path d="M5 22v-4h14v4Z"/></svg>`;
+                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-landmark" style="width: 1em; height: 1em;"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><path d="m12 2-8 6h16Z"/><path d="M5 22v-4h14v4Z"/></svg>`;
               } else if (el.id.includes('img4')) {
-                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="width: ${iconSize}; height: ${iconSize};"><path d="M20 13c0 5-3.5 7.5-7.66 9.7a1 1 0 0 1-.68 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.8 17 5 19 5a1 1 0 0 1 1 1Z"/><path d="m9 12 2 2 4-4"/></svg>`;
+                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check" style="width: 1em; height: 1em;"><path d="M20 13c0 5-3.5 7.5-7.66 9.7a1 1 0 0 1-.68 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.8 17 5 19 5a1 1 0 0 1 1 1Z"/><path d="m9 12 2 2 4-4"/></svg>`;
               } else {
-                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home" style="width: ${iconSize}; height: ${iconSize};"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home" style="width: 1em; height: 1em;"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
               }
 
+              const iconSize = s.fontSize || '24px';
+              const sizeNum = parseInt(iconSize) || 24;
+              const containerWidth = s.width || `${Math.round(sizeNum * 2.3)}px`;
+              const containerHeight = s.height || `${Math.round(sizeNum * 2.3)}px`;
+
               elHTML += `
-                <div id="element-${el.id}" class="flex items-center justify-center mx-auto mb-2 shadow-lg transition-all duration-200 hover:scale-110 ${elementVisibilityClasses}" style="width: ${s.width || '56px'}; height: ${s.height || '56px'}; background-color: ${s.backgroundColor || '#0f172a'}; border-color: ${s.borderColor || '#334155'}; border-width: ${s.borderWidth || '1px'}; border-style: solid; border-radius: ${s.borderRadius || '9999px'};">
+                <div id="element-${el.id}" class="flex items-center justify-center mx-auto mb-2 shadow-lg transition-all duration-200 hover:scale-110 ${elementVisibilityClasses}" style="width: ${containerWidth}; height: ${containerHeight}; font-size: ${iconSize}; color: ${s.color || '#f59e0b'}; background-color: ${s.backgroundColor || '#0f172a'}; border-color: ${s.borderColor || '#334155'}; border-width: ${s.borderWidth || '1px'}; border-style: solid; border-radius: ${s.borderRadius || '9999px'};">
                   ${svgContent}
                 </div>`;
             } else {
@@ -1462,13 +1474,13 @@ export default function SaveExportControls({
                 let menuHTML = '';
                 if (menuOverlay) {
                   const ms = menuOverlay.styles || {};
-                  const menuItems = menuOverlay.content.split(',').map(m => m.trim()).filter(Boolean);
+                  const menuItems = (menuOverlay.settings?.menuContentDesktop || menuOverlay.content).split(',').map(m => m.trim()).filter(Boolean);
                   const menuLinks = menuItems.map(item => {
                     const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
                     if (hasDropdown) {
                       return `
                         <div class="relative group/menu-dropdown">
-                          <button class="flex items-center gap-1 text-white hover:text-amber-400 font-bold transition-colors uppercase tracking-wider text-xs bg-transparent border-none cursor-pointer py-2">
+                          <button class="flex items-center gap-1 text-white hover:text-amber-400 transition-colors uppercase tracking-wider bg-transparent border-none cursor-pointer py-2" style="font-size: ${formatStyleVal(ms.fontSize) || '11px'}; font-weight: ${ms.fontWeight || 'bold'}; font-style: ${ms.fontStyle || 'normal'};">
                             <span>${item}</span>
                             <span class="text-[8px] transition-transform duration-200 group-hover/menu-dropdown:rotate-180">▼</span>
                           </button>
@@ -1489,14 +1501,14 @@ export default function SaveExportControls({
                           </div>
                         </div>`;
                     }
-                    return `<a href="#${item.toLowerCase().replace(/\s+/g, '-')}" class="text-white hover:text-amber-400 font-bold transition-colors uppercase tracking-wider text-xs no-underline">${item}</a>`;
+                    return `<a href="#${item.toLowerCase().replace(/\s+/g, '-')}" class="text-white hover:text-amber-400 transition-colors uppercase tracking-wider no-underline" style="font-size: ${formatStyleVal(ms.fontSize) || '11px'}; font-weight: ${ms.fontWeight || 'bold'}; font-style: ${ms.fontStyle || 'normal'};">${item}</a>`;
                   }).join('');
 
                   menuHTML = `
-                    <div class="hidden md:flex items-center gap-6" style="margin-bottom: ${ms.marginBottom || '0px'};">
+                    <div class="hidden lg:flex items-center gap-6" style="margin-bottom: ${ms.marginBottom || '0px'};">
                       ${menuLinks}
                     </div>
-                    <button onclick="toggleMobileMenu(true)" class="md:hidden p-2 text-white hover:text-amber-400 bg-transparent border-none cursor-pointer">
+                    <button onclick="toggleMobileMenu(true)" class="lg:hidden p-2 text-white hover:text-amber-400 bg-transparent border-none cursor-pointer">
                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>`;
                 }
@@ -1604,8 +1616,12 @@ export default function SaveExportControls({
           }
         });
 
-        const inlineWidthStyle = col.customWidth ? `style="flex: none; width: ${col.customWidth};"` : '';
-        const colClass = col.customWidth ? 'w-full' : (col.width === 'w-full' ? 'w-full' : col.width.replace('md:', 'sm:md:'));
+        const inlineWidthStyle = section.id === 'locksmith-quick-menu'
+          ? 'style="flex: 1 1 0%;"'
+          : (col.customWidth ? `style="flex: none; width: ${col.customWidth};"` : '');
+        const colClass = section.id === 'locksmith-quick-menu'
+          ? 'flex-1'
+          : (col.customWidth ? 'w-full' : (col.width === 'w-full' ? 'w-full' : col.width.replace('md:', 'sm:md:')));
         colHTML += `
           <div class="w-full ${colClass} flex flex-col space-y-4" ${inlineWidthStyle}>
             ${elHTML}
@@ -1624,11 +1640,15 @@ export default function SaveExportControls({
         section.visibleOnMobile === false ? 'hide-on-mobile' : ''
       ].filter(Boolean).join(' ');
 
+      const containerClass = section.id === 'locksmith-quick-menu'
+        ? 'flex flex-row gap-2 justify-around items-start w-full'
+        : 'flex flex-col md:flex-row gap-8 md:gap-12 items-start justify-between';
+
       sectionHTML += `
         <!-- Section: ${section.name} -->
         <section id="section-${section.id}" class="${padY} transition-colors ${sectionVisibilityClasses}" style="background-color: ${section.backgroundColor}; color: ${section.textColor || theme.text};">
           <div class="max-w-6xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row gap-8 md:gap-12 items-start justify-between">
+            <div class="${containerClass}">
               ${colHTML}
             </div>
           </div>
@@ -1841,7 +1861,17 @@ export default function SaveExportControls({
     }
 
     function toggleMobileMenu(isOpen) {
-      const drawer = document.getElementById('mobile-drawer-menu');
+      const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+      const drawerId = isTablet ? 'tablet-drawer-menu' : 'mobile-drawer-menu';
+      const otherDrawerId = isTablet ? 'mobile-drawer-menu' : 'tablet-drawer-menu';
+      
+      const drawer = document.getElementById(drawerId);
+      const otherDrawer = document.getElementById(otherDrawerId);
+      
+      if (otherDrawer) {
+        otherDrawer.style.display = 'none';
+      }
+      
       if (!drawer) return;
       if (isOpen) {
         drawer.style.display = 'flex';
@@ -3754,7 +3784,7 @@ export default function SaveExportControls({
   </div>
 
   <!-- Full-Screen Drawer Menu for Mobile -->
-  <div id="mobile-drawer-menu" class="pointer-events-auto hidden md:hidden" style="position: fixed; top: 0px; bottom: 0px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 768px; background-color: #ffffff; color: #0f172a; z-index: 110; flex-direction: column; box-shadow: 0 -10px 25px rgba(0,0,0,0.15), 0 10px 25px rgba(0,0,0,0.15); overflow-y: auto;">
+  <div id="mobile-drawer-menu" class="pointer-events-auto hidden md:hidden" style="position: fixed; top: 0px; bottom: 0px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 768px; background-color: ${menuOverlay?.settings?.drawerBgColorMobile || menuOverlay?.settings?.drawerBgColor || '#ffffff'}; color: ${menuOverlay?.settings?.drawerTextColorMobile || menuOverlay?.settings?.drawerTextColor || '#0f172a'}; z-index: 110; flex-direction: column; box-shadow: 0 -10px 25px rgba(0,0,0,0.15), 0 10px 25px rgba(0,0,0,0.15); overflow-y: auto;">
     <!-- Header -->
     <div class="p-6 flex justify-between items-center border-b border-slate-100 bg-white sticky top-0 z-10">
       <div id="mobile-drawer-logo">
@@ -3794,33 +3824,15 @@ export default function SaveExportControls({
         const menuOverlay = findMenuOverlay();
         if (!menuOverlay) return '<div class="text-center text-slate-400 text-sm">No navigation items found.</div>';
         
-        const items = menuOverlay.content.split(',').map(itemStr => itemStr.trim()).filter(Boolean);
+        const items = (menuOverlay.settings?.menuContentMobile || menuOverlay.content).split(',').map(itemStr => itemStr.trim()).filter(Boolean);
         let accordionHTML = '';
         items.forEach((item, idx) => {
           const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
           if (hasDropdown) {
-            const allLinks = menuOverlay.dropdownLinks || [
-              { id: '1', parentItem: 'Erhverv', group: 'Sikkerhed & Adgang', title: 'Adgangskontrol', link: '#adgangskontrol' },
-              { id: '2', parentItem: 'Erhverv', group: 'Sikkerhed & Adgang', title: 'Elektroniske dørgreb', link: '#doergreb' },
-              { id: '3', parentItem: 'Erhverv', group: 'Sikkerhed & Adgang', title: 'Dormakaba Exivo', link: '#dormakaba' },
-              { id: '4', parentItem: 'Erhverv', group: 'Låse & Sikring', title: 'Indbrudssikring', link: '#indbrudssikring' },
-              { id: '5', parentItem: 'Erhverv', group: 'Låse & Sikring', title: 'Låsesystemer', link: '#laasesystemer' },
-              
-              { id: '6', parentItem: 'Privat', group: 'Hjemmeservice', title: 'Låseservice', link: '#laaseservice' },
-              { id: '7', parentItem: 'Privat', group: 'Hjemmeservice', title: 'Sikkerhedstjek', link: '#sikkerhedstjek' },
-              { id: '8', parentItem: 'Privat', group: 'Hjemmeservice', title: 'Ruko / ASSA ABLOY', link: '#ruko' },
-              { id: '9', parentItem: 'Privat', group: 'Forebyggelse', title: 'Indbrudssikring', link: '#privat-indbrudssikring' },
-              { id: '10', parentItem: 'Privat', group: 'Forebyggelse', title: 'Nøglekopiering', link: '#noegler' },
-              
-              { id: '11', parentItem: 'Boligforeninger', group: 'Ejendomsservice', title: 'Systemlåse', link: '#systemlaase' },
-              { id: '12', parentItem: 'Boligforeninger', group: 'Ejendomsservice', title: 'Dørtelefoner', link: '#doertelefoner' },
-              { id: '13', parentItem: 'Boligforeninger', group: 'Ejendomsservice', title: 'Vedligeholdelse', link: '#vedligeholdelse' },
-              { id: '14', parentItem: 'Boligforeninger', group: 'Administration', title: 'Nøglesystemer', link: '#noeglesystemer' },
-              { id: '15', parentItem: 'Boligforeninger', group: 'Administration', title: 'Postkasseanlæg', link: '#postkasser' },
-            ];
+            const allLinks = menuOverlay.dropdownLinks || [];
             const filteredLinks = allLinks.filter(l => l.parentItem.toLowerCase() === item.toLowerCase());
             
-            const groups: { [key: string]: typeof allLinks } = {};
+            const groups = {};
             filteredLinks.forEach(link => {
               const g = link.group || 'General';
               if (!groups[g]) groups[g] = [];
@@ -3835,11 +3847,11 @@ export default function SaveExportControls({
               groupNames.forEach((gName, gIdx) => {
                 let linksHTML = '';
                 groups[gName].forEach(link => {
-                  linksHTML += `<a href="${link.link || '#'}" onclick="toggleMobileMenu(false)" class="block text-slate-600 text-xs py-1 hover:text-slate-955 no-underline" style="text-decoration: none;">${link.title}</a>`;
+                  linksHTML += `<a href="${link.link || '#'}" onclick="toggleMobileMenu(false)" class="block text-slate-600 py-1 hover:text-slate-955 no-underline" style="text-decoration: none; font-size: ${menuOverlay.settings?.drawerLinkFontSizeMobile || menuOverlay.settings?.drawerLinkFontSize || menuOverlay.settings?.dropdownFontSize || 12}px; font-weight: ${menuOverlay.settings?.drawerLinkFontWeightMobile || menuOverlay.settings?.drawerLinkFontWeight || 'normal'}; font-style: ${menuOverlay.settings?.drawerLinkFontStyleMobile || menuOverlay.settings?.drawerLinkFontStyle || 'normal'};">${link.title}</a>`;
                 });
                 submenuHTML += `
                   <div class="${gIdx > 0 ? 'mt-2' : ''}">
-                    <div class="text-slate-900 font-extrabold text-[10px] uppercase tracking-wider flex items-center gap-1 mb-1" style="font-size: 10px;">
+                    <div class="text-slate-900 font-extrabold uppercase tracking-wider flex items-center gap-1 mb-1" style="font-size: ${menuOverlay.settings?.drawerGroupFontSizeMobile || menuOverlay.settings?.drawerGroupFontSize || menuOverlay.settings?.dropdownGroupFontSize || 10}px; font-weight: ${menuOverlay.settings?.drawerGroupFontWeightMobile || menuOverlay.settings?.drawerGroupFontWeight || 'bold'}; font-style: ${menuOverlay.settings?.drawerGroupFontStyleMobile || menuOverlay.settings?.drawerGroupFontStyle || 'normal'};">
                       <span class="w-1.5 h-1.5 rounded-full bg-[#FFC502]" style="width: 6px; height: 6px; display: inline-block; border-radius: 50%;"></span> ${gName}
                     </div>
                     <div class="pl-2.5 space-y-1">
@@ -3851,8 +3863,8 @@ export default function SaveExportControls({
 
             accordionHTML += `
               <div class="border-b border-slate-100 pb-3 last:border-none">
-                <button onclick="toggleMobileAccordion('${item}')" class="w-full text-left py-2 flex justify-between items-center text-slate-950 font-bold uppercase tracking-wider border-none bg-transparent cursor-pointer hover:text-[#FFC502] transition-colors" style="border: none; background: transparent; cursor: pointer;">
-                  <span class="text-sm" style="font-size: 14px;">${item}</span>
+                <button onclick="toggleMobileAccordion('${item}')" class="w-full text-left py-2 flex justify-between items-center text-slate-955 font-bold uppercase tracking-wider border-none bg-transparent cursor-pointer hover:text-[#FFC502] transition-colors" style="border: none; background: transparent; cursor: pointer;">
+                  <span class="text-sm" style="font-size: ${menuOverlay.settings?.drawerFontSizeMobile || menuOverlay.settings?.drawerFontSize || 14}px; font-weight: ${menuOverlay.settings?.drawerFontWeightMobile || menuOverlay.settings?.drawerFontWeight || 'bold'}; font-style: ${menuOverlay.settings?.drawerFontStyleMobile || menuOverlay.settings?.drawerFontStyle || 'normal'};">${item}</span>
                   <span id="mobile-accordion-indicator-${item}" class="text-lg font-mono text-slate-500 font-bold" style="font-size: 18px;">+</span>
                 </button>
                 <div id="mobile-accordion-content-${item}" class="mt-2 pl-4 pr-2 py-3 bg-slate-50 rounded-xl space-y-3 border-l-2 border-[#FFC502] hidden">
@@ -3862,9 +3874,7 @@ export default function SaveExportControls({
           } else {
             accordionHTML += `
               <div class="border-b border-slate-100 pb-3 last:border-none">
-                <a href="#" onclick="toggleMobileMenu(false)" class="block py-2 text-slate-950 font-bold uppercase tracking-wider text-sm hover:text-[#FFC502] transition-colors no-underline" style="text-decoration: none; font-size: 14px;">
-                  ${item}
-                </a>
+                <a href="#" onclick="toggleMobileMenu(false)" class="block py-2 uppercase tracking-wider hover:text-[#FFC502] transition-colors no-underline" style="text-decoration: none; font-size: ${menuOverlay.settings?.drawerFontSizeMobile || menuOverlay.settings?.drawerFontSize || 14}px; font-weight: ${menuOverlay.settings?.drawerFontWeightMobile || menuOverlay.settings?.drawerFontWeight || 'bold'}; font-style: ${menuOverlay.settings?.drawerFontStyleMobile || menuOverlay.settings?.drawerFontStyle || 'normal'}; color: ${menuOverlay?.settings?.drawerTextColorMobile || menuOverlay?.settings?.drawerTextColor || '#0f172a'};">${item}</a>
               </div>`;
           }
         });
@@ -3873,19 +3883,149 @@ export default function SaveExportControls({
     </div>
 
     <!-- Footer Contact Card -->
-    <div class="p-6 bg-slate-50 border-t border-slate-100 mt-auto">
-      <div class="bg-[#FFC502] text-slate-950 rounded-2xl p-5 flex flex-col gap-3 shadow-lg" style="border-radius: 16px;">
-        <div class="font-extrabold text-xs uppercase tracking-wider text-slate-900" style="font-size: 12px;">Kontakt</div>
-        <div class="text-xs leading-relaxed font-semibold text-slate-900" style="font-size: 12px;">
-          Kulvej 10, 2 TV, 2450 København SV<br />
-          info@mmlaasesmed.dk
-        </div>
-        <a href="tel:31111115" class="flex items-center justify-center gap-2 bg-slate-950 text-white hover:bg-slate-900 font-extrabold text-xs py-3 px-4 rounded-xl transition-all uppercase tracking-wider shadow-sm hover:shadow-md cursor-pointer no-underline mt-2" style="text-decoration: none; border-radius: 12px; font-size: 12px; height: 44px; display: flex; align-items: center; justify-content: center; background-color: #0f172a; color: #ffffff;">
-          <svg class="w-4 h-4 text-[#FFC502]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; color: #FFC502;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-          <span>+45 31 11 11 15</span>
-        </a>
+    ${(() => {
+      const footerMenuOverlay = findMenuOverlay();
+      const contactText = footerMenuOverlay?.settings?.contactText || "Kulvej 10, 2 TV, 2450 København SV";
+      const contactEmail = footerMenuOverlay?.settings?.contactEmail || "info@mmlaasesmed.dk";
+      const contactPhone = footerMenuOverlay?.settings?.contactPhone || "+45 31 11 11 15";
+      const contactTitle = footerMenuOverlay?.settings?.contactTitle || "Kontakt";
+      return `
+        <div class="p-6 bg-slate-50 border-t border-slate-100 mt-auto">
+          <div class="bg-[#FFC502] text-slate-955 rounded-2xl p-5 flex flex-col gap-3 shadow-lg" style="border-radius: 16px;">
+            <div class="font-extrabold uppercase tracking-wider text-slate-900" style="font-size: ${footerMenuOverlay?.settings?.contactTitleFontSize || 12}px;">${contactTitle}</div>
+            <div class="leading-relaxed font-semibold text-slate-955" style="font-size: ${footerMenuOverlay?.settings?.contactTextFontSize || 10}px;">
+              ${contactText.split('\n').map(line => `<span>${line}</span>`).join('<br />')}
+              ${contactEmail ? `<p class="mt-1">${contactEmail}</p>` : ''}
+            </div>
+            <a href="tel:${contactPhone.replace(/\s+/g, '')}" class="flex items-center justify-center gap-2 bg-slate-955 text-white hover:bg-slate-900 font-extrabold text-xs py-3 px-4 rounded-xl transition-all uppercase tracking-wider shadow-sm hover:shadow-md cursor-pointer no-underline mt-2" style="text-decoration: none; border-radius: 12px; margin-top: 8px;">
+              <svg class="w-4 h-4 text-[#FFC502]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; color: #FFC502;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+              <span>${contactPhone}</span>
+            </a>
+          </div>
+        </div>`;
+    })()}
+  </div>
+
+  <div id="tablet-drawer-menu" class="pointer-events-auto hidden lg:hidden" style="position: fixed; top: 0px; bottom: 0px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 768px; background-color: ${menuOverlay?.settings?.drawerBgColorTablet || menuOverlay?.settings?.drawerBgColor || '#ffffff'}; color: ${menuOverlay?.settings?.drawerTextColorTablet || menuOverlay?.settings?.drawerTextColor || '#0f172a'}; z-index: 110; flex-direction: column; box-shadow: 0 -10px 25px rgba(0,0,0,0.15), 0 10px 25px rgba(0,0,0,0.15); overflow-y: auto;">
+    <!-- Header -->
+    <div class="p-6 flex justify-between items-center border-b border-slate-100 bg-white sticky top-0 z-10">
+      <div id="tablet-drawer-logo">
+        ${(() => {
+          const logoOverlay = findLogoOverlay();
+          if (!logoOverlay) return '';
+          if (logoOverlay.src) {
+            return `<img src="${logoOverlay.src}" alt="${logoOverlay.content || 'Logo'}" style="height: 40px; width: auto; border-radius: 4px;" class="object-contain" />`;
+          }
+          if (logoOverlay.content.toUpperCase().includes('MM') && logoOverlay.content.toUpperCase().includes('LÅSESMED')) {
+            return `
+              <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-full border-2 border-[#FFC502] flex items-center justify-center bg-slate-900 shrink-0">
+                  <span class="text-[#FFC502] font-black text-xs">MM</span>
+                </div>
+                <div class="flex flex-col text-left">
+                  <span class="font-extrabold tracking-wider leading-none text-slate-900 uppercase text-base flex items-center gap-1">
+                    LÅSESMED
+                  </span>
+                  <span class="text-[8px] text-[#FFC502] bg-slate-900 px-1.5 rounded-sm tracking-wide font-bold leading-normal mt-0.5 w-max">
+                    DØGNVAGT 31 11 11 15
+                  </span>
+                </div>
+              </div>`;
+          }
+          return `<span style="color: ${logoOverlay.styles?.color || '#0f172a'}; font-size: ${logoOverlay.styles?.fontSize || '20px'}; font-weight: ${logoOverlay.styles?.fontWeight || '800'};">${logoOverlay.content}</span>`;
+        })()}
       </div>
+      <button onclick="toggleMobileMenu(false)" class="p-2 rounded-full hover:bg-slate-100 border-none bg-transparent cursor-pointer transition-colors text-slate-955" style="border: none; background: transparent; cursor: pointer;">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
     </div>
+
+    <!-- Menu Items (Accordion) -->
+    <div class="flex-1 p-6 overflow-y-auto space-y-4">
+      ${(() => {
+        const menuOverlay = findMenuOverlay();
+        if (!menuOverlay) return '<div class="text-center text-slate-400 text-sm">No navigation items found.</div>';
+        
+        const items = (menuOverlay.settings?.menuContentTablet || menuOverlay.content).split(',').map(itemStr => itemStr.trim()).filter(Boolean);
+        let accordionHTML = '';
+        items.forEach((item, idx) => {
+          const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
+          if (hasDropdown) {
+            const allLinks = menuOverlay.dropdownLinks || [];
+            const filteredLinks = allLinks.filter(l => l.parentItem.toLowerCase() === item.toLowerCase());
+            
+            const groups = {};
+            filteredLinks.forEach(link => {
+              const g = link.group || 'General';
+              if (!groups[g]) groups[g] = [];
+              groups[g].push(link);
+            });
+            
+            let submenuHTML = '';
+            const groupNames = Object.keys(groups);
+            if (groupNames.length === 0) {
+              submenuHTML = `<div class="text-slate-400 text-xs py-1 italic">No sub-pages added yet.</div>`;
+            } else {
+              groupNames.forEach((gName, gIdx) => {
+                let linksHTML = '';
+                groups[gName].forEach(link => {
+                  linksHTML += `<a href="${link.link || '#'}" onclick="toggleMobileMenu(false)" class="block text-slate-600 py-1 hover:text-slate-955 no-underline" style="text-decoration: none; font-size: ${menuOverlay.settings?.drawerLinkFontSizeTablet || menuOverlay.settings?.drawerLinkFontSize || menuOverlay.settings?.dropdownFontSize || 12}px; font-weight: ${menuOverlay.settings?.drawerLinkFontWeightTablet || menuOverlay.settings?.drawerLinkFontWeight || 'normal'}; font-style: ${menuOverlay.settings?.drawerLinkFontStyleTablet || menuOverlay.settings?.drawerLinkFontStyle || 'normal'};">${link.title}</a>`;
+                });
+                submenuHTML += `
+                  <div class="${gIdx > 0 ? 'mt-2' : ''}">
+                    <div class="text-slate-900 font-extrabold uppercase tracking-wider flex items-center gap-1 mb-1" style="font-size: ${menuOverlay.settings?.drawerGroupFontSizeTablet || menuOverlay.settings?.drawerGroupFontSize || menuOverlay.settings?.dropdownGroupFontSize || 10}px; font-weight: ${menuOverlay.settings?.drawerGroupFontWeightTablet || menuOverlay.settings?.drawerGroupFontWeight || 'bold'}; font-style: ${menuOverlay.settings?.drawerGroupFontStyleTablet || menuOverlay.settings?.drawerGroupFontStyle || 'normal'};">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#FFC502]" style="width: 6px; height: 6px; display: inline-block; border-radius: 50%;"></span> ${gName}
+                    </div>
+                    <div class="pl-2.5 space-y-1">
+                      ${linksHTML}
+                    </div>
+                  </div>`;
+              });
+            }
+
+            accordionHTML += `
+              <div class="border-b border-slate-100 pb-3 last:border-none">
+                <button onclick="toggleMobileAccordion('${item}')" class="w-full text-left py-2 flex justify-between items-center text-slate-955 font-bold uppercase tracking-wider border-none bg-transparent cursor-pointer hover:text-[#FFC502] transition-colors" style="border: none; background: transparent; cursor: pointer;">
+                  <span class="text-sm" style="font-size: ${menuOverlay.settings?.drawerFontSizeTablet || menuOverlay.settings?.drawerFontSize || 14}px; font-weight: ${menuOverlay.settings?.drawerFontWeightTablet || menuOverlay.settings?.drawerFontWeight || 'bold'}; font-style: ${menuOverlay.settings?.drawerFontStyleTablet || menuOverlay.settings?.drawerFontStyle || 'normal'};">${item}</span>
+                  <span id="mobile-accordion-indicator-${item}" class="text-lg font-mono text-slate-500 font-bold" style="font-size: 18px;">+</span>
+                </button>
+                <div id="mobile-accordion-content-${item}" class="mt-2 pl-4 pr-2 py-3 bg-slate-50 rounded-xl space-y-3 border-l-2 border-[#FFC502] hidden">
+                  ${submenuHTML}
+                </div>
+              </div>`;
+          } else {
+            accordionHTML += `
+              <div class="border-b border-slate-100 pb-3 last:border-none">
+                <a href="#" onclick="toggleMobileMenu(false)" class="block py-2 uppercase tracking-wider hover:text-[#FFC502] transition-colors no-underline" style="text-decoration: none; font-size: ${menuOverlay.settings?.drawerFontSizeTablet || menuOverlay.settings?.drawerFontSize || 14}px; font-weight: ${menuOverlay.settings?.drawerFontWeightTablet || menuOverlay.settings?.drawerFontWeight || 'bold'}; font-style: ${menuOverlay.settings?.drawerFontStyleTablet || menuOverlay.settings?.drawerFontStyle || 'normal'}; color: ${menuOverlay?.settings?.drawerTextColorTablet || menuOverlay?.settings?.drawerTextColor || '#0f172a'};">${item}</a>
+              </div>`;
+          }
+        });
+        return accordionHTML;
+      })()}
+    </div>
+
+    <!-- Footer Contact Card -->
+    ${(() => {
+      const footerMenuOverlay = findMenuOverlay();
+      const contactText = footerMenuOverlay?.settings?.contactText || "Kulvej 10, 2 TV, 2450 København SV";
+      const contactEmail = footerMenuOverlay?.settings?.contactEmail || "info@mmlaasesmed.dk";
+      const contactPhone = footerMenuOverlay?.settings?.contactPhone || "+45 31 11 11 15";
+      const contactTitle = footerMenuOverlay?.settings?.contactTitle || "Kontakt";
+      return `
+        <div class="p-6 bg-slate-50 border-t border-slate-100 mt-auto">
+          <div class="bg-[#FFC502] text-slate-955 rounded-2xl p-5 flex flex-col gap-3 shadow-lg" style="border-radius: 16px;">
+            <div class="font-extrabold uppercase tracking-wider text-slate-900" style="font-size: ${footerMenuOverlay?.settings?.contactTitleFontSize || 12}px;">${contactTitle}</div>
+            <div class="leading-relaxed font-semibold text-slate-955" style="font-size: ${footerMenuOverlay?.settings?.contactTextFontSize || 10}px;">
+              ${contactText.split('\n').map(line => `<span>${line}</span>`).join('<br />')}
+              ${contactEmail ? `<p class="mt-1">${contactEmail}</p>` : ''}
+            </div>
+            <a href="tel:${contactPhone.replace(/\s+/g, '')}" class="flex items-center justify-center gap-2 bg-slate-955 text-white hover:bg-slate-900 font-extrabold text-xs py-3 px-4 rounded-xl transition-all uppercase tracking-wider shadow-sm hover:shadow-md cursor-pointer no-underline mt-2" style="text-decoration: none; border-radius: 12px; margin-top: 8px;">
+              <svg class="w-4 h-4 text-[#FFC502]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; color: #FFC502;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+              <span>${contactPhone}</span>
+            </a>
+          </div>
+        </div>`;
+    })()}
   </div>
 
 </body>

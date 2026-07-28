@@ -103,6 +103,7 @@ export interface OverlayItem {
   visibleOnDesktop?: boolean;
   visibleOnTablet?: boolean;
   visibleOnMobile?: boolean;
+  settings?: any;
 }
 
 export interface Column {
@@ -115,7 +116,7 @@ export interface Column {
 export interface Section {
   id: string;
   name: string;
-  layout: 'single-col' | 'two-col' | 'three-col' | 'custom';
+  layout: 'single-col' | 'two-col' | 'three-col' | 'custom' | 'rows';
   paddingY: 'none' | 'sm' | 'md' | 'lg' | 'xl'; // controls padding h-space
   backgroundColor: string; // hex or theme-specific class
   textColor: string;

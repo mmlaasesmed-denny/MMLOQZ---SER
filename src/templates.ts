@@ -747,10 +747,11 @@ export const TEMPLATES: { id: string; name: string; description: string; section
                     id: 'locksmith-logo',
                     type: 'logo',
                     content: '🔑 MM LÅSESMED',
+                    src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=120&h=120&q=80',
                     styles: {
-                      fontSize: '22px',
-                      fontWeight: '800',
-                      color: '#ffffff'
+                      fontSize: '32px',
+                      width: '60px',
+                      borderRadius: '8px'
                     }
                   },
                   {

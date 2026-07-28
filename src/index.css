@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @media (max-width: 767px) {
-  .hide-on-mobile { display: none !important; }
+  #live-visitor-root .hide-on-mobile { display: none !important; }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
-  .hide-on-tablet { display: none !important; }
+  #live-visitor-root .hide-on-tablet { display: none !important; }
 }
 @media (min-width: 1024px) {
-  .hide-on-desktop { display: none !important; }
+  #live-visitor-root .hide-on-desktop { display: none !important; }
 }
 
 /* Logo scaling using em units relative to parent font-size */
