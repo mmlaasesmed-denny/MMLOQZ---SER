@@ -89,6 +89,16 @@ export default function WebshopComponent({
   const badge1Desc = s.badge1Desc || 'Alle køb over 555 Dkk er berettiget til gratis forsendelse via USPS First Class Mail';
   const badge2Title = s.badge2Title || 'Nem betaling';
   const badge2Desc = s.badge2Desc || 'Alle betalinger behandles øjeblikkeligt over en sikker betalingsprotokol';
+  const badge3Title = s.badge3Title || 'Penge-tilbage-garanti';
+  const badge3Desc = s.badge3Desc || 'Hvis en vare ankom beskadiget, eller du har ombestemt dig, kan du sende den tilbage til fuld refusion.';
+  const badge4Title = s.badge4Title || 'Fineste kvalitet';
+  const badge4Desc = s.badge4Desc || 'Designet til at holde, hvert af vores produkter er blevet fremstillet med de fineste materialer.';
+  
+  const badge1Image = s.badge1Image || '🚚';
+  const badge2Image = s.badge2Image || '💳';
+  const badge3Image = s.badge3Image || '🛡️';
+  const badge4Image = s.badge4Image || '⭐️';
+  const badgeSize = s.badgeSize ? parseInt(String(s.badgeSize).replace('px', '')) : 30;
 
   const updateSetting = (key: string, value: string) => {
     if (onUpdateElement && el) {
@@ -99,6 +109,43 @@ export default function WebshopComponent({
         }
       });
     }
+  };
+
+  const updateCategoryField = (id: string, field: string, value: string) => {
+    if (isPreviewMode) return;
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
+  const updateSubcategoryField = (id: string, field: string, value: string) => {
+    if (isPreviewMode) return;
+    setSubcategories(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
+  const updateProductField = (id: string, field: string, value: string) => {
+    if (isPreviewMode) return;
+    setProducts(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
+  const promptEditImage = (type: 'category'|'subcategory'|'product'|'setting', id: string, field: string) => {
+    if (isPreviewMode) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e: any) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const b64 = reader.result as string;
+          if (type === 'category') updateCategoryField(id, field, b64);
+          else if (type === 'subcategory') updateSubcategoryField(id, field, b64);
+          else if (type === 'product') updateProductField(id, field, b64);
+          else if (type === 'setting') updateSetting(field, b64);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
   };
 
   // Helper for responsive grid columns based on preview viewportMode
@@ -132,8 +179,22 @@ export default function WebshopComponent({
   };
 
   // Navigation states
-  const [view, setView] = useState<ShopView>('categories');
+  const [view, setView] = useState<ShopView>(() => {
+    // If not preview mode and we have a forcedView in settings, use it as default
+    const s = el?.settings || {};
+    if (!isPreviewMode && s.forcedView) {
+      return s.forcedView;
+    }
+    return 'categories';
+  });
   const [backendLang, setBackendLang] = useState<'da' | 'en'>(() => (localStorage.getItem('mm_lase_backend_lang') as 'da' | 'en') || 'da');
+
+  // Sync view with forcedView in editor mode
+  useEffect(() => {
+    if (!isPreviewMode && el?.settings?.forcedView) {
+      setView(el.settings.forcedView);
+    }
+  }, [el?.settings?.forcedView, isPreviewMode]);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -215,6 +276,30 @@ export default function WebshopComponent({
   // Cart states
   const [cart, setCart] = useState<CartItem[]>([]);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_wishlist') : null;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  const toggleWishlist = (productId: string) => {
+    setWishlist(prev => {
+      const next = prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId];
+      if (typeof window !== 'undefined') localStorage.setItem('mm_lase_wishlist', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  // Mega Menu State
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [megaMenuHoverCatId, setMegaMenuHoverCatId] = useState<string | null>(null);
+  const [megaMenuHoverSubcatId, setMegaMenuHoverSubcatId] = useState<string | null>(null);
 
   // Checkout form states
   const [name, setName] = useState('');
@@ -326,10 +411,16 @@ export default function WebshopComponent({
 
   const [invSearchQuery, setInvSearchQuery] = useState('');
   
-  // Login form states
+  // Auth states
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  
+  const [registerName, setRegisterName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerError, setRegisterError] = useState('');
 
   // Reset password form states
   const [resetEmail, setResetEmail] = useState('');
@@ -342,7 +433,10 @@ export default function WebshopComponent({
   const activeCategory = categories.find(c => c.id === selectedCatId);
   const activeSubcategory = subcategories.find(s => s.id === selectedSubcatId);
   const activeBrand = WEBSHOP_BRANDS.find(b => b.id === selectedBrandId);
-  const activeProduct = products.find(p => p.id === selectedProductId) || WEBSHOP_PRODUCTS.find(p => p.id === selectedProductId);
+  const activeProduct = products.find(p => p.id === selectedProductId) || 
+    WEBSHOP_PRODUCTS.find(p => p.id === selectedProductId) || 
+    products[0] || 
+    WEBSHOP_PRODUCTS[0];
 
   const filteredInvProducts = products.filter(p => {
     const q = invSearchQuery.toLowerCase().trim();
@@ -452,22 +546,7 @@ export default function WebshopComponent({
           setResetEmail(emailParam);
         }
       } else if (hash === '#shop/admin') {
-        const sessionStr = localStorage.getItem('mm_lase_session');
-        let isLocalAdmin = false;
-        if (sessionStr) {
-          try {
-            const parsed = JSON.parse(sessionStr);
-            if (parsed && parsed.email === 'admin@mmlaseshop.dk') {
-              isLocalAdmin = true;
-            }
-          } catch (e) {}
-        }
-        if (isLocalAdmin || isPreviewMode) {
-          setView('admin');
-        } else {
-          setView('categories');
-          window.location.hash = 'shop';
-        }
+        setView('admin');
       } else if (hash.startsWith('#shop/search/')) {
         const query = decodeURIComponent(hash.replace('#shop/search/', ''));
         setSearchQuery(query);
@@ -693,6 +772,49 @@ export default function WebshopComponent({
       setSelectedDelivery(null);
     }
   }, [postcode, selectedCarrier]);
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!registerName || !registerEmail || !registerPassword) {
+      setRegisterError('Udfyld venligst alle felter.');
+      return;
+    }
+    const accountsStr = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_accounts') || '[]' : '[]';
+    let accounts: Account[] = [];
+    try {
+      accounts = JSON.parse(accountsStr);
+    } catch (err) {}
+    
+    if (accounts.some(a => a.email.toLowerCase() === registerEmail.toLowerCase())) {
+      setRegisterError('En konto med denne e-mail findes allerede.');
+      return;
+    }
+
+    const newUser: Account = {
+      email: registerEmail,
+      password: registerPassword,
+      name: registerName,
+      phone: '',
+      address: ''
+    };
+    
+    accounts.push(newUser);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mm_lase_accounts', JSON.stringify(accounts));
+      localStorage.setItem('mm_lase_session', JSON.stringify(newUser));
+    }
+    
+    setLoggedInUser(newUser);
+    setRegisterName('');
+    setRegisterEmail('');
+    setRegisterPassword('');
+    setRegisterError('');
+    if (isPreviewMode) {
+      window.location.hash = 'shop';
+    } else {
+      setView('categories');
+    }
+  };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1255,7 +1377,7 @@ export default function WebshopComponent({
   };
 
   return (
-    <div className="w-full bg-white text-slate-800 relative overflow-hidden font-sans py-4">
+    <div className="w-full bg-white text-slate-800 relative overflow-hidden font-sans py-2 px-4 md:px-8 lg:px-12">
       {/* Background Gradients */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
 
@@ -1272,8 +1394,45 @@ export default function WebshopComponent({
           }}
         >
           {(() => {
+            const logoType = s.logoType || 'text';
             const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
+            const logoSrc = s.logoSrc || '';
             const ratio = logoFontSize / 18;
+
+            if (logoType === 'image' && logoSrc) {
+              return (
+                <div className="relative group">
+                  <div 
+                    className={`flex items-center justify-center shrink-0 ${!isPreviewMode ? 'cursor-pointer outline-dashed outline-1 outline-transparent hover:outline-slate-300' : ''}`}
+                    onClick={(e) => {
+                      if (!isPreviewMode) {
+                        e.stopPropagation();
+                        promptEditImage('setting', '', 'logoSrc');
+                      }
+                    }}
+                  >
+                    <img src={logoSrc} alt="Logo" className="max-h-32 object-contain" style={{ height: `${48 * ratio}px` }} />
+                  </div>
+                  {!isPreviewMode && (
+                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-white border border-slate-200 rounded-md shadow-sm p-1 z-50">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); updateSetting('logoFontSize', String(Math.max(10, logoFontSize - 2))); }}
+                        className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                      >
+                        -
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); updateSetting('logoFontSize', String(Math.min(72, logoFontSize + 2))); }}
+                        className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <>
                 <div 
@@ -1444,19 +1603,7 @@ export default function WebshopComponent({
             )}
           </div>
 
-          {/* Admin */}
-          {(loggedInUser?.email === 'admin@mmlaseshop.dk' || isPreviewMode) && (
-            <div 
-              onClick={() => {
-                setView('admin');
-                if (isPreviewMode) window.location.hash = 'shop/admin';
-              }}
-              className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-amber-500 transition-colors select-none"
-            >
-              <Settings className="w-5 h-5 text-slate-750" />
-              <span className="text-[9px] font-extrabold uppercase tracking-wider">Admin</span>
-            </div>
-          )}
+          {/* Admin button removed for stealth mode */}
 
           {loggedInUser && (
             <button
@@ -1475,22 +1622,144 @@ export default function WebshopComponent({
       </div>
 
       {/* Nav Link Bar */}
-      <div className="bg-[#333333] rounded-xl flex items-center justify-between p-1 mb-6 relative z-10 select-none">
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => {
-              setView('categories');
-              setSelectedCatId(null);
-              setSelectedSubcatId(null);
-              setSelectedBrandId(null);
-              setSelectedProductId(null);
-              if (isPreviewMode) window.location.hash = 'shop';
+      <div className="bg-[#333333] flex items-center justify-between py-1 px-4 md:px-8 lg:px-12 -mx-4 md:-mx-8 lg:-mx-12 mb-6 relative z-50 select-none">
+        <div className="flex items-center gap-4 relative">
+          <div 
+            onMouseEnter={() => setIsMegaMenuOpen(true)}
+            onMouseLeave={() => {
+              setIsMegaMenuOpen(false);
+              setMegaMenuHoverCatId(null);
+              setMegaMenuHoverSubcatId(null);
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider rounded-lg transition-colors border-none cursor-pointer"
           >
-            <span>☰</span>
-            <span>Produkter</span>
-          </button>
+            <button 
+              onClick={() => {
+                setView('categories');
+                setSelectedCatId(null);
+                setSelectedSubcatId(null);
+                setSelectedBrandId(null);
+                setSelectedProductId(null);
+                setIsMegaMenuOpen(false);
+                if (isPreviewMode) window.location.hash = 'shop';
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider rounded-lg transition-colors border-none cursor-pointer"
+            >
+              <span>☰</span>
+              <span>Produkter</span>
+            </button>
+
+            {/* Mega Menu Flyout */}
+            {isMegaMenuOpen && (
+              <div 
+                className="absolute top-full left-0 mt-2 w-[800px] min-h-[400px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Column 1: Categories */}
+                <div className="w-1/3 bg-slate-50 border-r border-slate-200 py-4">
+                  <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kategorier</h4>
+                  <ul className="space-y-1">
+                    {categories.map(cat => (
+                      <li key={cat.id}>
+                        <button
+                          onMouseEnter={() => {
+                            setMegaMenuHoverCatId(cat.id);
+                            setMegaMenuHoverSubcatId(null);
+                          }}
+                          onClick={() => {
+                            setSelectedCatId(cat.id);
+                            setView('subcategories');
+                            setIsMegaMenuOpen(false);
+                            if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
+                          }}
+                          className={`w-full text-left px-6 py-2.5 text-xs font-bold transition-colors flex justify-between items-center ${
+                            megaMenuHoverCatId === cat.id ? 'bg-amber-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                          }`}
+                        >
+                          <span>{cat.name}</span>
+                          <span className="text-slate-400">&rsaquo;</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Column 2: Subcategories (if category hovered) */}
+                {megaMenuHoverCatId && (
+                  <div className="w-1/3 bg-white border-r border-slate-100 py-4">
+                    <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Underkategorier</h4>
+                    <ul className="space-y-1">
+                      {subcategories
+                        .filter(sub => sub.categoryId === megaMenuHoverCatId)
+                        .map(sub => (
+                          <li key={sub.id}>
+                            <button
+                              onMouseEnter={() => setMegaMenuHoverSubcatId(sub.id)}
+                              onClick={() => {
+                                setSelectedCatId(megaMenuHoverCatId);
+                                setSelectedSubcatId(sub.id);
+                                setView('subcategory-detail');
+                                setIsMegaMenuOpen(false);
+                                if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
+                              }}
+                              className={`w-full text-left px-6 py-2 text-xs font-semibold transition-colors flex justify-between items-center ${
+                                megaMenuHoverSubcatId === sub.id ? 'bg-slate-50 text-amber-500' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+                              }`}
+                            >
+                              <span>{sub.name}</span>
+                              <span className="text-slate-300">&rsaquo;</span>
+                            </button>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Column 3: Products (if subcategory hovered) */}
+                {megaMenuHoverSubcatId && (
+                  <div className="w-1/3 bg-white py-4 overflow-y-auto max-h-[400px]">
+                    <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Udvalgte Produkter</h4>
+                    <ul className="space-y-3 px-6">
+                      {products
+                        .filter(p => p.subcategoryId === megaMenuHoverSubcatId)
+                        .slice(0, 5) // Show only up to 5 products in mega menu
+                        .map(prod => (
+                          <li key={prod.id} className="group cursor-pointer" onClick={() => {
+                            setSelectedProductId(prod.id);
+                            setView('product-detail');
+                            setIsMegaMenuOpen(false);
+                            if (isPreviewMode) window.location.hash = `shop/product/${prod.id}`;
+                          }}>
+                            <div className="flex gap-3 items-center">
+                              <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                                <img src={prod.image} alt={prod.name} className="max-h-full max-w-full object-contain" />
+                              </div>
+                              <div>
+                                <h5 className="text-[11px] font-bold text-slate-700 group-hover:text-amber-500 transition-colors leading-tight line-clamp-1">{prod.name}</h5>
+                                <span className="text-[10px] font-bold text-slate-400">{prod.price} kr.</span>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                    </ul>
+                    <div className="px-6 mt-4 pt-4 border-t border-slate-100">
+                      <button 
+                        onClick={() => {
+                          setSelectedCatId(megaMenuHoverCatId);
+                          setSelectedSubcatId(megaMenuHoverSubcatId);
+                          setView('subcategory-detail');
+                          setIsMegaMenuOpen(false);
+                          if (isPreviewMode) window.location.hash = `shop/subcat/${megaMenuHoverSubcatId}`;
+                        }}
+                        className="text-[10px] font-black uppercase text-amber-500 hover:text-amber-600 tracking-wider"
+                      >
+                        Se alle produkter &rarr;
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           
           <div className="flex items-center gap-4 text-xs font-bold text-slate-300">
             <span 
@@ -1940,17 +2209,30 @@ export default function WebshopComponent({
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
-                            className="max-h-full max-w-full object-contain rounded-xl"
+                            className={`max-h-full max-w-full object-contain rounded-xl ${!isPreviewMode ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                            onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
                         </div>
                         <div className="space-y-4">
                           <div className="flex items-center gap-2">
                             <span className="text-2xl">{icon}</span>
-                            <h4 className="text-2xl font-extrabold text-slate-900 leading-tight uppercase tracking-tight">
+                            <h4 
+                              className="text-2xl font-extrabold text-slate-900 leading-tight uppercase tracking-tight outline-none focus:bg-slate-100 px-1 rounded"
+                              contentEditable={!isPreviewMode}
+                              suppressContentEditableWarning
+                              onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerText)}
+                              onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                            >
                               {cat.name}
                             </h4>
                           </div>
-                          <p className="text-slate-500 text-xs font-semibold leading-relaxed">
+                          <p 
+                            className="text-slate-500 text-xs font-semibold leading-relaxed outline-none focus:bg-slate-100 px-1 rounded"
+                            contentEditable={!isPreviewMode}
+                            suppressContentEditableWarning
+                            onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerText)}
+                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                          >
                             {cat.description}
                           </p>
                           <button 
@@ -1973,11 +2255,23 @@ export default function WebshopComponent({
                         <div className="space-y-4 order-2 md:order-1">
                           <div className="flex items-center gap-2">
                             <span className="text-2xl">{icon}</span>
-                            <h4 className="text-2xl font-extrabold text-slate-900 leading-tight uppercase tracking-tight">
+                            <h4 
+                              className="text-2xl font-extrabold text-slate-900 leading-tight uppercase tracking-tight outline-none focus:bg-slate-100 px-1 rounded"
+                              contentEditable={!isPreviewMode}
+                              suppressContentEditableWarning
+                              onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerText)}
+                              onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                            >
                               {cat.name}
                             </h4>
                           </div>
-                          <p className="text-slate-500 text-xs font-semibold leading-relaxed">
+                          <p 
+                            className="text-slate-500 text-xs font-semibold leading-relaxed outline-none focus:bg-slate-100 px-1 rounded"
+                            contentEditable={!isPreviewMode}
+                            suppressContentEditableWarning
+                            onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerText)}
+                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                          >
                             {cat.description}
                           </p>
                           <button 
@@ -1998,7 +2292,8 @@ export default function WebshopComponent({
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
-                            className="max-h-full max-w-full object-contain rounded-xl"
+                            className={`max-h-full max-w-full object-contain rounded-xl ${!isPreviewMode ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                            onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
                         </div>
                       </>
@@ -2010,11 +2305,25 @@ export default function WebshopComponent({
 
             {/* Newsletter Sign-up */}
             <div className="bg-[#1f2937] text-white rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4 border border-slate-800 text-left shadow-lg">
-              <div className="space-y-1 max-w-lg">
-                <h4 className="text-lg font-extrabold uppercase tracking-wider">Tilmeld dig vores nyhedsbrev</h4>
-                <p className="text-xs text-slate-400">Modtag eksklusive tilbud og sikkerhedsråd direkte i din indbakke hver uge.</p>
+              <div 
+                className="space-y-1 w-full"
+                style={{
+                  maxWidth: s.newsletterLeftWidth !== undefined ? `${s.newsletterLeftWidth}px` : '512px',
+                  paddingLeft: s.newsletterLeftPaddingLeft !== undefined ? `${s.newsletterLeftPaddingLeft}px` : '0px',
+                  paddingRight: s.newsletterLeftPaddingRight !== undefined ? `${s.newsletterLeftPaddingRight}px` : '0px',
+                }}
+              >
+                <h4 className="text-lg font-extrabold uppercase tracking-wider">{newsletterTitle}</h4>
+                <p className="text-xs text-slate-400">{newsletterDesc}</p>
               </div>
-              <div className="flex items-stretch rounded-xl overflow-hidden bg-white w-full md:w-auto min-w-[300px] border border-slate-700">
+              <div 
+                className="flex items-stretch rounded-xl overflow-hidden bg-white w-full md:w-auto border border-slate-700"
+                style={{
+                  minWidth: s.newsletterRightWidth !== undefined ? `${s.newsletterRightWidth}px` : '300px',
+                  paddingLeft: s.newsletterRightPaddingLeft !== undefined ? `${s.newsletterRightPaddingLeft}px` : '0px',
+                  paddingRight: s.newsletterRightPaddingRight !== undefined ? `${s.newsletterRightPaddingRight}px` : '0px',
+                }}
+              >
                 <input 
                   type="email" 
                   placeholder="Skriv din e-mailadresse..." 
@@ -2022,7 +2331,7 @@ export default function WebshopComponent({
                 />
                 <button 
                   onClick={() => alert('Tak for din tilmelding!')}
-                  className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider border-none cursor-pointer transition-colors"
+                  className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider border-none cursor-pointer transition-colors shrink-0"
                 >
                   Tilmeld dig
                 </button>
@@ -2031,26 +2340,60 @@ export default function WebshopComponent({
 
             {/* Trust Badges */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
-              <div className="flex flex-col items-center text-center space-y-2 p-4">
-                <span className="text-3xl">🚚</span>
-                <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">Gratis fragt</h5>
-                <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]">Alle køb over 555 Dkk er berettiget til gratis forsendelse via USPS First Class Mail</p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-2 p-4">
-                <span className="text-3xl">💳</span>
-                <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">Nem betaling</h5>
-                <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]">Alle betalinger behandles øjeblikkeligt over en sikker betalingsprotokol</p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-2 p-4">
-                <span className="text-3xl">🛡️</span>
-                <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">Penge-tilbage-garanti</h5>
-                <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]">Hvis en vare ankom beskadiget, eller du har ombestemt dig, kan du sende den tilbage til fuld refusion.</p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-2 p-4">
-                <span className="text-3xl">⭐️</span>
-                <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">Fineste kvalitet</h5>
-                <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]">Designet til at holde, hvert af vores produkter er blevet fremstillet med de fineste materialer.</p>
-              </div>
+              {[
+                { title: badge1Title, desc: badge1Desc, img: badge1Image, tKey: 'badge1Title', dKey: 'badge1Desc', iKey: 'badge1Image' },
+                { title: badge2Title, desc: badge2Desc, img: badge2Image, tKey: 'badge2Title', dKey: 'badge2Desc', iKey: 'badge2Image' },
+                { title: badge3Title, desc: badge3Desc, img: badge3Image, tKey: 'badge3Title', dKey: 'badge3Desc', iKey: 'badge3Image' },
+                { title: badge4Title, desc: badge4Desc, img: badge4Image, tKey: 'badge4Title', dKey: 'badge4Desc', iKey: 'badge4Image' },
+              ].map((badge, idx) => (
+                <div key={idx} className="flex flex-col items-center text-center space-y-2 p-4">
+                  <div className="relative group">
+                    <div 
+                      className={`cursor-pointer ${!isPreviewMode ? 'hover:opacity-80 transition-opacity outline-dashed outline-1 outline-transparent hover:outline-slate-300' : ''}`}
+                      onClick={() => promptEditImage('setting', '', badge.iKey)}
+                      style={{ width: `${badgeSize}px`, height: `${badgeSize}px`, minWidth: '24px', minHeight: '24px' }}
+                    >
+                      {badge.img.startsWith('data:image') || badge.img.startsWith('http') ? (
+                        <img src={badge.img} className="w-full h-full object-contain" alt={badge.title} />
+                      ) : (
+                        <span className="text-3xl flex items-center justify-center w-full h-full" style={{ fontSize: `${badgeSize * 0.8}px` }}>{badge.img}</span>
+                      )}
+                    </div>
+                    {!isPreviewMode && (
+                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-white border border-slate-200 rounded-md shadow-sm p-1 z-10">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.max(20, badgeSize - 4))); }}
+                          className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                        >
+                          -
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.min(120, badgeSize + 4))); }}
+                          className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <h5 
+                    className="text-xs font-black uppercase text-slate-900 tracking-wider outline-none focus:bg-slate-100 px-1 rounded"
+                    contentEditable={!isPreviewMode}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateSetting(badge.tKey, e.currentTarget.innerText)}
+                  >
+                    {badge.title}
+                  </h5>
+                  <p 
+                    className="text-[10px] text-slate-500 leading-relaxed max-w-[200px] outline-none focus:bg-slate-100 px-1 rounded"
+                    contentEditable={!isPreviewMode}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateSetting(badge.dKey, e.currentTarget.innerText)}
+                  >
+                    {badge.desc}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -2072,39 +2415,77 @@ export default function WebshopComponent({
               </button>
               <div>
                 <span className="text-[10px] text-amber-400 font-extrabold uppercase tracking-widest block">Kategori</span>
-                <h3 className="text-xl font-extrabold text-white uppercase">{activeCategory.name}</h3>
+                <h3 
+                  className="text-xl font-extrabold text-white uppercase outline-none focus:bg-slate-800 px-1 rounded"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateCategoryField(activeCategory.id, 'name', e.currentTarget.innerText)}
+                >
+                  {activeCategory.name}
+                </h3>
               </div>
             </div>
 
             <div className={`grid gap-6 ${getGridCols(1, 2, 3)}`}>
               {subcategories
                 .filter(sub => sub.categoryId === selectedCatId)
-                .map(subcategory => (
-                  <div 
-                    key={subcategory.id}
-                    onClick={() => {
-                      setSelectedSubcatId(subcategory.id);
-                      setView('subcategory-detail');
-                      if (isPreviewMode) {
-                        window.location.hash = `shop/subcat/${subcategory.id}`;
-                      }
-                    }}
-                    className={`bg-slate-950/60 hover:bg-slate-950 border border-slate-800 hover:border-amber-400/30 rounded-2xl cursor-pointer group transition-all duration-300 text-left flex flex-col justify-between ${getCardPadding('p-4', 'p-5', 'p-5')}`}
-                  >
-                    <div>
-                      <h4 className="text-sm font-extrabold uppercase text-white group-hover:text-amber-400 transition-colors">
-                        {subcategory.name}
-                      </h4>
-                      <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                        {subcategory.description}
-                      </p>
+                .map(subcategory => {
+                  const subImg = subcategory.image || 'https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?w=600&auto=format&fit=crop&q=80';
+                  return (
+                    <div 
+                      key={subcategory.id}
+                      onClick={() => {
+                        setSelectedSubcatId(subcategory.id);
+                        setView('subcategory-detail');
+                        if (isPreviewMode) {
+                          window.location.hash = `shop/subcat/${subcategory.id}`;
+                        }
+                      }}
+                      className={`bg-slate-950/60 hover:bg-slate-950 border border-slate-800 hover:border-amber-400/30 rounded-2xl cursor-pointer group transition-all duration-300 text-left flex flex-col overflow-hidden`}
+                    >
+                      {/* Image Block */}
+                      <div className="w-full h-40 bg-slate-900 border-b border-slate-800 relative">
+                        <img 
+                          src={subImg} 
+                          alt={subcategory.name} 
+                          className={`w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity ${!isPreviewMode ? 'hover:opacity-70' : ''}`}
+                          onClick={(e) => {
+                            if (!isPreviewMode) {
+                              e.stopPropagation();
+                              promptEditImage('subcategory', subcategory.id, 'image');
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className={`flex flex-col justify-between flex-grow ${getCardPadding('p-4', 'p-5', 'p-5')}`}>
+                        <div>
+                          <h4 
+                            className="text-sm font-extrabold uppercase text-white group-hover:text-amber-400 transition-colors outline-none focus:bg-slate-900 px-1 rounded"
+                            contentEditable={!isPreviewMode}
+                            suppressContentEditableWarning
+                            onBlur={(e) => updateSubcategoryField(subcategory.id, 'name', e.currentTarget.innerText)}
+                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                          >
+                            {subcategory.name}
+                          </h4>
+                          <p 
+                            className="text-xs text-slate-400 mt-2 leading-relaxed outline-none focus:bg-slate-900 px-1 rounded line-clamp-3"
+                            contentEditable={!isPreviewMode}
+                            suppressContentEditableWarning
+                            onBlur={(e) => updateSubcategoryField(subcategory.id, 'description', e.currentTarget.innerText)}
+                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
+                          >
+                            {subcategory.description}
+                          </p>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-slate-900 flex items-center justify-between">
+                          <span className="text-[9px] font-bold text-slate-500 uppercase">Se beskrivelse</span>
+                          <span className="text-amber-400 text-xs font-black">&rarr;</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-slate-900 flex items-center justify-between">
-                      <span className="text-[9px] font-bold text-slate-500 uppercase">Se beskrivelse</span>
-                      <span className="text-amber-400 text-xs font-black">&rarr;</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
         )}
@@ -2134,14 +2515,20 @@ export default function WebshopComponent({
             </div>
 
             {/* Banner Header Image with overlay text */}
-            <div className="relative h-64 rounded-3xl overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6]">
+            <div className="relative h-64 overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] -mx-4 md:-mx-8 lg:-mx-12">
               <img 
-                src="https://images.unsplash.com/photo-1558002038-1055907df827?w=1200&auto=format&fit=crop&q=80" 
+                src={activeSubcategory.image || "https://images.unsplash.com/photo-1558002038-1055907df827?w=1200&auto=format&fit=crop&q=80"} 
                 alt={activeSubcategory.name}
-                className="absolute inset-0 w-full h-full object-cover opacity-85"
+                className={`absolute inset-0 w-full h-full object-cover opacity-85 ${!isPreviewMode ? 'cursor-pointer hover:opacity-100 transition-opacity' : ''}`}
+                onClick={() => promptEditImage('subcategory', activeSubcategory.id, 'image')}
               />
               <div className="absolute inset-0 bg-black/35" />
-              <h2 className="relative z-10 text-4xl md:text-5xl font-black text-white uppercase tracking-wider font-sans">
+              <h2 
+                className="relative z-10 text-4xl md:text-5xl font-black text-white uppercase tracking-wider font-sans outline-none focus:bg-slate-900 px-2 rounded"
+                contentEditable={!isPreviewMode}
+                suppressContentEditableWarning
+                onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerText)}
+              >
                 {activeSubcategory.name}
               </h2>
             </div>
@@ -2149,34 +2536,44 @@ export default function WebshopComponent({
             {/* Section 1: Intro + Vigtige Fordele */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
               <div className="md:col-span-2 space-y-4">
-                <h4 className="text-xl font-extrabold text-slate-900">
-                  {activeSubcategory.name}-forbedrede løsninger til sikre og holdbare døre
+                <h4 
+                  className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSetting(`subcatIntroTitle_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                >
+                  {s[`subcatIntroTitle_${activeSubcategory.id}`] || `${activeSubcategory.name}-forbedrede løsninger til sikre og holdbare døre`}
                 </h4>
-                <p className="text-sm text-slate-500 leading-relaxed font-medium">
+                <p 
+                  className="text-sm text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 px-2 rounded"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'detailedDescription', e.currentTarget.innerText)}
+                >
                   {activeSubcategory.detailedDescription || activeSubcategory.description}
-                  {" "}Udover at yde beskyttelse mod indtrængen, brand og dårligt vejr, kan de også bruges til nødudgange og flugtveje. Eksempler på anvendelser omfatter skoler, hospitaler, plejehjem, erhvervsejendomme eller industrifaciliteter.
                 </p>
               </div>
               <div className="bg-amber-400 text-slate-900 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                 <div>
-                  <h5 className="text-sm font-black uppercase tracking-wider mb-4">Vigtige fordele</h5>
-                  <ul className="text-xs space-y-2.5 list-none p-0 font-extrabold">
-                    <li className="flex items-start gap-2">
-                      <span>•</span>
-                      <span>Kan bruges til nødudgang og flugtveje</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span>•</span>
-                      <span>Kan opsætte med passagetid (låses kun uden for åbningstid)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span>•</span>
-                      <span>Kan montere med rigtig lås selvom bruger blot åbner døren med håndtaget.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span>•</span>
-                      <span>Kan låses remote eller via tidsindstilling.</span>
-                    </li>
+                  <h5 
+                    className="text-sm font-black uppercase tracking-wider mb-4 outline-none focus:bg-amber-300 px-1 rounded"
+                    contentEditable={!isPreviewMode}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateSetting(`subcatBenefitsTitle_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                  >
+                    {s[`subcatBenefitsTitle_${activeSubcategory.id}`] || 'Vigtige fordele'}
+                  </h5>
+                  <ul 
+                    className="text-xs space-y-2.5 list-none p-0 font-extrabold outline-none focus:bg-amber-300 px-1 rounded"
+                    contentEditable={!isPreviewMode}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateSetting(`subcatBenefitsList_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                  >
+                    {(s[`subcatBenefitsList_${activeSubcategory.id}`] || '• Kan bruges til nødudgang og flugtveje\n• Kan opsætte med passagetid (låses kun uden for åbningstid)\n• Kan montere med rigtig lås selvom bruger blot åbner døren med håndtaget.\n• Kan låses remote eller via tidsindstilling.').split('\n').map((line: string, i: number) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span>{line}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -2185,24 +2582,45 @@ export default function WebshopComponent({
             {/* Section 2: Video + Finding Right Locks */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left items-center">
               <div className="space-y-4">
-                <h4 className="text-xl font-extrabold text-slate-900">
-                  Find de rette elektroniske {activeSubcategory.name.toLowerCase()} hos mmlaasesmed
+                <h4 
+                  className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSetting(`subcatVideoTitle_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                >
+                  {s[`subcatVideoTitle_${activeSubcategory.id}`] || `Find de rette elektroniske ${activeSubcategory.name.toLowerCase()} hos mmlaasesmed`}
                 </h4>
-                <p className="text-xs text-slate-505 leading-relaxed font-medium">
-                  Her finder du vores nøje udvalgte sortiment af elektroniske {activeSubcategory.name.toLowerCase()} fra vores leverandører. Vi har elektroniske {activeSubcategory.name.toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.
+                <p 
+                  className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSetting(`subcatVideoDesc1_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                >
+                  {s[`subcatVideoDesc1_${activeSubcategory.id}`] || `Her finder du vores nøje udvalgte sortiment af elektroniske ${activeSubcategory.name.toLowerCase()} fra vores leverandører. Vi har elektroniske ${activeSubcategory.name.toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
                 </p>
-                <p className="text-xs text-slate-505 leading-relaxed font-medium">
-                  Om du skal bruge elektroniske {activeSubcategory.name.toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.
+                <p 
+                  className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSetting(`subcatVideoDesc2_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                >
+                  {s[`subcatVideoDesc2_${activeSubcategory.id}`] || `Om du skal bruge elektroniske ${activeSubcategory.name.toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
                 </p>
               </div>
               {/* Video placeholder */}
               <div className="relative aspect-video rounded-3xl overflow-hidden shadow-md cursor-pointer group bg-[#1f2937] flex items-center justify-center border border-slate-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80" 
+                  src={s[`subcatVideoImg_${activeSubcategory.id}`] || "https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80"} 
                   alt="Video explanation" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-102 transition-transform duration-500"
+                  className={`absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-500 ${!isPreviewMode ? 'group-hover:opacity-100' : 'group-hover:scale-102'}`}
+                  onClick={(e) => {
+                    if (!isPreviewMode) {
+                      e.stopPropagation();
+                      promptEditImage('setting', '', `subcatVideoImg_${activeSubcategory.id}`);
+                    }
+                  }}
                 />
-                <div className="absolute inset-0 bg-black/15" />
+                <div className="absolute inset-0 bg-black/15 pointer-events-none" />
                 <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <span className="text-slate-900 text-xl font-extrabold ml-1">▶</span>
                 </div>
@@ -2666,7 +3084,12 @@ export default function WebshopComponent({
                   <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest block">
                     {brandName}
                   </span>
-                  <h3 className="text-xl font-extrabold text-slate-900 uppercase leading-tight">
+                  <h3 
+                    className="text-xl font-extrabold text-slate-900 uppercase leading-tight outline-none focus:bg-slate-100 px-1 rounded"
+                    contentEditable={!isPreviewMode}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateProductField(activeProduct.id, 'name', e.currentTarget.innerText)}
+                  >
                     {activeProduct.name}
                   </h3>
                 </div>
@@ -2681,7 +3104,8 @@ export default function WebshopComponent({
                     <img 
                       src={activeProduct.image} 
                       alt={activeProduct.name}
-                      className="max-h-full max-w-full object-contain rounded-2xl"
+                      className={`max-h-full max-w-full object-contain rounded-2xl ${!isPreviewMode ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+                      onClick={() => promptEditImage('product', activeProduct.id, 'image')}
                     />
                     <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
                       {activeProduct.badges.map((badge, idx) => (
@@ -2744,7 +3168,7 @@ export default function WebshopComponent({
                   </div>
 
                   {/* Quantity and Cart action */}
-                  <div className="pt-2">
+                  <div className="pt-2 space-y-3">
                     {inCartQty === 0 ? (
                       <button 
                         onClick={() => addToCart(activeProduct)}
@@ -2773,6 +3197,16 @@ export default function WebshopComponent({
                         </div>
                       </div>
                     )}
+                    
+                    <button
+                      onClick={() => toggleWishlist(activeProduct.id)}
+                      className="w-full py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-extrabold text-xs uppercase tracking-widest rounded-2xl transition-all shadow-sm active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span className={wishlist.includes(activeProduct.id) ? 'text-red-500' : 'text-slate-300'}>
+                        {wishlist.includes(activeProduct.id) ? '♥' : '♡'}
+                      </span>
+                      {wishlist.includes(activeProduct.id) ? 'Fjern fra ønskeliste' : 'Tilføj til ønskeliste'}
+                    </button>
                   </div>
 
                   {/* Specs Accordions */}
@@ -2783,7 +3217,12 @@ export default function WebshopComponent({
                         <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Beskrivelse</h4>
                         <span className="text-xs text-slate-400 font-bold">&#9662;</span>
                       </div>
-                      <div className="p-5 text-xs text-slate-500 leading-relaxed font-medium">
+                      <div 
+                        className="p-5 text-xs text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 rounded"
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) => updateProductField(activeProduct.id, 'description', e.currentTarget.innerText)}
+                      >
                         {activeProduct.description}
                       </div>
                     </div>
@@ -3393,66 +3832,153 @@ export default function WebshopComponent({
               <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 mx-auto mb-3">
                 <Lock className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-extrabold text-white uppercase tracking-wider">Log ind på din konto</h3>
-              <p className="text-xs text-slate-400 mt-2">Log ind for at hente dine gemte leveringsoplysninger.</p>
-            </div>
-
-            {loginError && (
-              <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-semibold leading-relaxed">
-                ⚠️ {loginError}
-              </div>
-            )}
-
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">E-mail Adresse</label>
-                <input 
-                  type="email" 
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="F.eks. anders@jensen.dk" 
-                  required 
-                  className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Adgangskode</label>
-                <input 
-                  type="password" 
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="Indtast din adgangskode" 
-                  required 
-                  className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                />
-              </div>
-
-              <button 
-                type="submit"
-                className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
-              >
-                Log ind
-              </button>
-            </form>
-
-            <div className="border-t border-slate-900 pt-4 text-center">
-              <p className="text-[11px] text-slate-500 font-medium">
-                Har du ikke en konto endnu?<br />
-                En konto oprettes <strong className="text-slate-400">automatisk</strong>, når du udfører dit første køb.
+              <h3 className="text-xl font-extrabold text-white uppercase tracking-wider">
+                {authMode === 'login' ? 'Log ind på din konto' : 'Opret ny konto'}
+              </h3>
+              <p className="text-xs text-slate-400 mt-2">
+                {authMode === 'login' ? 'Log ind for at hente dine gemte leveringsoplysninger.' : 'Opret en konto for at gemme dine oplysninger til næste gang.'}
               </p>
-              <button
-                onClick={() => {
-                  setView('categories');
-                  if (isPreviewMode) {
-                    window.location.hash = 'shop';
-                  }
-                }}
-                className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer"
-              >
-                Tilbage til butikken
-              </button>
             </div>
+
+            {authMode === 'login' ? (
+              <>
+                {loginError && (
+                  <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-semibold leading-relaxed">
+                    ⚠️ {loginError}
+                  </div>
+                )}
+                <form onSubmit={handleLoginSubmit} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">E-mail Adresse</label>
+                    <input 
+                      type="email" 
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      placeholder="F.eks. anders@jensen.dk" 
+                      required 
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Adgangskode</label>
+                    <input 
+                      type="password" 
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Indtast din adgangskode" 
+                      required 
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                    />
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
+                  >
+                    Log ind
+                  </button>
+                </form>
+
+                <div className="border-t border-slate-900 pt-4 text-center">
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Har du ikke en konto endnu?
+                  </p>
+                  <button
+                    onClick={() => setAuthMode('register')}
+                    className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
+                  >
+                    Opret konto her
+                  </button>
+                  <button
+                    onClick={() => {
+                      setView('categories');
+                      if (isPreviewMode) {
+                        window.location.hash = 'shop';
+                      }
+                    }}
+                    className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
+                  >
+                    Tilbage til butikken
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {registerError && (
+                  <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-semibold leading-relaxed">
+                    ⚠️ {registerError}
+                  </div>
+                )}
+                <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Fulde Navn</label>
+                    <input 
+                      type="text" 
+                      value={registerName}
+                      onChange={(e) => setRegisterName(e.target.value)}
+                      placeholder="F.eks. Anders Jensen" 
+                      required 
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">E-mail Adresse</label>
+                    <input 
+                      type="email" 
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      placeholder="F.eks. anders@jensen.dk" 
+                      required 
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Vælg Adgangskode</label>
+                    <input 
+                      type="password" 
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      placeholder="Indtast adgangskode" 
+                      required 
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                    />
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
+                  >
+                    Opret konto
+                  </button>
+                </form>
+
+                <div className="border-t border-slate-900 pt-4 text-center">
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Har du allerede en konto?
+                  </p>
+                  <button
+                    onClick={() => setAuthMode('login')}
+                    className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
+                  >
+                    Log ind her
+                  </button>
+                  <button
+                    onClick={() => {
+                      setView('categories');
+                      if (isPreviewMode) {
+                        window.location.hash = 'shop';
+                      }
+                    }}
+                    className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
+                  >
+                    Tilbage til butikken
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -3556,7 +4082,50 @@ export default function WebshopComponent({
           </div>
         )}
         {/* VIEW: ADMIN CONTROL PANEL */}
-        {view === 'admin' && (
+        {view === 'admin' && !(loggedInUser?.email === 'admin@mmlaseshop.dk' || isPreviewMode) && (
+          <div className="max-w-sm mx-auto mt-24 mb-32 p-8 bg-slate-900 rounded-3xl shadow-2xl text-left border border-slate-800 animate-in fade-in slide-in-from-bottom-4">
+            <div className="flex items-center gap-3 mb-6">
+              <ShieldCheck className="w-8 h-8 text-amber-500" />
+              <h3 className="text-xl font-black text-white uppercase tracking-wider">System Access</h3>
+            </div>
+            {loginError && (
+              <div className="p-3 mb-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-500 text-xs font-bold">
+                ⚠️ {loginError}
+              </div>
+            )}
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div>
+                <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide mb-1.5 block">Access ID</label>
+                <input
+                  type="text"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
+                  placeholder="Enter ID..."
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide mb-1.5 block">Passcode</label>
+                <input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
+                  placeholder="Enter passcode..."
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all border-none mt-2 shadow-lg shadow-amber-500/20 cursor-pointer"
+              >
+                Authenticate
+              </button>
+            </form>
+          </div>
+        )}
+
+        {view === 'admin' && (loggedInUser?.email === 'admin@mmlaseshop.dk' || isPreviewMode) && (
           <div className="space-y-6 animate-in fade-in duration-300 text-left">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
               <div>

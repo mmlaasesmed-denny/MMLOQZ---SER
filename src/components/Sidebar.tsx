@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Palette, Type, Sliders, Box, Layers, Image as ImageIcon, 
   Trash2, Plus, ChevronUp, ChevronDown, Copy, Link, 
@@ -37,6 +37,9 @@ interface SidebarProps {
   onChangeImageClick: (elementId: string) => void;
   viewportMode: 'desktop' | 'tablet' | 'mobile';
   pages?: any[];
+  activePageId?: string;
+  onNavigatePage?: (pageId: string) => void;
+  onChangeViewportMode?: (mode: 'desktop' | 'tablet' | 'mobile') => void;
 }
 
 interface DropdownEditorProps {
@@ -371,10 +374,19 @@ export default function Sidebar({
   isGeneratingAI,
   onChangeImageClick,
   viewportMode,
-  pages = []
+  pages = [],
+  activePageId,
+  onNavigatePage
 }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<'content' | 'elements' | 'sections' | 'theme' | 'webshop' | 'ai'>('content');
   const [aiPrompt, setAiPrompt] = useState('');
+
+  // Automatically switch to Inspector tab when an element or section is selected
+  useEffect(() => {
+    if (selectedElement || selectedSection) {
+      setActiveTab('content');
+    }
+  }, [selectedElement, selectedSection]);
 
   // Webshop Page Creator States
   const [newTemplateTitle, setNewTemplateTitle] = useState('');
@@ -912,43 +924,204 @@ export default function Sidebar({
                   </div>
                 </div>
 
-                {/* Element Type Changer */}
-                <div className="space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Element Type</span>
-                  <select
-                    value={selectedElement.type}
-                    onChange={(e) => {
-                      const nextType = e.target.value as ElementType;
-                      let contentUpdate = selectedElement.content;
-                      let srcUpdate = selectedElement.src;
-                      
-                      // Intelligently initialize content when converting type
-                      if (nextType === 'text' && !selectedElement.content) {
-                        contentUpdate = 'Ny tekstblok...';
-                      } else if (nextType === 'image' && !selectedElement.src) {
-                        srcUpdate = 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80';
-                      }
-                      
-                      onUpdateElement(
-                        selectedElement.id, 
-                        {}, 
-                        contentUpdate, 
-                        undefined, 
-                        srcUpdate, 
-                        { type: nextType }
-                      );
-                    }}
-                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-55 dark:bg-slate-950 text-slate-850 dark:text-slate-200 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 font-sans cursor-pointer"
-                  >
-                    <option value="text">Text / HTML Block</option>
-                    <option value="image">Image / Graphic</option>
-                    <option value="button">Button / Link Button</option>
-                    <option value="divider">Horizontal Divider</option>
-                    <option value="spacer">Blank Spacer</option>
-                    <option value="search-box">Search Input Box</option>
-                  </select>
-                </div>
+                {/* Specialized Logo Inspector or Standard Element Type Changer */}
+                {(() => {
+                  const isDirectLogo = selectedElement.id.toLowerCase().includes('logo');
+                  const logoOverlay = selectedElement.overlays?.find(o => o.type === 'logo');
+                  
+                  if (!isDirectLogo && !logoOverlay) {
+                    return (
+                      <div className="space-y-1.5 border-t border-slate-100 dark:border-slate-800 pt-3">
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-450 block">Element Type</span>
+                        <select
+                          value={selectedElement.type}
+                          onChange={(e) => {
+                            const nextType = e.target.value as ElementType;
+                            let contentUpdate = selectedElement.content;
+                            let srcUpdate = selectedElement.src;
+                            
+                            // Intelligently initialize content when converting type
+                            if (nextType === 'text' && !selectedElement.content) {
+                              contentUpdate = 'Ny tekstblok...';
+                            } else if (nextType === 'image' && !selectedElement.src) {
+                              srcUpdate = 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80';
+                            }
+                            
+                            onUpdateElement(
+                              selectedElement.id, 
+                              {}, 
+                              contentUpdate, 
+                              undefined, 
+                              srcUpdate, 
+                              { type: nextType }
+                            );
+                          }}
+                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-55 dark:bg-slate-955 text-slate-850 dark:text-slate-200 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 font-sans cursor-pointer"
+                        >
+                          <option value="text">Text / HTML Block</option>
+                          <option value="image">Image / Graphic</option>
+                          <option value="button">Button / Link Button</option>
+                          <option value="divider">Horizontal Divider</option>
+                          <option value="spacer">Blank Spacer</option>
+                          <option value="search-box">Search Input Box</option>
+                        </select>
+                      </div>
+                    );
+                  }
 
+                  const isImage = isDirectLogo ? selectedElement.type === 'image' : !!logoOverlay?.src;
+                  const logoContent = isDirectLogo ? selectedElement.content : logoOverlay?.content;
+                  const logoSrc = isDirectLogo ? selectedElement.src : logoOverlay?.src;
+                  const logoHeight = isDirectLogo 
+                    ? (selectedElement.styles?.height || '40px') 
+                    : (logoOverlay?.styles?.fontSize || '40px');
+
+                  return (
+                    <div className="space-y-4 border-t border-slate-100 dark:border-slate-800 pt-3 text-left">
+                      <h5 className="text-xs font-bold uppercase tracking-wider text-indigo-500">Logo Indstillinger (Logo Settings)</h5>
+                      
+                      {/* Logo Type Switcher */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Logo Type</label>
+                        <div className="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (isDirectLogo) {
+                                onUpdateElement(selectedElement.id, { height: undefined }, selectedElement.content || 'LOGO', undefined, undefined, { type: 'text' });
+                              } else if (logoOverlay) {
+                                const nextOverlays = selectedElement.overlays.map(o => o.id === logoOverlay.id ? { ...o, src: undefined, styles: { ...o.styles, fontSize: '22px' } } : o);
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                              }
+                            }}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors border-none cursor-pointer ${
+                              !isImage
+                                ? 'bg-white dark:bg-slate-800 text-indigo-650 dark:text-indigo-400 shadow-xs'
+                                : 'bg-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                            }`}
+                          >
+                            Tekst / Skrifttype
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const defaultLogoUrl = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=120&h=120&q=80';
+                              if (isDirectLogo) {
+                                onUpdateElement(selectedElement.id, { height: '40px', width: 'auto' }, undefined, undefined, selectedElement.src || defaultLogoUrl, { type: 'image' });
+                              } else if (logoOverlay) {
+                                const nextOverlays = selectedElement.overlays.map(o => o.id === logoOverlay.id ? { ...o, src: logoOverlay.src || defaultLogoUrl, styles: { ...o.styles, fontSize: '32px' } } : o);
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                              }
+                            }}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors border-none cursor-pointer ${
+                              isImage
+                                ? 'bg-white dark:bg-slate-800 text-indigo-650 dark:text-indigo-400 shadow-xs'
+                                : 'bg-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                            }`}
+                          >
+                            Billede / Grafisk
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Conditional Settings based on selected Logo Type */}
+                      {!isImage ? (
+                        <div className="space-y-2 animate-in fade-in duration-200">
+                          <label className="text-[10px] font-semibold text-slate-500 block">Logo Tekst</label>
+                          <input
+                            type="text"
+                            value={logoContent || ''}
+                            onChange={(e) => {
+                              if (isDirectLogo) {
+                                onUpdateElement(selectedElement.id, {}, e.target.value);
+                              } else if (logoOverlay) {
+                                const nextOverlays = selectedElement.overlays.map(o => o.id === logoOverlay.id ? { ...o, content: e.target.value } : o);
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                              }
+                            }}
+                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            placeholder="Indtast logo tekst..."
+                          />
+                        </div>
+                      ) : (
+                        <div className="space-y-3 animate-in fade-in duration-200">
+                          <label className="text-[10px] font-semibold text-slate-500 block">Logo Billede URL / Fil</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={logoSrc || ''}
+                              onChange={(e) => {
+                                if (isDirectLogo) {
+                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, e.target.value);
+                                } else if (logoOverlay) {
+                                  const nextOverlays = selectedElement.overlays.map(o => o.id === logoOverlay.id ? { ...o, src: e.target.value } : o);
+                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                }
+                              }}
+                              className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-mono text-[10px] focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              placeholder="Indtast logo URL..."
+                            />
+                            <input
+                              type="file"
+                              id={`file-upload-${selectedElement.id}`}
+                              className="hidden"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onloadend = () => {
+                                    const b64 = reader.result as string;
+                                    if (isDirectLogo) {
+                                      onUpdateElement(selectedElement.id, {}, undefined, undefined, b64);
+                                    } else if (logoOverlay) {
+                                      const nextOverlays = selectedElement.overlays.map(o => o.id === logoOverlay.id ? { ...o, src: b64 } : o);
+                                      onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                document.getElementById(`file-upload-${selectedElement.id}`)?.click();
+                              }}
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-655 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer"
+                            >
+                              Upload
+                            </button>
+                          </div>
+
+                          {/* Height slider for Logo */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-[10px] font-bold text-slate-550 uppercase">
+                              <span>Logo Højde</span>
+                              <span className="font-mono text-indigo-500">{logoHeight}</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="15"
+                              max="120"
+                              value={parseInt(logoHeight) || 40}
+                              onChange={(e) => {
+                                if (isDirectLogo) {
+                                  onUpdateElement(selectedElement.id, { height: `${e.target.value}px`, width: 'auto' });
+                                } else if (logoOverlay) {
+                                  const nextOverlays = selectedElement.overlays.map(o => o.id === logoOverlay.id ? { ...o, styles: { ...o.styles, fontSize: `${e.target.value}px` } } : o);
+                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                }
+                              }}
+                              className="w-full accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+                
                 {/* Responsive Visibility Controls */}
                 <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3" id="inspector-visibility">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Device Visibility</span>
@@ -1042,99 +1215,249 @@ export default function Sidebar({
                     </div>
 
                     <div className="space-y-3">
-                      {/* Logo Badge */}
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Logo ikon tekst (Badge)</label>
-                        <input
-                          type="text"
-                          value={selectedElement.settings?.logoBadge || 'MM'}
-                          onChange={(e) => {
-                            onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                              settings: {
-                                ...(selectedElement.settings || {}),
-                                logoBadge: e.target.value
-                              }
-                            });
-                          }}
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        />
+                      {/* Logo Type Selector for Webshop */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Logo Type</label>
+                        <div className="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  logoType: 'text'
+                                }
+                              });
+                            }}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors border-none cursor-pointer ${
+                              selectedElement.settings?.logoType !== 'image'
+                                ? 'bg-white dark:bg-slate-800 text-indigo-650 dark:text-indigo-400 shadow-xs'
+                                : 'bg-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                            }`}
+                          >
+                            Tekst / Badge
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  logoType: 'image'
+                                }
+                              });
+                            }}
+                            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors border-none cursor-pointer ${
+                              selectedElement.settings?.logoType === 'image'
+                                ? 'bg-white dark:bg-slate-800 text-indigo-650 dark:text-indigo-400 shadow-xs'
+                                : 'bg-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                            }`}
+                          >
+                            Billede / Grafisk
+                          </button>
+                        </div>
                       </div>
 
-                      {/* Logo Text */}
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Logo tekst</label>
-                        <input
-                          type="text"
-                          value={selectedElement.settings?.logoText || 'MM LÅSESMED'}
-                          onChange={(e) => {
-                            onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                              settings: {
-                                ...(selectedElement.settings || {}),
-                                logoText: e.target.value
-                              }
-                            });
-                          }}
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        />
-                      </div>
+                      {selectedElement.settings?.logoType === 'image' ? (
+                        <div className="space-y-3 animate-in fade-in duration-200">
+                          {/* Logo Image URL / Upload */}
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Logo Billede URL / Fil</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={selectedElement.settings?.logoSrc || ''}
+                                onChange={(e) => {
+                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                    settings: {
+                                      ...(selectedElement.settings || {}),
+                                      logoSrc: e.target.value
+                                    }
+                                  });
+                                }}
+                                className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-mono text-[10px] focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                placeholder="Indtast logo URL..."
+                              />
+                              <input
+                                type="file"
+                                id={`file-upload-settings-${selectedElement.id}`}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => {
+                                      const b64 = reader.result as string;
+                                      onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                        settings: {
+                                          ...(selectedElement.settings || {}),
+                                          logoSrc: b64
+                                        }
+                                      });
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  document.getElementById(`file-upload-settings-${selectedElement.id}`)?.click();
+                                }}
+                                className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-655 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700 text-xs font-semibold cursor-pointer"
+                              >
+                                Upload
+                              </button>
+                            </div>
+                          </div>
 
-                      {/* Tagline */}
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tagline / Undertekst</label>
-                        <input
-                          type="text"
-                          value={selectedElement.settings?.tagline || 'Døgnvagt i Storkøbenhavn'}
+                          {/* Logo Height Slider */}
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                              <span>Logo Højde</span>
+                              <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.logoHeight || 40)}px</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="20"
+                              max="120"
+                              value={selectedElement.settings?.logoHeight || 40}
+                              onChange={(e) => {
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    logoHeight: parseInt(e.target.value)
+                                  }
+                                });
+                              }}
+                              className="w-full accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3 animate-in fade-in duration-200">
+                          {/* Logo Badge */}
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider">Logo ikon tekst (Badge)</label>
+                            <input
+                              type="text"
+                              value={selectedElement.settings?.logoBadge || 'MM'}
+                              onChange={(e) => {
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    logoBadge: e.target.value
+                                  }
+                                });
+                              }}
+                              className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-5-0 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+
+                          {/* Logo Text */}
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider">Logo tekst</label>
+                            <input
+                              type="text"
+                              value={selectedElement.settings?.logoText || 'MM LÅSESMED'}
+                              onChange={(e) => {
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    logoText: e.target.value
+                                  }
+                                });
+                              }}
+                              className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-5-0 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+
+                          {/* Tagline */}
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-slate-555 uppercase tracking-wider">Tagline / Undertekst</label>
+                            <input
+                              type="text"
+                              value={selectedElement.settings?.tagline || 'Døgnvagt i Storkøbenhavn'}
+                              onChange={(e) => {
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    tagline: e.target.value
+                                  }
+                                });
+                              }}
+                              className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-5-0 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            />
+                          </div>
+
+                          {/* Forced Store View (eCommerce Page Sektion) */}
+                      <div className="space-y-1.5 p-3.5 bg-indigo-50 dark:bg-indigo-950/20 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
+                        <label className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider block">Editor Butiksvisning (eCommerce View)</label>
+                        <p className="text-[9px] text-slate-500 leading-normal">
+                          Styrer hvilken del af webshoppen der skal vises i editoren for dette element.
+                        </p>
+                        <select
+                          value={selectedElement.settings?.forcedView || 'categories'}
                           onChange={(e) => {
                             onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
                               settings: {
                                 ...(selectedElement.settings || {}),
-                                tagline: e.target.value
+                                forcedView: e.target.value
                               }
                             });
                           }}
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        />
+                          className="w-full mt-1.5 text-xs px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-900 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none"
+                        >
+                          <option value="categories">Butik Forside (Categories / Shop Home)</option>
+                          <option value="product-detail">Produktdetaljer (Product Details Template)</option>
+                          <option value="cart">Indkøbskurv (Cart Page)</option>
+                          <option value="checkout">Kasse / Betaling (Checkout Page)</option>
+                          <option value="login">Kunde Log ind / Profil (Account Page)</option>
+                        </select>
                       </div>
 
                       {/* Logo Font Size Slider */}
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                          <span>Logo Størrelse (Logo Size)</span>
-                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.logoFontSize || 18)}px</span>
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                              <span>Logo Størrelse (Logo Size)</span>
+                              <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.logoFontSize || 18)}px</span>
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <input
+                                type="range"
+                                min="12"
+                                max="40"
+                                value={selectedElement.settings?.logoFontSize || 18}
+                                onChange={(e) => {
+                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                    settings: {
+                                      ...(selectedElement.settings || {}),
+                                      logoFontSize: parseInt(e.target.value)
+                                    }
+                                  });
+                                }}
+                                className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                              />
+                              <input
+                                type="text"
+                                value={selectedElement.settings?.logoFontSize || 18}
+                                onChange={(e) => {
+                                  const val = parseInt(e.target.value) || 18;
+                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                    settings: {
+                                      ...(selectedElement.settings || {}),
+                                      logoFontSize: val
+                                    }
+                                  });
+                                }}
+                                className="w-12 text-[10px] px-1 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded font-sans text-center text-slate-800 dark:text-slate-200"
+                                placeholder="18px"
+                              />
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex gap-2 items-center">
-                          <input
-                            type="range"
-                            min="12"
-                            max="40"
-                            value={selectedElement.settings?.logoFontSize || 18}
-                            onChange={(e) => {
-                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                settings: {
-                                  ...(selectedElement.settings || {}),
-                                  logoFontSize: parseInt(e.target.value)
-                                }
-                              });
-                            }}
-                            className="flex-1 accent-indigo-600 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
-                          />
-                          <input
-                            type="text"
-                            value={selectedElement.settings?.logoFontSize || 18}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value) || 18;
-                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                settings: {
-                                  ...(selectedElement.settings || {}),
-                                  logoFontSize: val
-                                }
-                              });
-                            }}
-                            className="w-12 text-[10px] px-1 py-0.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded font-sans text-center text-slate-800 dark:text-slate-200"
-                            placeholder="18px"
-                          />
-                        </div>
-                      </div>
+                      )}
 
                       {/* Search Placeholder */}
                       <div className="space-y-1">
@@ -1170,6 +1493,133 @@ export default function Sidebar({
                           }}
                           className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                         />
+                      </div>
+
+                      {/* Nyhedsbrev (Newsletter) Settings */}
+                      <div className="pt-4 border-t border-slate-150 dark:border-slate-800 space-y-3">
+                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Nyhedsbrev Indstillinger</span>
+                        
+                        {/* Left Item Width */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-semibold text-slate-400 uppercase">
+                            <span>Tekst sektion Bredde</span>
+                            <span className="font-mono text-indigo-500">{(selectedElement.settings?.newsletterLeftWidth || 512)}px</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="200"
+                            max="800"
+                            value={selectedElement.settings?.newsletterLeftWidth || 512}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  newsletterLeftWidth: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="w-full accent-indigo-600 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+
+                        {/* Left Item Padding Left/Right */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[9px] text-slate-450 block font-semibold uppercase">Tekst Padding Venstre</label>
+                            <input
+                              type="number"
+                              value={selectedElement.settings?.newsletterLeftPaddingLeft || 0}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 0;
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    newsletterLeftPaddingLeft: val
+                                  }
+                                });
+                              }}
+                              className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[9px] text-slate-450 block font-semibold uppercase">Tekst Padding Højre</label>
+                            <input
+                              type="number"
+                              value={selectedElement.settings?.newsletterLeftPaddingRight || 0}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 0;
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    newsletterLeftPaddingRight: val
+                                  }
+                                });
+                              }}
+                              className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Right Item Width */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-semibold text-slate-400 uppercase">
+                            <span>Formular Sektion Bredde</span>
+                            <span className="font-mono text-indigo-500">{(selectedElement.settings?.newsletterRightWidth || 300)}px</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="200"
+                            max="600"
+                            value={selectedElement.settings?.newsletterRightWidth || 300}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  newsletterRightWidth: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="w-full accent-indigo-600 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+
+                        {/* Right Item Padding Left/Right */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[9px] text-slate-450 block font-semibold uppercase">Form Padding Venstre</label>
+                            <input
+                              type="number"
+                              value={selectedElement.settings?.newsletterRightPaddingLeft || 0}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 0;
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    newsletterRightPaddingLeft: val
+                                  }
+                                });
+                              }}
+                              className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-955 text-slate-800 dark:text-slate-100"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[9px] text-slate-450 block font-semibold uppercase">Form Padding Højre</label>
+                            <input
+                              type="number"
+                              value={selectedElement.settings?.newsletterRightPaddingRight || 0}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 0;
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    newsletterRightPaddingRight: val
+                                  }
+                                });
+                              }}
+                              className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-955 text-slate-800 dark:text-slate-100"
+                            />
+                          </div>
+                        </div>
                       </div>
 
                       {/* Upload Webshop Design File */}
@@ -3804,12 +4254,41 @@ export default function Sidebar({
         {activeTab === 'webshop' && (
           <div className="space-y-6 animate-in fade-in duration-150 text-left font-sans" id="tab-webshop-creator">
             <div className="space-y-1">
-              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider">Webshop Layout Designer</h4>
-              <p className="text-xs text-slate-400">Opret nye skabelonsider specifikt til din webshop. Du kan uploade layoutfiler eller designbilleder.</p>
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider">Webshop eCommerce Manager</h4>
+              <p className="text-xs text-slate-400">Administrer og rediger layouts på alle undersider i din webshop som selvstændige sider.</p>
             </div>
 
-            <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4">
-              <h5 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Opret ny Webshop side</h5>
+            {/* Store Navigation Pages list */}
+            <div className="space-y-3">
+              <h5 className="text-[11px] font-bold text-slate-450 dark:text-slate-400 uppercase tracking-wider block">Webshop Butikssider (eCommerce Pages)</h5>
+              <div className="grid gap-2">
+                {pages.filter(p => p.id.startsWith('webshop-')).map(p => {
+                  const isActive = p.id === activePageId;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => onNavigatePage && onNavigatePage(p.id)}
+                      className={`w-full p-3 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer ${
+                        isActive 
+                          ? 'bg-indigo-600 border-indigo-650 text-white shadow-md'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-850'
+                      }`}
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-xs uppercase tracking-wider">{p.name.replace(/^🛒\s/, '')}</span>
+                        <span className={`text-[10px] font-mono ${isActive ? 'text-indigo-200' : 'text-slate-400 dark:text-slate-500'}`}>
+                          /{p.slug}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-bold opacity-60">Rediger →</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4 mt-6">
+              <h5 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Opret ny Webshop Kampagneside</h5>
               
               {/* Page Title */}
               <div className="space-y-1.5">
@@ -3819,7 +4298,7 @@ export default function Sidebar({
                   placeholder="f.eks. Amager Butik, Vinter Udsalg"
                   value={newTemplateTitle}
                   onChange={(e) => setNewTemplateTitle(e.target.value)}
-                  className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-955 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
@@ -3855,25 +4334,9 @@ export default function Sidebar({
                 <span>Opret side & Åben i editor</span>
               </button>
             </div>
-
-            {/* Layouts List and Mappings helper note */}
-            <div className="space-y-3 pt-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-450 block">Status & vejledning</span>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed bg-slate-50 dark:bg-slate-955/20 p-3 rounded-lg border border-slate-205 dark:border-slate-800 space-y-1.5">
-                <p>
-                  <strong>1. Opret side:</strong> Indtast en titel, upload eventuelt dit design, og klik på knappen. Editoren åbner automatisk den nye side.
-                </p>
-                <p>
-                  <strong>2. Design frit:</strong> Tilføj eller tilpas sektioner og elementer for at matche dit design. Siden er 100% redigerbar.
-                </p>
-                <p>
-                  <strong>3. Forbind layout:</strong> Gå til <strong>Inspector</strong>-fanen, klik på din <strong>Webshop Butik</strong> komponent, og brug dropdown-menuen nederst til at anvende designet på den ønskede webshop-side!
-                </p>
-              </div>
-            </div>
           </div>
         )}
-
+        
         {/* =============== TAB: AI WRITER CO-COPILOT =============== */}
         {activeTab === 'ai' && (
           <div className="space-y-4 animate-in fade-in duration-150" id="tab-ai-copilot">
