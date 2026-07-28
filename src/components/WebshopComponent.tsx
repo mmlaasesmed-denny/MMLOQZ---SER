@@ -4127,24 +4127,24 @@ export default function WebshopComponent({
 
         {view === 'admin' && (loggedInUser?.email === 'admin@mmlaseshop.dk' || isPreviewMode) && (
           <div className="space-y-6 animate-in fade-in duration-300 text-left">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
               <div>
-                <h3 className="text-2xl font-black text-white uppercase tracking-wide flex items-center gap-2">
+                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
                   <ShieldCheck className="w-6 h-6 text-amber-400" />
                   {bt('Admin Kontrolpanel', 'Admin Control Panel')}
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">{bt('Administrer og hold styr på indkomne ordrer og leveringer.', 'Manage and keep track of incoming orders and deliveries.')}</p>
+                <p className="text-xs text-slate-600 mt-1">{bt('Administrer og hold styr på indkomne ordrer og leveringer.', 'Manage and keep track of incoming orders and deliveries.')}</p>
               </div>
               <div className="flex items-center gap-3">
                 {/* Language Toggle */}
-                <div className="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-xl p-1 select-none shrink-0 shadow-inner">
+                <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 select-none shrink-0 shadow-inner">
                   <button
                     type="button"
                     onClick={() => setAndDispatchBackendLang('da')}
                     className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border-none cursor-pointer ${
                       backendLang === 'da' 
                         ? 'bg-amber-400 text-slate-950 shadow-sm' 
-                        : 'bg-transparent text-slate-400 hover:text-white'
+                        : 'bg-transparent text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     DA
@@ -4155,7 +4155,7 @@ export default function WebshopComponent({
                     className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border-none cursor-pointer ${
                       backendLang === 'en' 
                         ? 'bg-amber-400 text-slate-950 shadow-sm' 
-                        : 'bg-transparent text-slate-400 hover:text-white'
+                        : 'bg-transparent text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     EN
@@ -4164,7 +4164,7 @@ export default function WebshopComponent({
 
                 <button
                   onClick={generateMockOrders}
-                  className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none shadow-md shadow-indigo-600/15 whitespace-nowrap"
+                  className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none shadow-md shadow-indigo-600/15 whitespace-nowrap"
                 >
                   {bt('Generer Testordrer', 'Generate Test Orders')}
                 </button>
@@ -4175,7 +4175,7 @@ export default function WebshopComponent({
                       window.location.hash = 'shop';
                     }
                   }}
-                  className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border border-slate-700 shadow-md whitespace-nowrap"
+                  className="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border border-slate-300 shadow-md whitespace-nowrap"
                 >
                   {bt('Luk Admin', 'Close Admin')}
                 </button>
@@ -4184,8 +4184,8 @@ export default function WebshopComponent({
 
             {/* KPI Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-slate-900/40 border border-slate-800/80 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
-                <div className="absolute -right-2 -bottom-2 opacity-5 text-white">
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
+                <div className="absolute -right-2 -bottom-2 opacity-5 text-slate-900">
                   <DollarSign className="w-20 h-20" />
                 </div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">{bt('Total Omsætning', 'Total Revenue')}</span>
@@ -4196,15 +4196,15 @@ export default function WebshopComponent({
                     .toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK
                 </p>
               </div>
-              <div className="bg-slate-900/40 border border-slate-800/80 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
-                <div className="absolute -right-2 -bottom-2 opacity-5 text-white">
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
+                <div className="absolute -right-2 -bottom-2 opacity-5 text-slate-900">
                   <ShoppingBag className="w-20 h-20" />
                 </div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">{bt('Samlet Antal Ordrer', 'Total Orders')}</span>
-                <p className="text-xl font-mono font-black text-white mt-1.5">{orders.length} {bt('stk', 'pcs')}</p>
+                <p className="text-xl font-mono font-black text-slate-900 mt-1.5">{orders.length} {bt('stk', 'pcs')}</p>
               </div>
-              <div className="bg-slate-900/40 border border-slate-800/80 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
-                <div className="absolute -right-2 -bottom-2 opacity-5 text-white">
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
+                <div className="absolute -right-2 -bottom-2 opacity-5 text-slate-900">
                   <Clock className="w-20 h-20" />
                 </div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">{bt('Nye Ordrer', 'New Orders')}</span>
@@ -4212,8 +4212,8 @@ export default function WebshopComponent({
                   {orders.filter(o => o.status === 'modtaget').length} {bt('stk', 'pcs')}
                 </p>
               </div>
-              <div className="bg-slate-900/40 border border-slate-800/80 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
-                <div className="absolute -right-2 -bottom-2 opacity-5 text-white">
+              <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
+                <div className="absolute -right-2 -bottom-2 opacity-5 text-slate-900">
                   <CheckCircle className="w-20 h-20" />
                 </div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider">{bt('Under Behandling', 'In Progress')}</span>
@@ -4224,7 +4224,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Admin Tab Switcher */}
-            <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-xl w-fit">
+            <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 border border-slate-200 rounded-xl w-fit">
               {(['orders', 'inventory', 'categories', 'subcategories', 'products'] as const).map(tab => {
                 const label = tab === 'orders' ? bt('Ordrer', 'Orders') :
                               tab === 'inventory' ? bt('Lagerstyring', 'Inventory') :
@@ -4236,8 +4236,8 @@ export default function WebshopComponent({
                     onClick={() => setAdminTab(tab)}
                     className={`px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider border-none transition-all cursor-pointer ${
                       adminTab === tab 
-                        ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/10' 
-                        : 'bg-transparent text-slate-400 hover:text-white'
+                        ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/30' 
+                        : 'bg-transparent text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     {label}
@@ -4249,7 +4249,7 @@ export default function WebshopComponent({
             {adminTab === 'orders' && (
               <>
                 {/* Filters Navigation */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1.5 border-b border-slate-800/40">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1.5 border-b border-slate-200">
                   {(['all', 'modtaget', 'godkendt', 'afsendt', 'annulleret'] as const).map(f => {
                     const label = f === 'all' ? bt('Alle Ordrer', 'All Orders') : 
                                   f === 'modtaget' ? bt('Nye (Modtaget)', 'New (Received)') : 
@@ -4263,8 +4263,8 @@ export default function WebshopComponent({
                         onClick={() => setActiveFilter(f)}
                         className={`px-3 py-1.5 rounded-xl border text-[11px] font-bold tracking-wide transition-all whitespace-nowrap cursor-pointer ${
                           isActive 
-                            ? 'bg-amber-400 text-slate-955 border-amber-400 shadow-md shadow-amber-400/10' 
-                            : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white'
+                            ? 'bg-amber-400 text-slate-955 border-amber-400 shadow-md shadow-amber-400/30' 
+                            : 'bg-slate-100 text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'
                         }`}
                       >
                         {label} ({count})
@@ -4276,9 +4276,9 @@ export default function WebshopComponent({
                 {/* Orders Cards Grid */}
                 <div className="space-y-3">
                   {orders.filter(o => activeFilter === 'all' || o.status === activeFilter).length === 0 ? (
-                    <div className="text-center py-10 bg-slate-900/20 border border-slate-800/40 rounded-2xl">
+                    <div className="text-center py-10 bg-slate-50 border border-slate-200 rounded-2xl">
                       <Package className="w-10 h-10 text-slate-600 mx-auto mb-2.5" />
-                      <p className="text-xs text-slate-505 italic">{bt('Ingen ordrer fundet i denne kategori.', 'No orders found in this category.')}</p>
+                      <p className="text-xs text-slate-500 italic">{bt('Ingen ordrer fundet i denne kategori.', 'No orders found in this category.')}</p>
                     </div>
                   ) : (
                     <div className="grid gap-3">
@@ -4294,22 +4294,22 @@ export default function WebshopComponent({
                             <div
                               key={order.id}
                               onClick={() => setActiveDetailOrder(order)}
-                              className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl hover:border-slate-700 hover:bg-slate-900 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                              className="bg-white border border-slate-200 p-4 rounded-2xl hover:border-slate-300 hover:bg-slate-100 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                             >
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                   <span className="font-mono text-xs font-black text-amber-400">{order.id}</span>
                                   <span className="text-[9px] font-extrabold uppercase text-slate-500 tracking-wider">• {order.date}</span>
                                 </div>
-                                <h4 className="text-sm font-bold text-white leading-tight">{order.customer.name}</h4>
-                                <div className="flex items-center gap-2.5 text-[10px] text-slate-400">
+                                <h4 className="text-sm font-bold text-slate-900 leading-tight">{order.customer.name}</h4>
+                                <div className="flex items-center gap-2.5 text-[10px] text-slate-600">
                                   <span>{order.items.reduce((sum, it) => sum + it.quantity, 0)} {bt('produkter', 'products')}</span>
                                   <span>•</span>
-                                  <span className="font-bold text-slate-300">{order.total.toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
+                                  <span className="font-bold text-slate-700">{order.total.toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
                                   {order.shipping && (
                                     <>
                                       <span>•</span>
-                                      <span className="text-slate-400 flex items-center gap-1">
+                                      <span className="text-slate-600 flex items-center gap-1">
                                         <Truck className="w-3 h-3 text-amber-505" />
                                         {order.shipping.carrier.toUpperCase()}
                                       </span>
@@ -4358,7 +4358,7 @@ export default function WebshopComponent({
                                   {!isAfsendt && !isAnnulleret && (
                                     <button
                                       onClick={() => updateOrderStatus(order.id, 'annulleret')}
-                                      className="px-2.5 py-1 bg-slate-800 hover:bg-rose-955 hover:text-rose-455 text-slate-400 font-bold text-[10px] rounded-lg border border-slate-700 hover:border-rose-900 transition-all cursor-pointer"
+                                      className="px-2.5 py-1 bg-slate-200 hover:bg-rose-955 hover:text-rose-455 text-slate-600 font-bold text-[10px] rounded-lg border border-slate-300 hover:border-rose-900 transition-all cursor-pointer"
                                     >
                                       {bt('Annuller', 'Cancel')}
                                     </button>
@@ -4377,20 +4377,20 @@ export default function WebshopComponent({
             {adminTab === 'inventory' && (
               <>
                 {/* Inventory Filter/Search Header */}
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white p-4 border border-slate-200 rounded-2xl">
                   <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-505" />
+                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
                     <input
                       type="text"
                       placeholder={bt('Søg efter produkt, underkategori eller mærke...', 'Search for product, subcategory, or brand...')}
                       value={invSearchQuery}
                       onChange={e => setInvSearchQuery(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 pl-9 pr-8 py-2 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                      className="w-full bg-white border border-slate-200 pl-9 pr-8 py-2 rounded-xl text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                     />
                     {invSearchQuery && (
                       <button
                         onClick={() => setInvSearchQuery('')}
-                        className="absolute right-3 top-2 w-5 h-5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center text-[10px] font-bold border-none cursor-pointer"
+                        className="absolute right-3 top-2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-[10px] font-bold border-none cursor-pointer"
                       >
                         ✕
                       </button>
@@ -4402,11 +4402,11 @@ export default function WebshopComponent({
                 </div>
 
                 {/* Inventory Table */}
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg shadow-slate-200">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase text-[9px] font-black tracking-wider">
+                        <tr className="bg-slate-100 border-b border-slate-200 text-slate-600 uppercase text-[9px] font-black tracking-wider">
                           <th className="p-4">{bt('Vare / Model', 'Item / Model')}</th>
                           <th className="p-4">{bt('Underkategori', 'Subcategory')}</th>
                           <th className="p-4">{bt('Pris', 'Price')}</th>
@@ -4414,10 +4414,10 @@ export default function WebshopComponent({
                           <th className="p-4 text-center w-40">{bt('Lagerbeholdning', 'Stock Level')}</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/60">
+                      <tbody className="divide-y divide-slate-200">
                         {filteredInvProducts.length === 0 ? (
                           <tr>
-                            <td colSpan={5} className="p-8 text-center text-slate-505 italic">
+                            <td colSpan={5} className="p-8 text-center text-slate-500 italic">
                               {bt('Ingen produkter matcher din søgning.', 'No products match your search.')}
                             </td>
                           </tr>
@@ -4440,21 +4440,21 @@ export default function WebshopComponent({
                             }
 
                             return (
-                              <tr key={p.id} className="hover:bg-slate-900/30 transition-colors">
+                              <tr key={p.id} className="hover:bg-slate-100 transition-colors">
                                 {/* Product Details */}
                                 <td className="p-4 flex items-center gap-3">
-                                  <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl bg-slate-950 border border-slate-800 shrink-0" />
+                                  <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl bg-white border border-slate-200 shrink-0" />
                                   <div>
-                                    <h5 className="font-bold text-white leading-tight uppercase text-[11px]">{p.name}</h5>
+                                    <h5 className="font-bold text-slate-900 leading-tight uppercase text-[11px]">{p.name}</h5>
                                     <span className="text-[9px] font-bold text-slate-500 tracking-wider font-mono">ID: {p.id}</span>
                                   </div>
                                 </td>
                                 {/* Subcategory */}
-                                <td className="p-4 text-slate-350 font-medium">
+                                <td className="p-4 text-slate-700 font-medium">
                                   {subcat?.name || 'N/A'}
                                 </td>
                                 {/* Price */}
-                                <td className="p-4 font-mono font-bold text-slate-300">
+                                <td className="p-4 font-mono font-bold text-slate-700">
                                   {p.price.toLocaleString('da-DK')},- DKK
                                 </td>
                                 {/* Status */}
@@ -4468,7 +4468,7 @@ export default function WebshopComponent({
                                   <div className="flex items-center justify-center gap-1">
                                     <button
                                       onClick={() => adjustStockLevel(p.id, -1)}
-                                      className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 transition-all text-white font-extrabold text-sm flex items-center justify-center border-none cursor-pointer"
+                                      className="w-7 h-7 rounded-lg bg-slate-200 hover:bg-slate-300 active:scale-95 transition-all text-slate-900 font-extrabold text-sm flex items-center justify-center border-none cursor-pointer"
                                     >
                                       -
                                     </button>
@@ -4479,11 +4479,11 @@ export default function WebshopComponent({
                                         const val = parseInt(e.target.value);
                                         setStockValue(p.id, isNaN(val) ? 0 : Math.max(0, val));
                                       }}
-                                      className="w-12 h-7 bg-slate-950 border border-slate-800 text-center font-mono font-bold text-xs text-white rounded-lg focus:outline-none focus:border-amber-400"
+                                      className="w-12 h-7 bg-white border border-slate-200 text-center font-mono font-bold text-xs text-slate-900 rounded-lg focus:outline-none focus:border-amber-400"
                                     />
                                     <button
                                       onClick={() => adjustStockLevel(p.id, 1)}
-                                      className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 transition-all text-white font-extrabold text-sm flex items-center justify-center border-none cursor-pointer"
+                                      className="w-7 h-7 rounded-lg bg-slate-200 hover:bg-slate-300 active:scale-95 transition-all text-slate-900 font-extrabold text-sm flex items-center justify-center border-none cursor-pointer"
                                     >
                                       +
                                     </button>
@@ -4502,8 +4502,8 @@ export default function WebshopComponent({
 
             {adminTab === 'categories' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-center bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
-                  <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">
+                <div className="flex justify-between items-center bg-white p-4 border border-slate-200 rounded-2xl">
+                  <span className="text-[10px] font-extrabold uppercase text-slate-600 tracking-wider">
                     {bt('Administrer butikkens hovedkategorier', 'Manage main shop categories')}
                   </span>
                   <button
@@ -4519,11 +4519,11 @@ export default function WebshopComponent({
                   </button>
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg shadow-slate-200">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-955/60 border-b border-slate-800 text-slate-400 uppercase text-[9px] font-black tracking-wider">
+                        <tr className="bg-slate-100 border-b border-slate-200 text-slate-600 uppercase text-[9px] font-black tracking-wider">
                           <th className="p-4 w-12 text-center">{bt('Ikon', 'Icon')}</th>
                           <th className="p-4">{bt('Navn', 'Name')}</th>
                           <th className="p-4">{bt('ID (Slug)', 'ID (Slug)')}</th>
@@ -4531,20 +4531,20 @@ export default function WebshopComponent({
                           <th className="p-4 text-right w-40">{bt('Handlinger', 'Actions')}</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/60">
+                      <tbody className="divide-y divide-slate-200">
                         {categories.length === 0 ? (
                           <tr>
-                            <td colSpan={5} className="p-8 text-center text-slate-505 italic">
+                            <td colSpan={5} className="p-8 text-center text-slate-500 italic">
                               {bt('Ingen kategorier fundet.', 'No categories found.')}
                             </td>
                           </tr>
                         ) : (
                           categories.map(cat => (
-                            <tr key={cat.id} className="hover:bg-slate-900/30 transition-colors">
+                            <tr key={cat.id} className="hover:bg-slate-100 transition-colors">
                               <td className="p-4 text-center text-xl">{cat.icon}</td>
-                              <td className="p-4 font-bold text-white uppercase">{cat.name}</td>
-                              <td className="p-4 text-slate-450 font-mono">{cat.id}</td>
-                              <td className="p-4 text-slate-300 font-medium max-w-xs truncate">{cat.description}</td>
+                              <td className="p-4 font-bold text-slate-900 uppercase">{cat.name}</td>
+                              <td className="p-4 text-slate-600 font-mono">{cat.id}</td>
+                              <td className="p-4 text-slate-700 font-medium max-w-xs truncate">{cat.description}</td>
                               <td className="p-4 text-right">
                                 <div className="flex items-center justify-end gap-2">
                                   <button
@@ -4553,14 +4553,14 @@ export default function WebshopComponent({
                                       isNew: false,
                                       data: { ...cat }
                                     })}
-                                    className="px-2.5 py-1 bg-slate-850 hover:bg-slate-800 text-slate-355 font-bold text-[10px] rounded-lg border border-slate-700 transition-all cursor-pointer flex items-center gap-1"
+                                    className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-355 font-bold text-[10px] rounded-lg border border-slate-300 transition-all cursor-pointer flex items-center gap-1"
                                   >
                                     <Settings className="w-3 h-3 text-amber-500" />
                                     {bt('Rediger', 'Edit')}
                                   </button>
                                   <button
                                     onClick={() => handleDeleteItem('category', cat.id)}
-                                    className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 font-bold text-[10px] rounded-lg border border-rose-500/20 transition-all cursor-pointer flex items-center gap-1"
+                                    className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 hover:text-slate-900 text-rose-400 font-bold text-[10px] rounded-lg border border-rose-500/20 transition-all cursor-pointer flex items-center gap-1"
                                   >
                                     <Trash2 className="w-3 h-3" />
                                     {bt('Slet', 'Delete')}
@@ -4579,8 +4579,8 @@ export default function WebshopComponent({
 
             {adminTab === 'subcategories' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-center bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
-                  <span className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">
+                <div className="flex justify-between items-center bg-white p-4 border border-slate-200 rounded-2xl">
+                  <span className="text-[10px] font-extrabold uppercase text-slate-600 tracking-wider">
                     {bt('Administrer underkategorier og deres mærke-tilknytninger', 'Manage subcategories and their brand associations')}
                   </span>
                   <button
@@ -4596,11 +4596,11 @@ export default function WebshopComponent({
                   </button>
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg shadow-slate-200">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-955/60 border-b border-slate-800 text-slate-400 uppercase text-[9px] font-black tracking-wider">
+                        <tr className="bg-slate-100 border-b border-slate-200 text-slate-600 uppercase text-[9px] font-black tracking-wider">
                           <th className="p-4">{bt('Overordnet Kategori', 'Parent Category')}</th>
                           <th className="p-4">{bt('Navn', 'Name')}</th>
                           <th className="p-4">{bt('ID (Slug)', 'ID (Slug)')}</th>
@@ -4608,10 +4608,10 @@ export default function WebshopComponent({
                           <th className="p-4 text-right w-40">{bt('Handlinger', 'Actions')}</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/60">
+                      <tbody className="divide-y divide-slate-200">
                         {subcategories.length === 0 ? (
                           <tr>
-                            <td colSpan={5} className="p-8 text-center text-slate-550 italic">
+                            <td colSpan={5} className="p-8 text-center text-slate-600 italic">
                               {bt('Ingen underkategorier fundet.', 'No subcategories found.')}
                             </td>
                           </tr>
@@ -4623,11 +4623,11 @@ export default function WebshopComponent({
                               .map(b => b.name)
                               .join(', ') || bt('Ingen (Direkte produkter)', 'None (Direct products)');
                             return (
-                              <tr key={sub.id} className="hover:bg-slate-900/30 transition-colors">
+                              <tr key={sub.id} className="hover:bg-slate-100 transition-colors">
                                 <td className="p-4 text-amber-405 font-bold uppercase">{parentCat?.name || sub.categoryId}</td>
-                                <td className="p-4 font-bold text-white">{sub.name}</td>
-                                <td className="p-4 text-slate-450 font-mono">{sub.id}</td>
-                                <td className="p-4 text-slate-300 font-medium max-w-xs truncate">{brandNames}</td>
+                                <td className="p-4 font-bold text-slate-900">{sub.name}</td>
+                                <td className="p-4 text-slate-600 font-mono">{sub.id}</td>
+                                <td className="p-4 text-slate-700 font-medium max-w-xs truncate">{brandNames}</td>
                                 <td className="p-4 text-right">
                                   <div className="flex items-center justify-end gap-2">
                                     <button
@@ -4636,14 +4636,14 @@ export default function WebshopComponent({
                                         isNew: false,
                                         data: { ...sub }
                                       })}
-                                      className="px-2.5 py-1 bg-slate-850 hover:bg-slate-800 text-slate-350 font-bold text-[10px] rounded-lg border border-slate-700 transition-all cursor-pointer flex items-center gap-1"
+                                      className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] rounded-lg border border-slate-300 transition-all cursor-pointer flex items-center gap-1"
                                     >
                                       <Settings className="w-3 h-3 text-amber-505" />
                                       {bt('Rediger', 'Edit')}
                                     </button>
                                     <button
                                       onClick={() => handleDeleteItem('subcategory', sub.id)}
-                                      className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 font-bold text-[10px] rounded-lg border border-rose-500/20 transition-all cursor-pointer flex items-center gap-1"
+                                      className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 hover:text-slate-900 text-rose-400 font-bold text-[10px] rounded-lg border border-rose-500/20 transition-all cursor-pointer flex items-center gap-1"
                                     >
                                       <Trash2 className="w-3 h-3" />
                                       {bt('Slet', 'Delete')}
@@ -4663,20 +4663,20 @@ export default function WebshopComponent({
 
             {adminTab === 'products' && (
               <div className="space-y-4">
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-slate-900/60 p-4 border border-slate-800 rounded-2xl">
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white p-4 border border-slate-200 rounded-2xl">
                   <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-505" />
+                    <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
                     <input
                       type="text"
                       placeholder={bt('Søg efter produkt...', 'Search for product...')}
                       value={invSearchQuery}
                       onChange={e => setInvSearchQuery(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 pl-9 pr-8 py-2 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                      className="w-full bg-white border border-slate-200 pl-9 pr-8 py-2 rounded-xl text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                     />
                     {invSearchQuery && (
                       <button
                         onClick={() => setInvSearchQuery('')}
-                        className="absolute right-3 top-2 w-5 h-5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 flex items-center justify-center text-[10px] font-bold border-none cursor-pointer"
+                        className="absolute right-3 top-2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-[10px] font-bold border-none cursor-pointer"
                       >
                         ✕
                       </button>
@@ -4695,11 +4695,11 @@ export default function WebshopComponent({
                   </button>
                 </div>
 
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-lg shadow-slate-200">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-955/60 border-b border-slate-800 text-slate-400 uppercase text-[9px] font-black tracking-wider">
+                        <tr className="bg-slate-100 border-b border-slate-200 text-slate-600 uppercase text-[9px] font-black tracking-wider">
                           <th className="p-4">{bt('Billede & Vare', 'Image & Item')}</th>
                           <th className="p-4">{bt('Underkategori', 'Subcategory')}</th>
                           <th className="p-4">{bt('Mærke', 'Brand')}</th>
@@ -4708,10 +4708,10 @@ export default function WebshopComponent({
                           <th className="p-4 text-right w-40">{bt('Handlinger', 'Actions')}</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/60">
+                      <tbody className="divide-y divide-slate-200">
                         {filteredInvProducts.length === 0 ? (
                           <tr>
-                            <td colSpan={6} className="p-8 text-center text-slate-550 italic">
+                            <td colSpan={6} className="p-8 text-center text-slate-600 italic">
                               {bt('Ingen produkter fundet.', 'No products found.')}
                             </td>
                           </tr>
@@ -4721,18 +4721,18 @@ export default function WebshopComponent({
                             const brand = WEBSHOP_BRANDS.find(b => b.id === p.brandId);
                             const currentStock = p.stock !== undefined ? p.stock : 15;
                             return (
-                              <tr key={p.id} className="hover:bg-slate-900/30 transition-colors">
+                              <tr key={p.id} className="hover:bg-slate-100 transition-colors">
                                 <td className="p-4 flex items-center gap-3">
-                                  <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl bg-slate-950 border border-slate-800 shrink-0" />
+                                  <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl bg-white border border-slate-200 shrink-0" />
                                   <div>
-                                    <h5 className="font-bold text-white leading-tight uppercase text-[11px]">{p.name}</h5>
+                                    <h5 className="font-bold text-slate-900 leading-tight uppercase text-[11px]">{p.name}</h5>
                                     <span className="text-[9px] font-bold text-slate-500 tracking-wider font-mono">ID: {p.id}</span>
                                   </div>
                                 </td>
-                                <td className="p-4 text-slate-350 font-medium">{subcat?.name || p.subcategoryId}</td>
-                                <td className="p-4 text-slate-350 font-medium">{brand?.name || bt('Intet (Direkte)', 'None (Direct)')}</td>
-                                <td className="p-4 font-mono font-bold text-slate-300">{p.price.toLocaleString('da-DK')},- DKK</td>
-                                <td className="p-4 text-slate-300 font-bold font-mono">{currentStock} {bt('stk', 'pcs')}</td>
+                                <td className="p-4 text-slate-700 font-medium">{subcat?.name || p.subcategoryId}</td>
+                                <td className="p-4 text-slate-700 font-medium">{brand?.name || bt('Intet (Direkte)', 'None (Direct)')}</td>
+                                <td className="p-4 font-mono font-bold text-slate-700">{p.price.toLocaleString('da-DK')},- DKK</td>
+                                <td className="p-4 text-slate-700 font-bold font-mono">{currentStock} {bt('stk', 'pcs')}</td>
                                 <td className="p-4 text-right">
                                   <div className="flex items-center justify-end gap-2">
                                     <button
@@ -4741,14 +4741,14 @@ export default function WebshopComponent({
                                         isNew: false,
                                         data: { ...p }
                                       })}
-                                      className="px-2.5 py-1 bg-slate-855 hover:bg-slate-800 text-slate-350 font-bold text-[10px] rounded-lg border border-slate-700 transition-all cursor-pointer flex items-center gap-1"
+                                      className="px-2.5 py-1 bg-slate-855 hover:bg-slate-200 text-slate-700 font-bold text-[10px] rounded-lg border border-slate-300 transition-all cursor-pointer flex items-center gap-1"
                                     >
                                       <Settings className="w-3 h-3 text-amber-505" />
                                       {bt('Rediger', 'Edit')}
                                     </button>
                                     <button
                                       onClick={() => handleDeleteItem('product', p.id)}
-                                      className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-400 font-bold text-[10px] rounded-lg border border-rose-500/20 transition-all cursor-pointer flex items-center gap-1"
+                                      className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 hover:text-slate-900 text-rose-400 font-bold text-[10px] rounded-lg border border-rose-500/20 transition-all cursor-pointer flex items-center gap-1"
                                     >
                                       <Trash2 className="w-3 h-3" />
                                       {bt('Slet', 'Delete')}
@@ -4771,9 +4771,9 @@ export default function WebshopComponent({
         {/* EDIT ITEM DIALOG MODAL */}
         {editingItem && (
           <div className="fixed inset-0 z-55 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 overflow-y-auto">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl max-w-lg w-full text-left space-y-4 my-8">
-              <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h4 className="text-base font-black text-white uppercase tracking-wide">
+            <div className="bg-slate-100 border border-slate-200 rounded-3xl p-6 shadow-2xl max-w-lg w-full text-left space-y-4 my-8">
+              <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+                <h4 className="text-base font-black text-slate-900 uppercase tracking-wide">
                   {editingItem.isNew ? bt('Tilføj', 'Add') : bt('Rediger', 'Edit')}{' '}
                   {editingItem.type === 'category' ? bt('Kategori', 'Category') :
                    editingItem.type === 'subcategory' ? bt('Underkategori', 'Subcategory') : bt('Produkt', 'Product')}
@@ -4781,17 +4781,17 @@ export default function WebshopComponent({
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="bg-transparent hover:text-white text-slate-400 font-bold border-none cursor-pointer text-sm"
+                  className="bg-transparent hover:text-slate-900 text-slate-600 font-bold border-none cursor-pointer text-sm"
                 >
                   ✕
                 </button>
               </div>
 
-              <form onSubmit={handleSaveItem} className="space-y-4 text-xs font-semibold text-slate-350">
+              <form onSubmit={handleSaveItem} className="space-y-4 text-xs font-semibold text-slate-700">
                 {editingItem.type === 'category' && (
                   <>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] uppercase text-slate-450 tracking-wider">{bt('Kategorinavn', 'Category Name')}</label>
+                      <label className="text-[10px] uppercase text-slate-600 tracking-wider">{bt('Kategorinavn', 'Category Name')}</label>
                       <input
                         type="text"
                         required
@@ -4801,7 +4801,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, name: e.target.value }
                         })}
                         placeholder={bt('F.eks. Låse & Cylindre', 'E.g. Locks & Cylinders')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
 
@@ -4817,7 +4817,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, id: e.target.value }
                         })}
                         placeholder={bt('F.eks. lase-cylindre', 'E.g. locks-cylinders')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
 
@@ -4832,7 +4832,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, icon: e.target.value }
                         })}
                         placeholder="F.eks. 🔒"
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
 
@@ -4846,7 +4846,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, description: e.target.value }
                         })}
                         placeholder={bt('Beskriv kategorien...', 'Describe the category...')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-sans font-medium"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-sans font-medium"
                       />
                     </div>
 
@@ -4860,7 +4860,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, image: e.target.value }
                         })}
                         placeholder={bt('Billede URL til banner (f.eks. Unsplash link)...', 'Image URL for banner (e.g. Unsplash link)...')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
                   </>
@@ -4879,7 +4879,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, name: e.target.value }
                         })}
                         placeholder={bt('F.eks. Hængelåse (Padlocks)', 'E.g. Padlocks')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
 
@@ -4895,7 +4895,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, id: e.target.value }
                         })}
                         placeholder={bt('F.eks. haengelaase', 'E.g. padlocks')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
 
@@ -4908,7 +4908,7 @@ export default function WebshopComponent({
                           ...editingItem,
                           data: { ...editingItem.data, categoryId: e.target.value }
                         })}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       >
                         <option value="">{bt('Vælg kategori...', 'Select category...')}</option>
                         {categories.map(c => (
@@ -4927,7 +4927,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, description: e.target.value }
                         })}
                         placeholder={bt('Kort introduktion til underkategorien...', 'Short introduction to subcategory...')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-450 focus:ring-1 focus:ring-amber-450 transition-all font-sans font-medium"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-450 focus:ring-1 focus:ring-amber-450 transition-all font-sans font-medium"
                       />
                     </div>
 
@@ -4941,17 +4941,17 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, detailedDescription: e.target.value }
                         })}
                         placeholder={bt('Uddybende produkttekst vist øverst på kategorisiden...', 'Detailed description shown at the top of category page...')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-450 focus:ring-1 focus:ring-amber-450 transition-all font-sans font-medium"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-450 focus:ring-1 focus:ring-amber-450 transition-all font-sans font-medium"
                       />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[10px] uppercase text-slate-455 tracking-wider mb-1">{bt('Tilknyttede Mærker', 'Associated Brands')}</label>
-                      <div className="grid grid-cols-2 gap-2 bg-slate-955 p-3 border border-slate-800 rounded-xl">
+                      <div className="grid grid-cols-2 gap-2 bg-white p-3 border border-slate-200 rounded-xl">
                         {WEBSHOP_BRANDS.map(brand => {
                           const isChecked = editingItem.data.brandIds?.includes(brand.id);
                           return (
-                            <label key={brand.id} className="flex items-center gap-2 text-slate-300 font-medium cursor-pointer hover:text-white">
+                            <label key={brand.id} className="flex items-center gap-2 text-slate-700 font-medium cursor-pointer hover:text-slate-900">
                               <input
                                 type="checkbox"
                                 checked={isChecked}
@@ -4965,7 +4965,7 @@ export default function WebshopComponent({
                                     data: { ...editingItem.data, brandIds: updated }
                                   });
                                 }}
-                                className="rounded border-slate-800 text-amber-500 focus:ring-amber-500 bg-slate-900"
+                                className="rounded border-slate-200 text-amber-500 focus:ring-amber-500 bg-slate-100"
                               />
                               <span>{brand.name}</span>
                             </label>
@@ -4989,7 +4989,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, name: e.target.value }
                         })}
                         placeholder={bt('F.eks. Ruko Triton 501 Cylinder', 'E.g. Cylinder Lock Triton 501')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
 
@@ -5005,7 +5005,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, id: e.target.value }
                         })}
                         placeholder={bt('F.eks. prod-ruko-triton', 'E.g. prod-lock-triton')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
 
@@ -5018,7 +5018,7 @@ export default function WebshopComponent({
                           ...editingItem,
                           data: { ...editingItem.data, subcategoryId: e.target.value }
                         })}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       >
                         <option value="">{bt('Vælg underkategori...', 'Select subcategory...')}</option>
                         {subcategories.map(s => (
@@ -5035,7 +5035,7 @@ export default function WebshopComponent({
                           ...editingItem,
                           data: { ...editingItem.data, brandId: e.target.value }
                         })}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       >
                         <option value="">{bt('Intet (Direkte produkt uden mærke)', 'None (Direct product without brand)')}</option>
                         {WEBSHOP_BRANDS.map(b => (
@@ -5057,7 +5057,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, price: parseFloat(e.target.value) }
                         })}
                         placeholder="F.eks. 1249"
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
 
@@ -5071,7 +5071,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, image: e.target.value }
                         })}
                         placeholder={bt('Billede URL link...', 'Image URL link...')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
 
@@ -5085,7 +5085,7 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, badges: e.target.value }
                         })}
                         placeholder={bt('F.eks. Høj Sikkerhed, Patenteret, Udsolgt', 'E.g. High Security, Patented')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-semibold"
                       />
                     </div>
 
@@ -5100,7 +5100,7 @@ export default function WebshopComponent({
                             data: { ...editingItem.data, color: e.target.value }
                           })}
                           placeholder={bt('sølv', 'silver')}
-                          className="bg-slate-955 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                          className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-400"
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -5113,7 +5113,7 @@ export default function WebshopComponent({
                             data: { ...editingItem.data, shape: e.target.value }
                           })}
                           placeholder={bt('rund', 'round')}
-                          className="bg-slate-955 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                          className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-400"
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -5126,7 +5126,7 @@ export default function WebshopComponent({
                             data: { ...editingItem.data, size: e.target.value }
                           })}
                           placeholder={bt('standard', 'standard')}
-                          className="bg-slate-955 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                          className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-400"
                         />
                       </div>
                     </div>
@@ -5141,7 +5141,7 @@ export default function WebshopComponent({
                           ...editingItem,
                           data: { ...editingItem.data, stock: parseInt(e.target.value) || 0 }
                         })}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-mono font-semibold"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-mono font-semibold"
                       />
                     </div>
 
@@ -5155,17 +5155,17 @@ export default function WebshopComponent({
                           data: { ...editingItem.data, description: e.target.value }
                         })}
                         placeholder={bt('Produktbeskrivelse...', 'Product description...')}
-                        className="bg-slate-955 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-sans font-medium"
+                        className="bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all font-sans font-medium"
                       />
                     </div>
                   </div>
                 )}
 
-                <div className="flex items-center justify-end gap-2 border-t border-slate-800 pt-3">
+                <div className="flex items-center justify-end gap-2 border-t border-slate-200 pt-3">
                   <button
                     type="button"
                     onClick={() => setEditingItem(null)}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition-all cursor-pointer border border-slate-700 uppercase tracking-wide"
+                    className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition-all cursor-pointer border border-slate-300 uppercase tracking-wide"
                   >
                     {bt('Annuller', 'Cancel')}
                   </button>
@@ -5199,7 +5199,7 @@ export default function WebshopComponent({
           }}
         >
           <div 
-            className="w-full max-w-sm bg-white border border-slate-200 p-6 rounded-3xl text-center shadow-xl animate-in zoom-in-95 duration-200"
+            className="w-full max-w-sm bg-white border border-slate-200 p-6 rounded-3xl text-center shadow-lg shadow-slate-200 animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-4 text-emerald-600">
@@ -5235,43 +5235,43 @@ export default function WebshopComponent({
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200"
         >
           <div 
-            className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col text-left text-slate-200 font-sans max-h-[90vh]"
+            className="w-full max-w-lg bg-slate-100 border border-slate-200 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col text-left text-slate-700 font-sans max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Window bar */}
-            <div className="bg-slate-950 px-4 py-3 border-b border-slate-850 flex items-center justify-between">
+            <div className="bg-white px-4 py-3 border-b border-slate-850 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-rose-500" />
                 <div className="w-3 h-3 rounded-full bg-amber-500" />
                 <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="text-[10px] text-slate-400 font-bold ml-2 tracking-wide uppercase">Simuleret E-mail Klient</span>
+                <span className="text-[10px] text-slate-600 font-bold ml-2 tracking-wide uppercase">Simuleret E-mail Klient</span>
               </div>
               <button 
                 onClick={() => setSimulatedEmail(null)}
-                className="text-slate-400 hover:text-white text-xs font-bold bg-transparent border-none cursor-pointer"
+                className="text-slate-600 hover:text-slate-900 text-xs font-bold bg-transparent border-none cursor-pointer"
               >
                 Luk [X]
               </button>
             </div>
 
             {/* Email Headers */}
-            <div className="p-4 bg-slate-950/40 border-b border-slate-850 space-y-2 text-xs">
+            <div className="p-4 bg-slate-100 border-b border-slate-850 space-y-2 text-xs">
               <div>
                 <span className="text-slate-500 font-bold uppercase tracking-wider">Fra:</span>
                 <span className="text-amber-400 font-bold ml-2">MM Låseshop &lt;no-reply@mmlaseshop.dk&gt;</span>
               </div>
               <div>
-                <span className="text-slate-505 font-bold uppercase tracking-wider">Til:</span>
-                <span className="text-slate-200 font-medium ml-2">{simulatedEmail.to}</span>
+                <span className="text-slate-500 font-bold uppercase tracking-wider">Til:</span>
+                <span className="text-slate-700 font-medium ml-2">{simulatedEmail.to}</span>
               </div>
               <div>
-                <span className="text-slate-505 font-bold uppercase tracking-wider">Emne:</span>
-                <span className="text-white font-extrabold ml-2">{simulatedEmail.subject}</span>
+                <span className="text-slate-500 font-bold uppercase tracking-wider">Emne:</span>
+                <span className="text-slate-900 font-extrabold ml-2">{simulatedEmail.subject}</span>
               </div>
             </div>
 
             {/* Email Body */}
-            <div className="p-5 space-y-4 text-xs leading-relaxed text-slate-300 max-h-[250px] overflow-y-auto font-mono flex-1">
+            <div className="p-5 space-y-4 text-xs leading-relaxed text-slate-700 max-h-[250px] overflow-y-auto font-mono flex-1">
               <p>Kære kunde,</p>
               <p>
                 Tak for din bestilling hos <strong>MM Låseshop</strong>.
@@ -5279,7 +5279,7 @@ export default function WebshopComponent({
               <p>
                 Da du ikke var logget ind, har vi automatisk oprettet en konto til dig for at gøre dine fremtidige bestillinger nemmere.
               </p>
-              <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1">
+              <div className="p-3 bg-white/80 border border-slate-200 rounded-xl space-y-1">
                 <div><strong>Login E-mail:</strong> {simulatedEmail.to}</div>
                 <div><strong>Midlertidig Password:</strong> <span className="text-amber-400 font-bold">{simulatedEmail.tempPass}</span></div>
               </div>
@@ -5306,7 +5306,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Email Footer */}
-            <div className="bg-slate-950/60 px-4 py-3 border-t border-slate-850 text-[10px] text-slate-500 text-center font-medium">
+            <div className="bg-slate-100 px-4 py-3 border-t border-slate-850 text-[10px] text-slate-500 text-center font-medium">
               Dette er en simuleret e-mail for at demonstrere flowet. I produktion sendes denne e-mail til kundens indbakke.
             </div>
           </div>
@@ -5319,18 +5319,18 @@ export default function WebshopComponent({
           onClick={() => setActiveDetailOrder(null)}
         >
           <div 
-            className="w-full max-w-2xl bg-slate-900 border border-slate-800 p-6 rounded-3xl text-left shadow-2xl animate-in zoom-in-95 duration-200 relative overflow-y-auto max-h-[90vh]"
+            className="w-full max-w-2xl bg-slate-100 border border-slate-200 p-6 rounded-3xl text-left shadow-2xl animate-in zoom-in-95 duration-200 relative overflow-y-auto max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-4">
               <div>
                 <span className="font-mono text-sm font-black text-amber-400">{activeDetailOrder.id}</span>
-                <p className="text-[10px] text-slate-400 font-bold tracking-wide mt-0.5">Bestillingsdato: {activeDetailOrder.date}</p>
+                <p className="text-[10px] text-slate-600 font-bold tracking-wide mt-0.5">Bestillingsdato: {activeDetailOrder.date}</p>
               </div>
               <button
                 onClick={() => setActiveDetailOrder(null)}
-                className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center font-bold transition-all border border-slate-700 cursor-pointer"
+                className="w-8 h-8 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-900 flex items-center justify-center font-bold transition-all border border-slate-300 cursor-pointer"
               >
                 ✕
               </button>
@@ -5341,45 +5341,45 @@ export default function WebshopComponent({
               {/* Left Column: Customer & Shipping Details */}
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <h4 className="text-[10.5px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                  <h4 className="text-[10.5px] font-black uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-amber-500" />
                     Kundeoplysninger
                   </h4>
-                  <div className="bg-slate-950/40 border border-slate-800/60 p-3 rounded-xl space-y-1 text-xs">
-                    <p className="text-white font-bold">{activeDetailOrder.customer.name}</p>
-                    <p className="text-slate-300"><span className="text-slate-505">Email:</span> {activeDetailOrder.customer.email}</p>
-                    <p className="text-slate-300"><span className="text-slate-505">Tlf:</span> {activeDetailOrder.customer.phone}</p>
+                  <div className="bg-slate-100 border border-slate-200 p-3 rounded-xl space-y-1 text-xs">
+                    <p className="text-slate-900 font-bold">{activeDetailOrder.customer.name}</p>
+                    <p className="text-slate-700"><span className="text-slate-500">Email:</span> {activeDetailOrder.customer.email}</p>
+                    <p className="text-slate-700"><span className="text-slate-500">Tlf:</span> {activeDetailOrder.customer.phone}</p>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <h4 className="text-[10.5px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                  <h4 className="text-[10.5px] font-black uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
                     <Truck className="w-3.5 h-3.5 text-amber-500" />
                     Forsendelse & Shipmondo
                   </h4>
-                  <div className="bg-slate-950/40 border border-slate-800/60 p-3 rounded-xl space-y-1.5 text-xs">
+                  <div className="bg-slate-100 border border-slate-200 p-3 rounded-xl space-y-1.5 text-xs">
                     {activeDetailOrder.shipping ? (
                       <>
                         <div className="flex items-center gap-1.5">
                           <span className="px-1.5 py-0.5 bg-amber-400/10 text-amber-400 border border-amber-400/20 text-[9px] font-black uppercase rounded">
                             {activeDetailOrder.shipping.carrier.toUpperCase()}
                           </span>
-                          <span className="font-bold text-white text-[11px]">{activeDetailOrder.shipping.name}</span>
+                          <span className="font-bold text-slate-900 text-[11px]">{activeDetailOrder.shipping.name}</span>
                         </div>
-                        <p className="text-slate-300 leading-tight">
+                        <p className="text-slate-700 leading-tight">
                           <span className="text-slate-500 block text-[10px] uppercase font-bold mt-1.5">Leveringsadresse/Udlevering</span>
                           {activeDetailOrder.shipping.address}
                         </p>
                       </>
                     ) : (
-                      <p className="text-slate-400 italic">Ingen leveringsmetode valgt (standard levering).</p>
+                      <p className="text-slate-600 italic">Ingen leveringsmetode valgt (standard levering).</p>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <h4 className="text-[10.5px] font-black uppercase text-slate-400 tracking-wider">Ordre Status</h4>
-                  <div className="bg-slate-950/40 border border-slate-800/60 p-3 rounded-xl flex flex-col gap-2">
+                  <h4 className="text-[10.5px] font-black uppercase text-slate-600 tracking-wider">Ordre Status</h4>
+                  <div className="bg-slate-100 border border-slate-200 p-3 rounded-xl flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${
                         activeDetailOrder.status === 'modtaget' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' :
@@ -5396,7 +5396,7 @@ export default function WebshopComponent({
                       <div className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-semibold leading-relaxed">
                         ⚠️ Refundering Anmodet
                         {activeDetailOrder.refundReason && (
-                          <span className="block text-[10px] text-slate-450 font-normal mt-1 leading-normal">Årsag: "{activeDetailOrder.refundReason}"</span>
+                          <span className="block text-[10px] text-slate-600 font-normal mt-1 leading-normal">Årsag: "{activeDetailOrder.refundReason}"</span>
                         )}
                       </div>
                     )}
@@ -5406,37 +5406,37 @@ export default function WebshopComponent({
 
               {/* Right Column: Ordered Items & Total */}
               <div className="space-y-4">
-                <h4 className="text-[10.5px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                <h4 className="text-[10.5px] font-black uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
                   <Package className="w-3.5 h-3.5 text-amber-500" />
                   Bestilte Varer
                 </h4>
-                <div className="bg-slate-950/20 border border-slate-800/60 rounded-2xl overflow-hidden divide-y divide-slate-800/60 max-h-56 overflow-y-auto">
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-200 max-h-56 overflow-y-auto">
                   {activeDetailOrder.items.map((item, idx) => (
                     <div key={idx} className="p-3 flex gap-2.5 items-center">
-                      <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800/60 flex items-center justify-center shrink-0 font-bold text-sm">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 font-bold text-sm">
                         🔑
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-white truncate leading-tight uppercase">{item.product.name}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{item.quantity} x {item.product.price.toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</p>
+                        <p className="text-xs font-bold text-slate-900 truncate leading-tight uppercase">{item.product.name}</p>
+                        <p className="text-[10px] text-slate-600 mt-0.5">{item.quantity} x {item.product.price.toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</p>
                       </div>
-                      <span className="font-mono text-xs text-white font-bold shrink-0">
+                      <span className="font-mono text-xs text-slate-900 font-bold shrink-0">
                         {(item.product.price * item.quantity).toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="bg-slate-950/40 border border-slate-800/60 p-4 rounded-2xl space-y-1.5">
-                  <div className="flex justify-between text-xs text-slate-400">
+                <div className="bg-slate-100 border border-slate-200 p-4 rounded-2xl space-y-1.5">
+                  <div className="flex justify-between text-xs text-slate-600">
                     <span>Subtotal:</span>
                     <span>{activeDetailOrder.subtotal.toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
                   </div>
-                  <div className="flex justify-between text-xs text-slate-400">
+                  <div className="flex justify-between text-xs text-slate-600">
                     <span>Forsendelse:</span>
                     <span>0,00 DKK</span>
                   </div>
-                  <div className="flex justify-between text-sm font-bold border-t border-slate-800/60 pt-2 text-white">
+                  <div className="flex justify-between text-sm font-bold border-t border-slate-200 pt-2 text-slate-900">
                     <span>Total beløb:</span>
                     <span className="text-amber-400">{activeDetailOrder.total.toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
                   </div>
@@ -5445,11 +5445,11 @@ export default function WebshopComponent({
             </div>
 
             {/* Actions Block */}
-            <div className="border-t border-slate-800 pt-4 mt-6 flex justify-end gap-2.5">
+            <div className="border-t border-slate-200 pt-4 mt-6 flex justify-end gap-2.5">
               {activeDetailOrder.refundRequested && activeDetailOrder.status !== 'annulleret' && (
                 <button
                   onClick={() => updateOrderStatus(activeDetailOrder.id, 'annulleret')}
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs uppercase tracking-wide rounded-xl transition-all border-none cursor-pointer"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-slate-900 font-extrabold text-xs uppercase tracking-wide rounded-xl transition-all border-none cursor-pointer"
                 >
                   Godkend Refundering
                 </button>
@@ -5473,14 +5473,14 @@ export default function WebshopComponent({
               {activeDetailOrder.status !== 'afsendt' && activeDetailOrder.status !== 'annulleret' && (
                 <button
                   onClick={() => updateOrderStatus(activeDetailOrder.id, 'annulleret')}
-                  className="px-4 py-2 bg-slate-800 hover:bg-rose-950 hover:text-rose-400 text-slate-400 font-bold text-xs uppercase tracking-wide rounded-xl border border-slate-700 hover:border-rose-900 transition-all cursor-pointer"
+                  className="px-4 py-2 bg-slate-200 hover:bg-rose-950 hover:text-rose-400 text-slate-600 font-bold text-xs uppercase tracking-wide rounded-xl border border-slate-300 hover:border-rose-900 transition-all cursor-pointer"
                 >
                   Annuller Ordre
                 </button>
               )}
               <button
                 onClick={() => setActiveDetailOrder(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wide rounded-xl border border-slate-700 transition-all cursor-pointer"
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs uppercase tracking-wide rounded-xl border border-slate-300 transition-all cursor-pointer"
               >
                 Luk
               </button>
