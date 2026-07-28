@@ -2441,14 +2441,14 @@ export default function WebshopComponent({
                           window.location.hash = `shop/subcat/${subcategory.id}`;
                         }
                       }}
-                      className={`bg-slate-950/60 hover:bg-slate-950 border border-slate-800 hover:border-amber-400/30 rounded-2xl cursor-pointer group transition-all duration-300 text-left flex flex-col overflow-hidden`}
+                      className={`bg-white hover:bg-slate-50 border border-slate-200 hover:border-amber-400/50 rounded-2xl cursor-pointer group transition-all duration-300 text-left flex flex-col overflow-hidden shadow-sm`}
                     >
                       {/* Image Block */}
-                      <div className="w-full h-40 bg-slate-900 border-b border-slate-800 relative">
+                      <div className="w-full h-40 bg-slate-100 border-b border-slate-100 relative">
                         <img 
                           src={subImg} 
                           alt={subcategory.name} 
-                          className={`w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity ${!isPreviewMode ? 'hover:opacity-70' : ''}`}
+                          className={`w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity ${!isPreviewMode ? 'hover:opacity-80' : ''}`}
                           onClick={(e) => {
                             if (!isPreviewMode) {
                               e.stopPropagation();
@@ -2460,7 +2460,7 @@ export default function WebshopComponent({
                       <div className={`flex flex-col justify-between flex-grow ${getCardPadding('p-4', 'p-5', 'p-5')}`}>
                         <div>
                           <h4 
-                            className="text-sm font-extrabold uppercase text-white group-hover:text-amber-400 transition-colors outline-none focus:bg-slate-900 px-1 rounded"
+                            className="text-sm font-extrabold uppercase text-slate-900 group-hover:text-amber-600 transition-colors outline-none focus:bg-slate-100 px-1 rounded"
                             contentEditable={!isPreviewMode}
                             suppressContentEditableWarning
                             onBlur={(e) => updateSubcategoryField(subcategory.id, 'name', e.currentTarget.innerText)}
@@ -2469,7 +2469,7 @@ export default function WebshopComponent({
                             {subcategory.name}
                           </h4>
                           <p 
-                            className="text-xs text-slate-400 mt-2 leading-relaxed outline-none focus:bg-slate-900 px-1 rounded line-clamp-3"
+                            className="text-xs text-slate-600 mt-2 leading-relaxed outline-none focus:bg-slate-100 px-1 rounded line-clamp-3 font-medium"
                             contentEditable={!isPreviewMode}
                             suppressContentEditableWarning
                             onBlur={(e) => updateSubcategoryField(subcategory.id, 'description', e.currentTarget.innerText)}
@@ -2478,9 +2478,9 @@ export default function WebshopComponent({
                             {subcategory.description}
                           </p>
                         </div>
-                        <div className="mt-4 pt-3 border-t border-slate-900 flex items-center justify-between">
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                           <span className="text-[9px] font-bold text-slate-500 uppercase">Se beskrivelse</span>
-                          <span className="text-amber-400 text-xs font-black">&rarr;</span>
+                          <span className="text-amber-500 text-xs font-black">&rarr;</span>
                         </div>
                       </div>
                     </div>
