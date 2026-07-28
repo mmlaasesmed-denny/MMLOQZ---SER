@@ -101,6 +101,7 @@ export default function WebshopComponent({
   const badgeSize = s.badgeSize ? parseInt(String(s.badgeSize).replace('px', '')) : 30;
   const badgeTitleSize = s.badgeTitleSize ? parseInt(String(s.badgeTitleSize)) : 12;
   const badgeTextSize = s.badgeTextSize ? parseInt(String(s.badgeTextSize)) : 10;
+  const categoryImageWidth = s.categoryImageWidth ? parseInt(String(s.categoryImageWidth)) : 35;
   const updateSetting = (key: string, value: string) => {
     if (onUpdateElement && el) {
       onUpdateElement(el.id, {}, undefined, undefined, undefined, {
@@ -2202,10 +2203,14 @@ export default function WebshopComponent({
                   <div 
                     key={cat.id} 
                     className="flex flex-col md:flex-row bg-slate-50 min-h-[320px]"
+                    style={{
+                      '--cat-img-w': `${categoryImageWidth}%`,
+                      '--cat-txt-w': `${100 - categoryImageWidth}%`
+                    } as React.CSSProperties}
                   >
                     {isEven ? (
                       <>
-                        <div className="w-full md:w-[35%] h-64 md:h-auto relative shrink-0">
+                        <div className="w-full md:w-[length:var(--cat-img-w)] h-64 md:h-auto relative shrink-0">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
@@ -2213,7 +2218,7 @@ export default function WebshopComponent({
                             onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
                         </div>
-                        <div className="w-full md:w-[65%] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
+                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
                           <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
                             <span 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
@@ -2256,7 +2261,7 @@ export default function WebshopComponent({
                       </>
                     ) : (
                       <>
-                        <div className="w-full md:w-[65%] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 md:order-1">
+                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 md:order-1">
                           <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
                             <span 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
@@ -2296,7 +2301,7 @@ export default function WebshopComponent({
                             {bt('Se produkter', 'See products')}
                           </button>
                         </div>
-                        <div className="w-full md:w-[35%] h-64 md:h-auto relative shrink-0 order-1 md:order-2">
+                        <div className="w-full md:w-[length:var(--cat-img-w)] h-64 md:h-auto relative shrink-0 order-1 md:order-2">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 

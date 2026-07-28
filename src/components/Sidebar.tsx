@@ -1581,6 +1581,31 @@ export default function Sidebar({
                         />
                       </div>
 
+                      {/* Category Image Width Slider */}
+                      <div className="space-y-1 mt-4">
+                        <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                          <span>Kategori Billede Bredde %</span>
+                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.categoryImageWidth || 35)}%</span>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <input
+                            type="range"
+                            min="10"
+                            max="90"
+                            value={selectedElement.settings?.categoryImageWidth || 35}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  categoryImageWidth: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+                      </div>
+
                       {/* Nyhedsbrev (Newsletter) Settings */}
                       <div className="pt-4 border-t border-slate-150 dark:border-slate-800 space-y-3">
                         <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Nyhedsbrev Indstillinger</span>
