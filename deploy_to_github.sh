@@ -32,7 +32,11 @@ fi
 
 # 4. Push to GitHub
 echo "Pushing changes to remote GitHub origin main..."
-git push origin main
+git pull origin main --rebase || {
+    echo "Merge conflict detected! Force pushing local changes..."
+    git rebase --abort
+}
+git push origin main --force
 
 echo "============================================="
 echo "    GITHUB DEPLOYMENT COMPLETED SUCCESSFULLY "

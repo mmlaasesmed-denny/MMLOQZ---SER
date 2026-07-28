@@ -19,7 +19,7 @@ echo "[1/4] Pushing latest changes to GitHub..."
 
 # 2. Take remote database backup on the production server (both timestamped and latest)
 echo "[2/4] Backing up remote production database (versioned backup)..."
-ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST "
+ssh -n -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST "
   mkdir -p $REMOTE_DIR/django_backend/backups && \
   BACKUP_FILE=\"$REMOTE_DIR/django_backend/backups/db.sqlite3.backup_\$(date '+%Y%m%d_%H%M%S')\" && \
   if [ -f $REMOTE_DIR/django_backend/db.sqlite3 ]; then \
@@ -52,9 +52,11 @@ else
   echo "[3/4] Skipping database upload (run with --with-db to upload database)."
 fi
 
-# 4. Run remote server pull and restart commands
-echo "[4/4] Executing remote server deployment commands..."
-ssh -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST "bash $REMOTE_DIR/deploy.sh"
+# 4. Upload frontend assets and restart server
+echo "[4/4] Uploading frontend assets directly to server and restarting..."
+scp -i $SSH_KEY -r django_backend/static/assets $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/django_backend/static/
+scp -i $SSH_KEY django_backend/templates/index.html $REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR/django_backend/templates/index.html
+ssh -n -i $SSH_KEY $REMOTE_USER@$REMOTE_HOST "sudo systemctl restart gunicorn"
 
 echo "============================================="
 echo "     PRODUCTION DEPLOYMENT COMPLETED         "
