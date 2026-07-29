@@ -1992,7 +1992,7 @@ export default function Sidebar({
                       </div>
                       <input
                         type="range"
-                        min="10"
+                        min="4"
                         max="80"
                         value={parseInt(activeElementStyles.fontSize || '16') || 16}
                         onChange={(e) => onUpdateElement(selectedElement.id, { fontSize: `${e.target.value}px` })}
@@ -2614,7 +2614,7 @@ export default function Sidebar({
                                      <div className="flex gap-2 items-center">
                                        <input
                                          type="range"
-                                         min="10"
+                                         min="4"
                                          max="80"
                                          value={parseInt(item.styles.fontSize || '16') || 16}
                                          onChange={(e) => {
