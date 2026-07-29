@@ -1974,6 +1974,7 @@ export default function Sidebar({
                         className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-250 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                       >
                         <option value="">Standard (System Sans)</option>
+                        <option value="'Poppins', sans-serif">Poppins (Modern Geometric Sans)</option>
                         <option value="'Inter', sans-serif">Inter (Sleek Modern Sans)</option>
                         <option value="'Outfit', sans-serif">Outfit (Elegant Geometric)</option>
                         <option value="'Playfair Display', serif">Playfair Display (Premium Serif)</option>
@@ -2585,6 +2586,25 @@ export default function Sidebar({
 
                                 {/* Style configurations */}
                                 <div className="space-y-2 pt-1 border-t border-slate-150 dark:border-slate-800">
+                                   {/* Font Family Selector */}
+                                   <div className="space-y-1">
+                                     <label className="text-[10px] text-slate-400 block font-semibold">Skrifttype / Font</label>
+                                     <select
+                                       value={item.styles.fontFamily || ''}
+                                       onChange={(e) => updateOverlayStyles(item.id, { fontFamily: e.target.value })}
+                                       className="w-full text-xs px-2.5 py-1.5 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                                     >
+                                       <option value="">Standard (System Sans)</option>
+                                       <option value="'Poppins', sans-serif">Poppins (Modern Geometric Sans)</option>
+                                       <option value="'Inter', sans-serif">Inter (Sleek Modern Sans)</option>
+                                       <option value="'Outfit', sans-serif">Outfit (Elegant Geometric)</option>
+                                       <option value="'Playfair Display', serif">Playfair Display (Premium Serif)</option>
+                                       <option value="'Cormorant Garamond', serif">Cormorant Garamond (Classic Luxe Serif)</option>
+                                       <option value="'Space Grotesk', sans-serif">Space Grotesk (Edgy Display)</option>
+                                       <option value="'Fira Code', monospace">Fira Code (Developer Mono)</option>
+                                     </select>
+                                   </div>
+                                   
                                    {/* Font Size Selector */}
                                    <div className="space-y-1">
                                      <div className="flex justify-between text-[10px]">
