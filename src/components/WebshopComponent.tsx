@@ -106,6 +106,7 @@ export default function WebshopComponent({
   const navMenuColor = s.navMenuColor || '#cbd5e1';
   const produkterBgColor = s.produkterBgColor || '#fbbf24';
   const produkterTextColor = s.produkterTextColor || '#0f172a';
+  const megaMenuFontSize = s.megaMenuFontSize || 12;
   const updateSetting = (key: string, value: string) => {
     if (onUpdateElement && el) {
       onUpdateElement(el.id, {}, undefined, undefined, undefined, {
@@ -1682,9 +1683,10 @@ export default function WebshopComponent({
                             setIsMegaMenuOpen(false);
                             if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
                           }}
-                          className={`w-full text-left px-6 py-2.5 text-xs font-bold transition-colors flex justify-between items-center ${
+                          className={`w-full text-left px-6 py-2.5 font-bold transition-colors flex justify-between items-center ${
                             megaMenuHoverCatId === cat.id ? 'bg-amber-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                           }`}
+                          style={{ fontSize: `${megaMenuFontSize}px` }}
                         >
                           <span>{cat.name}</span>
                           <span className="text-slate-400">&rsaquo;</span>
@@ -1712,9 +1714,10 @@ export default function WebshopComponent({
                                 setIsMegaMenuOpen(false);
                                 if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
                               }}
-                              className={`w-full text-left px-6 py-2 text-xs font-semibold transition-colors flex justify-between items-center ${
+                              className={`w-full text-left px-6 py-2 font-semibold transition-colors flex justify-between items-center ${
                                 megaMenuHoverSubcatId === sub.id ? 'bg-slate-50 text-amber-500' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
                               }`}
+                              style={{ fontSize: `${megaMenuFontSize}px` }}
                             >
                               <span>{sub.name}</span>
                               <span className="text-slate-300">&rsaquo;</span>
@@ -1745,8 +1748,8 @@ export default function WebshopComponent({
                                 <img src={prod.image} alt={prod.name} className="max-h-full max-w-full object-contain" />
                               </div>
                               <div>
-                                <h5 className="text-[11px] font-bold text-slate-700 group-hover:text-amber-500 transition-colors leading-tight line-clamp-1">{prod.name}</h5>
-                                <span className="text-[10px] font-bold text-slate-400">{prod.price} kr.</span>
+                                <h5 className="font-bold text-slate-700 group-hover:text-amber-500 transition-colors leading-tight line-clamp-1" style={{ fontSize: `${megaMenuFontSize}px` }}>{prod.name}</h5>
+                                <span className="font-bold text-slate-400" style={{ fontSize: `${Math.max(8, megaMenuFontSize - 2)}px` }}>{prod.price} kr.</span>
                               </div>
                             </div>
                           </li>

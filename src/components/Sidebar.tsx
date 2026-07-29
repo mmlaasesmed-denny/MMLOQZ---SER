@@ -1574,6 +1574,30 @@ export default function Sidebar({
                         </div>
 
                         <div className="space-y-1">
+                          <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                            <span>Dropdown (Mega Menu) Tekst</span>
+                            <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.megaMenuFontSize || 12)}px</span>
+                          </div>
+                          <div className="flex gap-2 items-center">
+                            <input
+                              type="range"
+                              min="8"
+                              max="32"
+                              value={selectedElement.settings?.megaMenuFontSize || 12}
+                              onChange={(e) => {
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    megaMenuFontSize: parseInt(e.target.value)
+                                  }
+                                });
+                              }}
+                              className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
                           <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Menu Link Farve (Standard)</label>
                           <input
                             type="color"
