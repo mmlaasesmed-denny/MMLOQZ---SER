@@ -1598,6 +1598,40 @@ export default function Sidebar({
                         </div>
 
                         <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Dropdown Tekst Farve</label>
+                          <input
+                            type="color"
+                            value={selectedElement.settings?.megaMenuTextColor || '#475569'}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  megaMenuTextColor: e.target.value
+                                }
+                              });
+                            }}
+                            className="w-full h-8 cursor-pointer rounded-lg border-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Dropdown Hover/Aktiv Farve</label>
+                          <input
+                            type="color"
+                            value={selectedElement.settings?.megaMenuActiveColor || '#f59e0b'}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  megaMenuActiveColor: e.target.value
+                                }
+                              });
+                            }}
+                            className="w-full h-8 cursor-pointer rounded-lg border-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
                           <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Menu Link Farve (Standard)</label>
                           <input
                             type="color"

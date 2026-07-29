@@ -107,6 +107,8 @@ export default function WebshopComponent({
   const produkterBgColor = s.produkterBgColor || '#fbbf24';
   const produkterTextColor = s.produkterTextColor || '#0f172a';
   const megaMenuFontSize = s.megaMenuFontSize || 12;
+  const megaMenuTextColor = s.megaMenuTextColor || '#475569';
+  const megaMenuActiveColor = s.megaMenuActiveColor || '#f59e0b';
   const updateSetting = (key: string, value: string) => {
     if (onUpdateElement && el) {
       onUpdateElement(el.id, {}, undefined, undefined, undefined, {
@@ -307,6 +309,7 @@ export default function WebshopComponent({
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [megaMenuHoverCatId, setMegaMenuHoverCatId] = useState<string | null>(null);
   const [megaMenuHoverSubcatId, setMegaMenuHoverSubcatId] = useState<string | null>(null);
+  const [megaMenuHoverProdId, setMegaMenuHoverProdId] = useState<string | null>(null);
 
   // Checkout form states
   const [name, setName] = useState('');
@@ -1684,12 +1687,15 @@ export default function WebshopComponent({
                             if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
                           }}
                           className={`w-full text-left px-6 py-2.5 font-bold transition-colors flex justify-between items-center ${
-                            megaMenuHoverCatId === cat.id ? 'bg-amber-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            megaMenuHoverCatId === cat.id ? 'bg-amber-100' : 'hover:bg-slate-100'
                           }`}
-                          style={{ fontSize: `${megaMenuFontSize}px` }}
+                          style={{ 
+                            fontSize: `${megaMenuFontSize}px`,
+                            color: megaMenuHoverCatId === cat.id ? megaMenuActiveColor : megaMenuTextColor
+                          }}
                         >
                           <span>{cat.name}</span>
-                          <span className="text-slate-400">&rsaquo;</span>
+                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>&rsaquo;</span>
                         </button>
                       </li>
                     ))}
@@ -1715,12 +1721,15 @@ export default function WebshopComponent({
                                 if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
                               }}
                               className={`w-full text-left px-6 py-2 font-semibold transition-colors flex justify-between items-center ${
-                                megaMenuHoverSubcatId === sub.id ? 'bg-slate-50 text-amber-500' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+                                megaMenuHoverSubcatId === sub.id ? 'bg-slate-50' : 'hover:bg-slate-50'
                               }`}
-                              style={{ fontSize: `${megaMenuFontSize}px` }}
+                              style={{ 
+                                fontSize: `${megaMenuFontSize}px`,
+                                color: megaMenuHoverSubcatId === sub.id ? megaMenuActiveColor : megaMenuTextColor
+                              }}
                             >
                               <span>{sub.name}</span>
-                              <span className="text-slate-300">&rsaquo;</span>
+                              <span style={{ color: megaMenuTextColor, opacity: 0.3 }}>&rsaquo;</span>
                             </button>
                           </li>
                         ))}
@@ -1737,18 +1746,29 @@ export default function WebshopComponent({
                         .filter(p => p.subcategoryId === megaMenuHoverSubcatId)
                         .slice(0, 5) // Show only up to 5 products in mega menu
                         .map(prod => (
-                          <li key={prod.id} className="group cursor-pointer" onClick={() => {
-                            setSelectedProductId(prod.id);
-                            setView('product-detail');
-                            setIsMegaMenuOpen(false);
-                            if (isPreviewMode) window.location.hash = `shop/product/${prod.id}`;
-                          }}>
+                          <li 
+                            key={prod.id} 
+                            className="group cursor-pointer" 
+                            onMouseEnter={() => setMegaMenuHoverProdId(prod.id)}
+                            onMouseLeave={() => setMegaMenuHoverProdId(null)}
+                            onClick={() => {
+                              setSelectedProductId(prod.id);
+                              setView('product-detail');
+                              setIsMegaMenuOpen(false);
+                              if (isPreviewMode) window.location.hash = `shop/product/${prod.id}`;
+                            }}
+                          >
                             <div className="flex gap-3 items-center">
                               <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
                                 <img src={prod.image} alt={prod.name} className="max-h-full max-w-full object-contain" />
                               </div>
                               <div>
-                                <h5 className="font-bold text-slate-700 group-hover:text-amber-500 transition-colors leading-tight line-clamp-1" style={{ fontSize: `${megaMenuFontSize}px` }}>{prod.name}</h5>
+                                <h5 className="font-bold transition-colors leading-tight line-clamp-1" style={{ 
+                                  fontSize: `${megaMenuFontSize}px`,
+                                  color: megaMenuHoverProdId === prod.id ? megaMenuActiveColor : megaMenuTextColor
+                                }}>
+                                  {prod.name}
+                                </h5>
                                 <span className="font-bold text-slate-400" style={{ fontSize: `${Math.max(8, megaMenuFontSize - 2)}px` }}>{prod.price} kr.</span>
                               </div>
                             </div>
