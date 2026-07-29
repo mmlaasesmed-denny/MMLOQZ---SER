@@ -1248,9 +1248,10 @@ export default function Canvas({
                                             e.stopPropagation();
                                             if (e.target.value) {
                                               document.execCommand('fontName', false, e.target.value);
+                                              // Reset the select back to "Font..." so it can be used again easily
+                                              e.target.value = "";
                                             }
                                           }}
-                                          onMouseDown={(e) => e.preventDefault()}
                                         >
                                           <option value="">Font...</option>
                                           <option value="Inter">Inter</option>
@@ -3391,11 +3392,12 @@ export default function Canvas({
                   sel.addRange(selectionRange);
                 }
                 document.execCommand('fontName', false, e.target.value);
+                // Reset the select back to "Font..."
+                e.target.value = "";
               }
               setSelectionRange(null);
               setSelectionRect(null);
             }}
-            onMouseDown={(e) => e.preventDefault()}
           >
             <option value="">Font...</option>
             <option value="Inter">Inter</option>
