@@ -1479,8 +1479,8 @@ export default function Sidebar({
                         <div className="flex gap-2 items-center">
                           <input
                             type="range"
-                            min="20"
-                            max="120"
+                            min="4"
+                            max="600"
                             value={selectedElement.settings?.badgeSize ? parseInt(String(selectedElement.settings.badgeSize).replace('px', '')) : 30}
                             onChange={(e) => {
                               onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {

@@ -2414,7 +2414,7 @@ export default function WebshopComponent({
                           -
                         </button>
                         <button 
-                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.min(120, badgeSize + 4))); }}
+                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.min(600, badgeSize + 4))); }}
                           className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
                         >
                           +
