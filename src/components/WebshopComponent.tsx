@@ -2406,16 +2406,18 @@ export default function WebshopComponent({
                       )}
                     </div>
                     {!isPreviewMode && (
-                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-white border border-slate-200 rounded-md shadow-sm p-1 z-10">
+                      <div className="absolute -bottom-4 right-0 md:-right-4 flex items-center gap-1 bg-indigo-600 border border-indigo-700 rounded-lg shadow-xl p-1 z-30">
                         <button 
-                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.max(4, badgeSize - 4))); }}
-                          className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.max(4, badgeSize - 10))); }}
+                          className="w-6 h-6 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded text-white font-bold text-lg leading-none cursor-pointer border-none"
+                          title="Gør mindre"
                         >
                           -
                         </button>
                         <button 
-                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.min(600, badgeSize + 4))); }}
-                          className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.min(600, badgeSize + 10))); }}
+                          className="w-6 h-6 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded text-white font-bold text-lg leading-none cursor-pointer border-none"
+                          title="Gør større"
                         >
                           +
                         </button>
