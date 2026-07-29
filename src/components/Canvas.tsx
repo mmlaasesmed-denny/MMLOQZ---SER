@@ -202,7 +202,11 @@ const renderListContent = (text: string, type: 'unordered' | 'ordered' | 'square
   return <ul className={styleClass} style={customStyles}>{listItems}</ul>;
 };
 
-const renderQuickMenuIcon = (el: PageElement) => {
+const renderQuickMenuIcon = (
+  el: PageElement, 
+  isPreviewMode?: boolean,
+  onUpdateElement?: (id: string, updates: Partial<PageElement>, newStyles?: React.CSSProperties) => void
+) => {
   const styles = el.styles || {};
   let IconComponent = Home;
   if (el.id.includes('img2')) IconComponent = Building2;
@@ -219,27 +223,57 @@ const renderQuickMenuIcon = (el: PageElement) => {
   const borderRadius = styles.borderRadius || '9999px';
 
   return (
-    <div 
-      className="flex items-center justify-center mx-auto mb-2 shadow-lg transition-all duration-200 group-hover:scale-110"
-      style={{
-        width: containerWidth,
-        height: containerHeight,
-        fontSize: iconSize,
-        color: iconColor,
-        backgroundColor: bgColor,
-        borderColor: borderColor,
-        borderWidth: styles.borderWidth || '1px',
-        borderStyle: 'solid',
-        borderRadius: borderRadius,
-      }}
-    >
-      <IconComponent 
-        size={parseInt(iconSize) || 24}
+    <div className="relative group mx-auto mb-2">
+      <div 
+        className="flex items-center justify-center shadow-lg transition-all duration-200 group-hover:scale-110"
         style={{
+          width: containerWidth,
+          height: containerHeight,
+          fontSize: iconSize,
           color: iconColor,
+          backgroundColor: bgColor,
+          borderColor: borderColor,
+          borderWidth: styles.borderWidth || '1px',
+          borderStyle: 'solid',
+          borderRadius: borderRadius,
         }}
-        className="transition-colors group-hover:text-amber-400"
-      />
+      >
+        <IconComponent 
+          size={parseInt(iconSize) || 24}
+          style={{
+            color: iconColor,
+          }}
+          className="transition-colors group-hover:text-amber-400"
+        />
+      </div>
+      {!isPreviewMode && onUpdateElement && (
+        <div className="absolute -bottom-4 right-0 md:-right-4 flex items-center gap-1 bg-indigo-600 border border-indigo-700 rounded-lg shadow-xl p-1 z-30">
+          <button 
+            type="button"
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              const newSize = Math.max(4, sizeNum - 10);
+              onUpdateElement(el.id, {}, { ...styles, fontSize: `${newSize}px`, width: `${Math.round(newSize * 2.3)}px`, height: `${Math.round(newSize * 2.3)}px` });
+            }}
+            className="w-6 h-6 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded text-white font-bold text-lg leading-none cursor-pointer border-none"
+            title="Gør mindre"
+          >
+            -
+          </button>
+          <button 
+            type="button"
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              const newSize = Math.min(600, sizeNum + 10);
+              onUpdateElement(el.id, {}, { ...styles, fontSize: `${newSize}px`, width: `${Math.round(newSize * 2.3)}px`, height: `${Math.round(newSize * 2.3)}px` });
+            }}
+            className="w-6 h-6 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded text-white font-bold text-lg leading-none cursor-pointer border-none"
+            title="Gør større"
+          >
+            +
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -1364,7 +1398,7 @@ export default function Canvas({
                                     marginBottom: formatStyleVal(el.styles.marginBottom) || '0px',
                                     width: formatStyleVal(el.styles.width) || '100%',
                                     height: formatStyleVal(el.styles.height) || undefined,
-                                    minHeight: el.styles.minHeight !== undefined
+                                      minHeight: el.styles.minHeight !== undefined
                                       ? (el.styles.minHeight === 'none' ? undefined : formatStyleVal(el.styles.minHeight))
                                       : (el.styles.height || el.id.includes('foot') || el.id.includes('logo') || (section.name && section.name.toLowerCase().includes('foot')))
                                         ? undefined 
@@ -1372,7 +1406,7 @@ export default function Canvas({
                                   }}
                                 >
                                   {el.id.startsWith('locksmith-quick-img') ? (
-                                    renderQuickMenuIcon(el)
+                                    renderQuickMenuIcon(el, isPreviewMode, onUpdateElement)
                                   ) : (
                                     <>
                                       <img
