@@ -4100,14 +4100,14 @@ export default function SaveExportControls({
   };
 
   return (
-    <div className="bg-white border-b border-slate-200 text-slate-800 px-6 h-14 flex items-center justify-between flex-wrap sm:flex-nowrap gap-3 shrink-0 z-40 relative">
+    <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 px-6 h-14 flex items-center justify-between flex-wrap sm:flex-nowrap gap-3 shrink-0 z-40 relative">
       {/* Brand */}
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">
           <Code className="w-4 h-4" />
         </div>
         <div>
-          <span className="font-semibold text-slate-900 tracking-tight text-sm">VisualEngine <span className="text-slate-400 font-normal">v2.4</span></span>
+          <span className="font-semibold text-slate-900 dark:text-slate-100 tracking-tight text-sm">VisualEngine <span className="text-slate-400 font-normal">v2.4</span></span>
         </div>
       </div>
 
