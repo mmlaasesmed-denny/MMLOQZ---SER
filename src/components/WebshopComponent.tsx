@@ -102,6 +102,10 @@ export default function WebshopComponent({
   const badgeTitleSize = s.badgeTitleSize ? parseInt(String(s.badgeTitleSize)) : 12;
   const badgeTextSize = s.badgeTextSize ? parseInt(String(s.badgeTextSize)) : 10;
   const categoryImageWidth = s.categoryImageWidth ? parseInt(String(s.categoryImageWidth)) : 35;
+  const navMenuFontSize = s.navMenuFontSize || 12;
+  const navMenuColor = s.navMenuColor || '#cbd5e1';
+  const produkterBgColor = s.produkterBgColor || '#fbbf24';
+  const produkterTextColor = s.produkterTextColor || '#0f172a';
   const updateSetting = (key: string, value: string) => {
     if (onUpdateElement && el) {
       onUpdateElement(el.id, {}, undefined, undefined, undefined, {
@@ -1624,9 +1628,13 @@ export default function WebshopComponent({
       </div>
 
       {/* Nav Link Bar */}
-      <div className="bg-[#333333] flex items-center justify-between py-1 px-4 md:px-8 lg:px-12 -mx-4 md:-mx-8 lg:-mx-12 mb-6 relative z-50 select-none">
+      <div 
+        className={`bg-[#333333] flex items-center justify-between py-1 px-4 md:px-8 lg:px-12 -mx-4 md:-mx-8 lg:-mx-12 mb-6 relative z-50 select-none ${!isPreviewMode ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all' : ''}`}
+        onClick={() => !isPreviewMode && promptEditImage('setting', '', 'navMenuSettings')}
+      >
         <div className="flex items-center gap-4 relative">
           <div 
+            className="relative"
             onMouseEnter={() => setIsMegaMenuOpen(true)}
             onMouseLeave={() => {
               setIsMegaMenuOpen(false);
@@ -1644,7 +1652,8 @@ export default function WebshopComponent({
                 setIsMegaMenuOpen(false);
                 if (isPreviewMode) window.location.hash = 'shop';
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider rounded-lg transition-colors border-none cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 font-extrabold uppercase tracking-wider rounded-lg transition-opacity hover:opacity-90 border-none cursor-pointer"
+              style={{ backgroundColor: produkterBgColor, color: produkterTextColor, fontSize: `${navMenuFontSize}px` }}
             >
               <span>☰</span>
               <span>Produkter</span>
@@ -1763,9 +1772,10 @@ export default function WebshopComponent({
             )}
           </div>
           
-          <div className="flex items-center gap-4 text-xs font-bold text-slate-300">
+          <div className="flex items-center gap-4 font-bold" style={{ color: navMenuColor, fontSize: `${navMenuFontSize}px` }}>
             <span 
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 if (loggedInUser) {
                   setView('profile');
                   if (isPreviewMode) window.location.hash = 'shop/profile';
@@ -1779,13 +1789,13 @@ export default function WebshopComponent({
               Order status
             </span>
             <span 
-              onClick={() => alert('Dette er en demo webshop.')}
+              onClick={(e) => { e.stopPropagation(); alert('Dette er en demo webshop.'); }}
               className="hover:text-white transition-colors cursor-pointer"
             >
               om os
             </span>
             <span 
-              onClick={() => alert('Kontakt os på info@mmlaasesmed.dk')}
+              onClick={(e) => { e.stopPropagation(); alert('Kontakt os på info@mmlaasesmed.dk'); }}
               className="hover:text-white transition-colors cursor-pointer"
             >
               Kontakt os

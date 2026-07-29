@@ -1545,6 +1545,86 @@ export default function Sidebar({
                         </div>
                       </div>
 
+                      {/* Nav Menu Settings */}
+                      <div className="space-y-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                        <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Hovedmenu Indstillinger</h4>
+                        
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                            <span>Menu Tekst Størrelse</span>
+                            <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.navMenuFontSize || 12)}px</span>
+                          </div>
+                          <div className="flex gap-2 items-center">
+                            <input
+                              type="range"
+                              min="8"
+                              max="32"
+                              value={selectedElement.settings?.navMenuFontSize || 12}
+                              onChange={(e) => {
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: {
+                                    ...(selectedElement.settings || {}),
+                                    navMenuFontSize: parseInt(e.target.value)
+                                  }
+                                });
+                              }}
+                              className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Menu Link Farve (Standard)</label>
+                          <input
+                            type="color"
+                            value={selectedElement.settings?.navMenuColor || '#cbd5e1'}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  navMenuColor: e.target.value
+                                }
+                              });
+                            }}
+                            className="w-full h-8 cursor-pointer rounded-lg border-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Produkter Knap Baggrund</label>
+                          <input
+                            type="color"
+                            value={selectedElement.settings?.produkterBgColor || '#fbbf24'}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  produkterBgColor: e.target.value
+                                }
+                              });
+                            }}
+                            className="w-full h-8 cursor-pointer rounded-lg border-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Produkter Knap Tekst</label>
+                          <input
+                            type="color"
+                            value={selectedElement.settings?.produkterTextColor || '#0f172a'}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  produkterTextColor: e.target.value
+                                }
+                              });
+                            }}
+                            className="w-full h-8 cursor-pointer rounded-lg border-none"
+                          />
+                        </div>
+                      </div>
+
                       {/* Search Placeholder */}
                       <div className="space-y-1">
                         <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Søgefelt placeholder</label>
