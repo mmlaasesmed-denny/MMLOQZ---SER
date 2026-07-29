@@ -1240,6 +1240,27 @@ export default function Canvas({
                                         >
                                           <Link className="w-3 h-3 text-indigo-400" /> Link
                                         </button>
+                                        <span className="w-[1px] h-4 bg-slate-700 mx-1"></span>
+                                        <select 
+                                          className="bg-slate-800 text-white text-[10px] font-bold border border-slate-700 rounded px-1.5 py-1 cursor-pointer focus:outline-none hover:bg-slate-750"
+                                          onChange={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            if (e.target.value) {
+                                              document.execCommand('fontName', false, e.target.value);
+                                            }
+                                          }}
+                                          onMouseDown={(e) => e.preventDefault()}
+                                        >
+                                          <option value="">Font...</option>
+                                          <option value="Inter">Inter</option>
+                                          <option value="Poppins">Poppins</option>
+                                          <option value="Montserrat">Montserrat</option>
+                                          <option value="Roboto">Roboto</option>
+                                          <option value="Outfit">Outfit</option>
+                                          <option value="Arial">Arial</option>
+                                          <option value="Georgia">Georgia</option>
+                                        </select>
                                       </div>
                                       
                                       <div
@@ -3357,6 +3378,34 @@ export default function Canvas({
           >
             <Link className="w-3 h-3" /> Link
           </button>
+          <span className="w-[1px] h-3.5 bg-slate-850 mx-1"></span>
+          <select 
+            className="bg-slate-900 text-white text-[10px] font-bold border border-slate-750 rounded px-1.5 py-1 cursor-pointer focus:outline-none hover:bg-slate-800"
+            onChange={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (e.target.value) {
+                const sel = window.getSelection();
+                if (sel && selectionRange) {
+                  sel.removeAllRanges();
+                  sel.addRange(selectionRange);
+                }
+                document.execCommand('fontName', false, e.target.value);
+              }
+              setSelectionRange(null);
+              setSelectionRect(null);
+            }}
+            onMouseDown={(e) => e.preventDefault()}
+          >
+            <option value="">Font...</option>
+            <option value="Inter">Inter</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Outfit">Outfit</option>
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+          </select>
         </div>
       )}
     </div>
