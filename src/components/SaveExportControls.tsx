@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Code, Download, RefreshCw, Upload, Check, Database, Wifi, WifiOff, Server, Trash2, LogOut, Lock, Monitor, Tablet, Smartphone } from 'lucide-react';
+import { Eye, EyeOff, Code, Download, RefreshCw, Upload, Check, Database, Wifi, WifiOff, Server, Trash2, LogOut, Lock, Monitor, Tablet, Smartphone, Moon, Sun } from 'lucide-react';
 import { Section, SiteTheme } from '../types';
 import { WEBSHOP_CATEGORIES as WEBSHOP_CATEGORIES_ORIG, WEBSHOP_SUBCATEGORIES as WEBSHOP_SUBCATEGORIES_ORIG, WEBSHOP_BRANDS, WEBSHOP_PRODUCTS as WEBSHOP_PRODUCTS_ORIG } from '../webshopData';
 
@@ -63,6 +63,16 @@ export default function SaveExportControls({
   const [djangoLayouts, setDjangoLayouts] = useState<any[]>([]);
   const [newLayoutTitle, setNewLayoutTitle] = useState('My Custom Website Draft');
   const [isDjangoLoading, setIsDjangoLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prev => {
+      const next = !prev;
+      if (next) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+      return next;
+    });
+  };
 
   // Deployment Sync Check States
   const [deployCheckStatus, setDeployCheckStatus] = useState<'idle' | 'checking' | 'success' | 'warning' | 'error'>('idle');
@@ -4168,6 +4178,17 @@ export default function SaveExportControls({
             title="Mobile View"
           >
             <Smartphone className="w-3.5 h-3.5" />
+          </button>
+        </div>
+        
+        {/* Editor Dark Mode Toggle */}
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+          <button
+            onClick={toggleDarkMode}
+            className={`p-1.5 rounded transition-all flex items-center justify-center cursor-pointer border-none bg-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200`}
+            title={isDarkMode ? "Skift til lys tilstand" : "Skift til mørk tilstand"}
+          >
+            {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
