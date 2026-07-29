@@ -2364,7 +2364,7 @@ export default function WebshopComponent({
                     <div 
                       className={`cursor-pointer ${!isPreviewMode ? 'hover:opacity-80 transition-opacity outline-dashed outline-1 outline-transparent hover:outline-slate-300' : ''}`}
                       onClick={() => promptEditImage('setting', '', badge.iKey)}
-                      style={{ width: `${badgeSize}px`, height: `${badgeSize}px`, minWidth: '24px', minHeight: '24px' }}
+                      style={{ width: `${badgeSize}px`, height: `${badgeSize}px` }}
                     >
                       {badge.img.startsWith('data:image') || badge.img.startsWith('http') ? (
                         <img src={badge.img} className="w-full h-full object-contain" alt={badge.title} />
@@ -2375,7 +2375,7 @@ export default function WebshopComponent({
                     {!isPreviewMode && (
                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-white border border-slate-200 rounded-md shadow-sm p-1 z-10">
                         <button 
-                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.max(20, badgeSize - 4))); }}
+                          onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.max(4, badgeSize - 4))); }}
                           className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
                         >
                           -
