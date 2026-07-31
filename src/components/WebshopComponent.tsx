@@ -109,6 +109,25 @@ export default function WebshopComponent({
   const megaMenuFontSize = s.megaMenuFontSize || 12;
   const megaMenuTextColor = s.megaMenuTextColor || '#475569';
   const megaMenuActiveColor = s.megaMenuActiveColor || '#f59e0b';
+  
+  // Login / Register Form Texts
+  const loginTitle = s.loginTitle || 'Log ind på din konto';
+  const loginDesc = s.loginDesc || 'Log ind for at hente dine gemte leveringsoplysninger.';
+  const registerTitle = s.registerTitle || 'Opret ny konto';
+  const registerDesc = s.registerDesc || 'Opret en konto for at gemme dine oplysninger til næste gang.';
+  const loginEmailLabel = s.loginEmailLabel || 'E-mail Adresse';
+  const loginPasswordLabel = s.loginPasswordLabel || 'Adgangskode';
+  const loginButtonText = s.loginButtonText || 'Log ind';
+  const noAccountText = s.noAccountText || 'Har du ikke en konto endnu?';
+  const createAccountLink = s.createAccountLink || 'Opret konto her';
+  const backToShopText = s.backToShopText || 'Tilbage til butikken';
+  
+  const registerNameLabel = s.registerNameLabel || 'Fulde Navn';
+  const registerEmailLabel = s.registerEmailLabel || 'E-mail Adresse';
+  const registerPasswordLabel = s.registerPasswordLabel || 'Vælg Adgangskode';
+  const registerButtonText = s.registerButtonText || 'Opret konto nu';
+  const hasAccountText = s.hasAccountText || 'Har du allerede en konto?';
+  const loginAccountLink = s.loginAccountLink || 'Log ind her';
   const updateSetting = (key: string, value: string) => {
     if (onUpdateElement && el) {
       onUpdateElement(el.id, {}, undefined, undefined, undefined, {
@@ -3882,11 +3901,21 @@ export default function WebshopComponent({
               <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 mx-auto mb-3">
                 <Lock className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-extrabold text-white uppercase tracking-wider">
-                {authMode === 'login' ? 'Log ind på din konto' : 'Opret ny konto'}
+              <h3 
+                className="text-xl font-extrabold text-white uppercase tracking-wider outline-none focus:bg-slate-800 rounded px-1"
+                contentEditable={!isPreviewMode}
+                suppressContentEditableWarning
+                onBlur={(e) => updateSetting(authMode === 'login' ? 'loginTitle' : 'registerTitle', e.currentTarget.innerText)}
+              >
+                {authMode === 'login' ? loginTitle : registerTitle}
               </h3>
-              <p className="text-xs text-slate-400 mt-2">
-                {authMode === 'login' ? 'Log ind for at hente dine gemte leveringsoplysninger.' : 'Opret en konto for at gemme dine oplysninger til næste gang.'}
+              <p 
+                className="text-xs text-slate-400 mt-2 outline-none focus:bg-slate-800 rounded px-1"
+                contentEditable={!isPreviewMode}
+                suppressContentEditableWarning
+                onBlur={(e) => updateSetting(authMode === 'login' ? 'loginDesc' : 'registerDesc', e.currentTarget.innerText)}
+              >
+                {authMode === 'login' ? loginDesc : registerDesc}
               </p>
             </div>
 
@@ -3899,7 +3928,14 @@ export default function WebshopComponent({
                 )}
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">E-mail Adresse</label>
+                    <label 
+                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('loginEmailLabel', e.currentTarget.innerText)}
+                    >
+                      {loginEmailLabel}
+                    </label>
                     <input 
                       type="email" 
                       value={loginEmail}
@@ -3911,7 +3947,14 @@ export default function WebshopComponent({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Adgangskode</label>
+                    <label 
+                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('loginPasswordLabel', e.currentTarget.innerText)}
+                    >
+                      {loginPasswordLabel}
+                    </label>
                     <input 
                       type="password" 
                       value={loginPassword}
@@ -3926,19 +3969,38 @@ export default function WebshopComponent({
                     type="submit"
                     className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
                   >
-                    Log ind
+                    <span 
+                      className="outline-none focus:bg-amber-500 rounded px-2"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('loginButtonText', e.currentTarget.innerText)}
+                    >
+                      {loginButtonText}
+                    </span>
                   </button>
                 </form>
 
                 <div className="border-t border-slate-900 pt-4 text-center">
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    Har du ikke en konto endnu?
+                  <p 
+                    className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-800 rounded px-1 inline-block"
+                    contentEditable={!isPreviewMode}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateSetting('noAccountText', e.currentTarget.innerText)}
+                  >
+                    {noAccountText}
                   </p>
                   <button
                     onClick={() => setAuthMode('register')}
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
-                    Opret konto her
+                    <span
+                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('createAccountLink', e.currentTarget.innerText)}
+                    >
+                      {createAccountLink}
+                    </span>
                   </button>
                   <button
                     onClick={() => {
@@ -3949,7 +4011,14 @@ export default function WebshopComponent({
                     }}
                     className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
                   >
-                    Tilbage til butikken
+                    <span
+                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('backToShopText', e.currentTarget.innerText)}
+                    >
+                      {backToShopText}
+                    </span>
                   </button>
                 </div>
               </>
@@ -3962,7 +4031,14 @@ export default function WebshopComponent({
                 )}
                 <form onSubmit={handleRegisterSubmit} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Fulde Navn</label>
+                    <label 
+                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('registerNameLabel', e.currentTarget.innerText)}
+                    >
+                      {registerNameLabel}
+                    </label>
                     <input 
                       type="text" 
                       value={registerName}
@@ -3974,7 +4050,14 @@ export default function WebshopComponent({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">E-mail Adresse</label>
+                    <label 
+                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('registerEmailLabel', e.currentTarget.innerText)}
+                    >
+                      {registerEmailLabel}
+                    </label>
                     <input 
                       type="email" 
                       value={registerEmail}
@@ -3986,7 +4069,14 @@ export default function WebshopComponent({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Vælg Adgangskode</label>
+                    <label 
+                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('registerPasswordLabel', e.currentTarget.innerText)}
+                    >
+                      {registerPasswordLabel}
+                    </label>
                     <input 
                       type="password" 
                       value={registerPassword}
@@ -4001,19 +4091,38 @@ export default function WebshopComponent({
                     type="submit"
                     className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
                   >
-                    Opret konto
+                    <span 
+                      className="outline-none focus:bg-amber-500 rounded px-2"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('registerButtonText', e.currentTarget.innerText)}
+                    >
+                      {registerButtonText}
+                    </span>
                   </button>
                 </form>
 
                 <div className="border-t border-slate-900 pt-4 text-center">
-                  <p className="text-[11px] text-slate-500 font-medium">
-                    Har du allerede en konto?
+                  <p 
+                    className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-800 rounded px-1 inline-block"
+                    contentEditable={!isPreviewMode}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateSetting('hasAccountText', e.currentTarget.innerText)}
+                  >
+                    {hasAccountText}
                   </p>
                   <button
                     onClick={() => setAuthMode('login')}
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
-                    Log ind her
+                    <span
+                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('loginAccountLink', e.currentTarget.innerText)}
+                    >
+                      {loginAccountLink}
+                    </span>
                   </button>
                   <button
                     onClick={() => {
@@ -4024,7 +4133,14 @@ export default function WebshopComponent({
                     }}
                     className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
                   >
-                    Tilbage til butikken
+                    <span
+                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting('backToShopText', e.currentTarget.innerText)}
+                    >
+                      {backToShopText}
+                    </span>
                   </button>
                 </div>
               </>
