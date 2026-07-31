@@ -1392,7 +1392,7 @@ export default function WebshopComponent({
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
 
       {/* Webshop Header Bar */}
-      <div className="pb-5 mb-4 relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-150">
+      <div className="pb-5 mb-4 relative z-[100] flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-150">
         <div className="flex items-center gap-3 cursor-pointer select-none"
           onClick={() => {
             setView('categories');
