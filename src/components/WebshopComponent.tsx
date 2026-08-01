@@ -1602,8 +1602,21 @@ export default function WebshopComponent({
             }}
             className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
           >
-            <User className="w-5 h-5 text-slate-750" />
-            <span className="text-[9px] font-extrabold uppercase tracking-wider">Vogn</span>
+            {loggedInUser ? (
+              <>
+                <div className="w-5 h-5 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-bold text-[10px]">
+                  {loggedInUser.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider truncate max-w-[40px] text-center" title={loggedInUser.name}>
+                  {loggedInUser.name.split(' ')[0]}
+                </span>
+              </>
+            ) : (
+              <>
+                <User className="w-5 h-5 text-slate-750" />
+                <span className="text-[9px] font-extrabold uppercase tracking-wider">Konto</span>
+              </>
+            )}
           </div>
 
           {/* Wishlist */}
