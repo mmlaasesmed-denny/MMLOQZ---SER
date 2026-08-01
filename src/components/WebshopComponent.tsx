@@ -2732,23 +2732,75 @@ export default function WebshopComponent({
                 </p>
               </div>
               {/* Video placeholder */}
-              <div className="relative aspect-video rounded-3xl overflow-hidden shadow-md cursor-pointer group bg-[#1f2937] flex items-center justify-center border border-slate-200">
-                <img 
-                  src={s[`subcatVideoImg_${activeSubcategory.id}`] || "https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80"} 
-                  alt="Video explanation" 
-                  className={`absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-500 ${!isPreviewMode ? 'group-hover:opacity-100' : 'group-hover:scale-102'}`}
-                  onClick={(e) => {
-                    if (!isPreviewMode) {
-                      e.stopPropagation();
-                      promptEditImage('setting', '', `subcatVideoImg_${activeSubcategory.id}`);
+              {(() => {
+                let embedUrl = s[`subcatVideoUrl_${activeSubcategory.id}`] || '';
+                if (embedUrl) {
+                  if (embedUrl.includes('youtube.com/watch?v=')) {
+                    embedUrl = embedUrl.replace('youtube.com/watch?v=', 'youtube.com/embed/');
+                    const ampIdx = embedUrl.indexOf('&');
+                    if (ampIdx !== -1) embedUrl = embedUrl.substring(0, ampIdx);
+                  } else if (embedUrl.includes('youtu.be/')) {
+                    embedUrl = embedUrl.replace('youtu.be/', 'youtube.com/embed/');
+                  } else if (embedUrl.includes('vimeo.com/') && !embedUrl.includes('player.vimeo.com')) {
+                    const match = embedUrl.match(/vimeo\.com\/(\d+)/);
+                    if (match) {
+                      embedUrl = `https://player.vimeo.com/video/${match[1]}`;
                     }
-                  }}
-                />
-                <div className="absolute inset-0 bg-black/15 pointer-events-none" />
-                <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-slate-900 text-xl font-extrabold ml-1">▶</span>
-                </div>
-              </div>
+                  }
+                }
+                
+                return (
+                  <div className="relative aspect-video rounded-3xl overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
+                    {embedUrl ? (
+                      <iframe 
+                        src={embedUrl} 
+                        title="Video" 
+                        className="absolute inset-0 w-full h-full border-none"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <>
+                        <img 
+                          src={s[`subcatVideoImg_${activeSubcategory.id}`] || "https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80"} 
+                          alt="Video explanation" 
+                          className={`absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-500 ${!isPreviewMode ? 'group-hover:opacity-100' : 'group-hover:scale-102'}`}
+                        />
+                        <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+                        <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 pointer-events-none">
+                          <span className="text-slate-900 text-xl font-extrabold ml-1">▶</span>
+                        </div>
+                      </>
+                    )}
+                    
+                    {!isPreviewMode && (
+                      <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            promptEditImage('setting', '', `subcatVideoImg_${activeSubcategory.id}`);
+                          }}
+                          className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
+                        >
+                          Skift Billede
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const url = window.prompt("Indtast video URL (f.eks. YouTube eller Vimeo):", s[`subcatVideoUrl_${activeSubcategory.id}`] || "");
+                            if (url !== null) {
+                              updateSetting(`subcatVideoUrl_${activeSubcategory.id}`, url);
+                            }
+                          }}
+                          className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
+                        >
+                          Skift Video URL
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Brands Promotional Cards Grid or Direct Products Grid if no brands associated */}
