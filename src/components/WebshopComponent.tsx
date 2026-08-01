@@ -2631,14 +2631,22 @@ export default function WebshopComponent({
             </div>
 
             {/* Banner Header Image with overlay text */}
-            <div className="relative h-64 overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] -mx-4 md:-mx-8 lg:-mx-12">
+            <div 
+              className="relative h-64 overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] -mx-4 md:-mx-8 lg:-mx-12 group"
+              onClick={() => { if (!isPreviewMode) promptEditImage('subcategory', activeSubcategory.id, 'image'); }}
+            >
               <img 
                 src={activeSubcategory.image || "https://images.unsplash.com/photo-1558002038-1055907df827?w=1200&auto=format&fit=crop&q=80"} 
                 alt={activeSubcategory.name}
-                className={`absolute inset-0 w-full h-full object-cover opacity-85 ${!isPreviewMode ? 'cursor-pointer hover:opacity-100 transition-opacity' : ''}`}
-                onClick={() => promptEditImage('subcategory', activeSubcategory.id, 'image')}
+                className={`absolute inset-0 w-full h-full object-cover opacity-85 transition-opacity ${!isPreviewMode ? 'group-hover:opacity-100 cursor-pointer' : ''}`}
               />
-              <div className="absolute inset-0 bg-black/35" />
+              <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+              
+              {!isPreviewMode && (
+                <div className="absolute top-4 right-4 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow flex items-center gap-2">
+                  <Plus className="w-3.5 h-3.5" /> Skift Banner
+                </div>
+              )}
               <h2 
                 className="relative z-10 text-4xl md:text-5xl font-black text-white uppercase tracking-wider font-sans outline-none focus:bg-slate-900 px-2 rounded"
                 contentEditable={!isPreviewMode}
