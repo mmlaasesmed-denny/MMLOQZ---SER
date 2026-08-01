@@ -1425,8 +1425,8 @@ export default function WebshopComponent({
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
 
       {/* Webshop Header Bar */}
-      <div className="pb-5 mb-4 relative z-[100] flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-150">
-        <div className="flex items-center gap-3 cursor-pointer select-none"
+      <div className="pb-4 md:pb-5 mb-4 relative z-[100] grid grid-cols-2 md:flex md:flex-row items-center md:justify-between gap-y-4 gap-x-2 md:gap-4 border-b border-slate-150">
+        <div className="flex items-center justify-start gap-3 cursor-pointer select-none order-1 md:order-none"
           onClick={() => {
             setView('categories');
             setSelectedCatId(null);
@@ -1518,7 +1518,7 @@ export default function WebshopComponent({
         </div>
 
         {/* Search Bar Container */}
-        <div className="search-container-root relative flex-grow max-w-md w-full relative z-20">
+        <div className="search-container-root relative flex-grow w-full md:max-w-md z-20 order-3 md:order-none col-span-2 md:col-span-1">
           <div className="flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-white focus-within:border-amber-400 transition-colors">
             <input
               type="text"
@@ -1602,7 +1602,7 @@ export default function WebshopComponent({
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center justify-end gap-3 md:gap-5 order-2 md:order-none">
           {/* Account Icon */}
           <div 
             onClick={() => {
@@ -2309,7 +2309,7 @@ export default function WebshopComponent({
                     )}
                     {isEven ? (
                       <>
-                        <div className="w-full md:w-[length:var(--cat-img-w)] h-64 md:h-auto relative shrink-0">
+                        <div className="w-full md:w-[length:var(--cat-img-w)] h-48 md:h-auto relative shrink-0">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
@@ -2317,7 +2317,7 @@ export default function WebshopComponent({
                             onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
                         </div>
-                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
+                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-6 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
                           <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
                             <span 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
@@ -2360,7 +2360,7 @@ export default function WebshopComponent({
                       </>
                     ) : (
                       <>
-                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-8 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 md:order-1">
+                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-6 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 md:order-1">
                           <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
                             <span 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
@@ -2400,7 +2400,7 @@ export default function WebshopComponent({
                             {bt('Se produkter', 'See products')}
                           </button>
                         </div>
-                        <div className="w-full md:w-[length:var(--cat-img-w)] h-64 md:h-auto relative shrink-0 order-1 md:order-2">
+                        <div className="w-full md:w-[length:var(--cat-img-w)] h-48 md:h-auto relative shrink-0 order-1 md:order-2">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
@@ -4497,7 +4497,7 @@ export default function WebshopComponent({
             </div>
 
             {/* KPI Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
                 <div className="absolute -right-2 -bottom-2 opacity-5 text-slate-900">
                   <DollarSign className="w-20 h-20" />
