@@ -3896,13 +3896,13 @@ export default function WebshopComponent({
 
         {/* VIEW: LOGIN */}
         {view === 'login' && (
-          <div className="max-w-md mx-auto p-4 sm:p-6 bg-slate-950/60 border border-slate-800 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-md mx-auto p-4 sm:p-6 bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
             <div className="text-center">
               <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 mx-auto mb-3">
                 <Lock className="w-6 h-6" />
               </div>
               <h3 
-                className="text-xl font-extrabold text-white uppercase tracking-wider outline-none focus:bg-slate-800 rounded px-1"
+                className="text-xl font-extrabold text-slate-900 uppercase tracking-wider outline-none focus:bg-slate-100 rounded px-1"
                 contentEditable={!isPreviewMode}
                 suppressContentEditableWarning
                 onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -3911,7 +3911,7 @@ export default function WebshopComponent({
                 {authMode === 'login' ? loginTitle : registerTitle}
               </h3>
               <p 
-                className="text-xs text-slate-400 mt-2 outline-none focus:bg-slate-800 rounded px-1"
+                className="text-xs text-slate-500 mt-2 outline-none focus:bg-slate-100 rounded px-1"
                 contentEditable={!isPreviewMode}
                 suppressContentEditableWarning
                 onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -3931,7 +3931,7 @@ export default function WebshopComponent({
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   <div className="space-y-1.5">
                     <label 
-                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -3945,13 +3945,13 @@ export default function WebshopComponent({
                       onChange={(e) => setLoginEmail(e.target.value)}
                       placeholder="F.eks. anders@jensen.dk" 
                       required 
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label 
-                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -3965,7 +3965,7 @@ export default function WebshopComponent({
                       onChange={(e) => setLoginPassword(e.target.value)}
                       placeholder="Indtast din adgangskode" 
                       required 
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
@@ -3985,9 +3985,9 @@ export default function WebshopComponent({
                   </button>
                 </form>
 
-                <div className="border-t border-slate-900 pt-4 text-center">
+                <div className="border-t border-slate-100 pt-4 text-center">
                   <p 
-                    className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-800 rounded px-1 inline-block"
+                    className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-100 rounded px-1 inline-block"
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
                     onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4000,7 +4000,7 @@ export default function WebshopComponent({
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2 block"
+                      className="outline-none focus:bg-slate-100 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4016,10 +4016,10 @@ export default function WebshopComponent({
                         window.location.hash = 'shop';
                       }
                     }}
-                    className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
+                    className="mt-3 text-xs text-slate-500 hover:text-slate-800 font-bold bg-transparent border-none cursor-pointer"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2 block"
+                      className="outline-none focus:bg-slate-100 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4040,7 +4040,7 @@ export default function WebshopComponent({
                 <form onSubmit={handleRegisterSubmit} className="space-y-4">
                   <div className="space-y-1.5">
                     <label 
-                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4054,13 +4054,13 @@ export default function WebshopComponent({
                       onChange={(e) => setRegisterName(e.target.value)}
                       placeholder="F.eks. Anders Jensen" 
                       required 
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label 
-                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4074,13 +4074,13 @@ export default function WebshopComponent({
                       onChange={(e) => setRegisterEmail(e.target.value)}
                       placeholder="F.eks. anders@jensen.dk" 
                       required 
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label 
-                      className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
+                      className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4094,7 +4094,7 @@ export default function WebshopComponent({
                       onChange={(e) => setRegisterPassword(e.target.value)}
                       placeholder="Indtast adgangskode" 
                       required 
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
@@ -4114,9 +4114,9 @@ export default function WebshopComponent({
                   </button>
                 </form>
 
-                <div className="border-t border-slate-900 pt-4 text-center">
+                <div className="border-t border-slate-100 pt-4 text-center">
                   <p 
-                    className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-800 rounded px-1 inline-block"
+                    className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-100 rounded px-1 inline-block"
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
                     onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4129,7 +4129,7 @@ export default function WebshopComponent({
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2 block"
+                      className="outline-none focus:bg-slate-100 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4145,10 +4145,10 @@ export default function WebshopComponent({
                         window.location.hash = 'shop';
                       }
                     }}
-                    className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
+                    className="mt-3 text-xs text-slate-500 hover:text-slate-800 font-bold bg-transparent border-none cursor-pointer"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2 block"
+                      className="outline-none focus:bg-slate-100 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
@@ -4165,13 +4165,13 @@ export default function WebshopComponent({
 
         {/* VIEW: RESET PASSWORD */}
         {view === 'reset-password' && (
-          <div className="max-w-md mx-auto p-4 sm:p-6 bg-slate-950/60 border border-slate-800 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-md mx-auto p-4 sm:p-6 bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
             <div className="text-center">
               <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 mx-auto mb-3">
                 <Key className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-extrabold text-white uppercase tracking-wider">Nulstil Adgangskode</h3>
-              <p className="text-xs text-slate-400 mt-2">Vælg en ny adgangskode til din konto.</p>
+              <h3 className="text-xl font-extrabold text-slate-900 uppercase tracking-wider">Nulstil Adgangskode</h3>
+              <p className="text-xs text-slate-500 mt-2">Vælg en ny adgangskode til din konto.</p>
             </div>
 
             {resetSuccess ? (
@@ -4209,7 +4209,7 @@ export default function WebshopComponent({
                       onChange={(e) => setResetEmail(e.target.value)}
                       placeholder="F.eks. anders@jensen.dk" 
                       required
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-505 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
@@ -4221,7 +4221,7 @@ export default function WebshopComponent({
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Mindst 6 tegn" 
                       required 
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-555 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
@@ -4233,7 +4233,7 @@ export default function WebshopComponent({
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Gentag ny adgangskode" 
                       required 
-                      className="w-full text-xs px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-white placeholder-slate-555 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                      className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
@@ -4247,7 +4247,7 @@ export default function WebshopComponent({
               </>
             )}
 
-            <div className="border-t border-slate-900 pt-4 text-center">
+            <div className="border-t border-slate-100 pt-4 text-center">
               <button
                 onClick={() => {
                   setView('categories');
