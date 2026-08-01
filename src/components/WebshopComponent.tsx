@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ShoppingCart, ArrowLeft, Plus, Minus, Trash2, Check, 
   ShoppingBag, Info, ShieldCheck, Key, Phone, ChevronRight,
+  ArrowUp, ArrowDown,
   Mail, Lock, User, Package, Settings, Clock, AlertCircle,
   TrendingUp, CheckCircle, XCircle, Calendar, DollarSign,
   MapPin, Truck, ChevronLeft, Search, Heart
@@ -142,6 +143,19 @@ export default function WebshopComponent({
   const updateCategoryField = (id: string, field: string, value: string) => {
     if (isPreviewMode) return;
     setCategories(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
+  };
+
+  const moveCategory = (index: number, direction: 'up' | 'down') => {
+    if (isPreviewMode) return;
+    setCategories(prev => {
+      const newCats = [...prev];
+      if (direction === 'up' && index > 0) {
+        [newCats[index - 1], newCats[index]] = [newCats[index], newCats[index - 1]];
+      } else if (direction === 'down' && index < newCats.length - 1) {
+        [newCats[index + 1], newCats[index]] = [newCats[index], newCats[index + 1]];
+      }
+      return newCats;
+    });
   };
 
   const updateSubcategoryField = (id: string, field: string, value: string) => {
@@ -2267,12 +2281,32 @@ export default function WebshopComponent({
                 return (
                   <div 
                     key={cat.id} 
-                    className="flex flex-col md:flex-row bg-slate-50 min-h-[320px]"
+                    className="relative group/catblock flex flex-col md:flex-row bg-slate-50 min-h-[320px]"
                     style={{
                       '--cat-img-w': `${categoryImageWidth}%`,
                       '--cat-txt-w': `${100 - categoryImageWidth}%`
                     } as React.CSSProperties}
                   >
+                    {!isPreviewMode && (
+                      <div className="absolute top-4 left-4 flex flex-col gap-2 z-10 opacity-0 group-hover/catblock:opacity-100 transition-opacity">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); moveCategory(index, 'up'); }}
+                          disabled={index === 0}
+                          className="w-10 h-10 bg-white shadow-md border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-amber-500 hover:border-amber-400 disabled:opacity-30 disabled:hover:text-slate-600 disabled:hover:border-slate-200 transition-all cursor-pointer disabled:cursor-not-allowed"
+                          title="Flyt Kategori Op"
+                        >
+                          <ArrowUp className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); moveCategory(index, 'down'); }}
+                          disabled={index === categories.length - 1}
+                          className="w-10 h-10 bg-white shadow-md border border-slate-200 rounded-full flex items-center justify-center text-slate-600 hover:text-amber-500 hover:border-amber-400 disabled:opacity-30 disabled:hover:text-slate-600 disabled:hover:border-slate-200 transition-all cursor-pointer disabled:cursor-not-allowed"
+                          title="Flyt Kategori Ned"
+                        >
+                          <ArrowDown className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
                     {isEven ? (
                       <>
                         <div className="w-full md:w-[length:var(--cat-img-w)] h-64 md:h-auto relative shrink-0">
