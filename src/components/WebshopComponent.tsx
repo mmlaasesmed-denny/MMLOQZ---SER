@@ -2927,10 +2927,36 @@ export default function WebshopComponent({
               </>
             ) : (
               <div className="space-y-6 pt-6 border-t border-slate-100">
-                <div className="text-left">
-                  <h4 className="text-lg font-extrabold text-slate-900">Vælg Producent (Brand)</h4>
-                  <p className="text-xs text-slate-400 mt-1">Vi fører kun forsikringsgodkendte mærker, der er testet til det barske nordiske klima.</p>
-                </div>
+                {(!isPreviewMode || s[`hideBrandHeader_${activeSubcategory.id}`] !== 'true') && (
+                  <div className={`text-left relative group/brandheader ${s[`hideBrandHeader_${activeSubcategory.id}`] === 'true' ? 'opacity-30' : ''}`}>
+                    <h4 
+                      className="text-lg font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded inline-block"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting(`subcatBrandTitle_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                    >
+                      {s[`subcatBrandTitle_${activeSubcategory.id}`] ?? 'Vælg Producent (Brand)'}
+                    </h4>
+                    <br/>
+                    <p 
+                      className="text-xs text-slate-400 mt-1 outline-none focus:bg-slate-100 px-1 rounded inline-block"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) => updateSetting(`subcatBrandDesc_${activeSubcategory.id}`, e.currentTarget.innerText)}
+                    >
+                      {s[`subcatBrandDesc_${activeSubcategory.id}`] ?? 'Vi fører kun forsikringsgodkendte mærker, der er testet til det barske nordiske klima.'}
+                    </p>
+                    
+                    {!isPreviewMode && (
+                      <button 
+                        onClick={() => updateSetting(`hideBrandHeader_${activeSubcategory.id}`, s[`hideBrandHeader_${activeSubcategory.id}`] === 'true' ? 'false' : 'true')}
+                        className="absolute top-0 right-0 opacity-0 group-hover/brandheader:opacity-100 px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-full text-[10px] font-bold transition-all border-none cursor-pointer"
+                      >
+                        {s[`hideBrandHeader_${activeSubcategory.id}`] === 'true' ? 'Vis igen' : 'Skjul i preview'}
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {WEBSHOP_BRANDS
