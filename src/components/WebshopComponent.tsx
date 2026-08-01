@@ -3905,6 +3905,7 @@ export default function WebshopComponent({
                 className="text-xl font-extrabold text-white uppercase tracking-wider outline-none focus:bg-slate-800 rounded px-1"
                 contentEditable={!isPreviewMode}
                 suppressContentEditableWarning
+                onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                 onBlur={(e) => updateSetting(authMode === 'login' ? 'loginTitle' : 'registerTitle', e.currentTarget.innerText)}
               >
                 {authMode === 'login' ? loginTitle : registerTitle}
@@ -3913,6 +3914,7 @@ export default function WebshopComponent({
                 className="text-xs text-slate-400 mt-2 outline-none focus:bg-slate-800 rounded px-1"
                 contentEditable={!isPreviewMode}
                 suppressContentEditableWarning
+                onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                 onBlur={(e) => updateSetting(authMode === 'login' ? 'loginDesc' : 'registerDesc', e.currentTarget.innerText)}
               >
                 {authMode === 'login' ? loginDesc : registerDesc}
@@ -3932,6 +3934,7 @@ export default function WebshopComponent({
                       className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginEmailLabel', e.currentTarget.innerText)}
                     >
                       {loginEmailLabel}
@@ -3951,6 +3954,7 @@ export default function WebshopComponent({
                       className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginPasswordLabel', e.currentTarget.innerText)}
                     >
                       {loginPasswordLabel}
@@ -3970,9 +3974,10 @@ export default function WebshopComponent({
                     className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
                   >
                     <span 
-                      className="outline-none focus:bg-amber-500 rounded px-2"
+                      className="outline-none focus:bg-amber-500 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginButtonText', e.currentTarget.innerText)}
                     >
                       {loginButtonText}
@@ -3985,6 +3990,7 @@ export default function WebshopComponent({
                     className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-800 rounded px-1 inline-block"
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
+                    onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                     onBlur={(e) => updateSetting('noAccountText', e.currentTarget.innerText)}
                   >
                     {noAccountText}
@@ -3994,9 +4000,10 @@ export default function WebshopComponent({
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      className="outline-none focus:bg-slate-800 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('createAccountLink', e.currentTarget.innerText)}
                     >
                       {createAccountLink}
@@ -4012,9 +4019,10 @@ export default function WebshopComponent({
                     className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      className="outline-none focus:bg-slate-800 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('backToShopText', e.currentTarget.innerText)}
                     >
                       {backToShopText}
@@ -4035,6 +4043,7 @@ export default function WebshopComponent({
                       className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerNameLabel', e.currentTarget.innerText)}
                     >
                       {registerNameLabel}
@@ -4054,6 +4063,7 @@ export default function WebshopComponent({
                       className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerEmailLabel', e.currentTarget.innerText)}
                     >
                       {registerEmailLabel}
@@ -4073,6 +4083,7 @@ export default function WebshopComponent({
                       className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide outline-none focus:bg-slate-800 rounded px-1"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerPasswordLabel', e.currentTarget.innerText)}
                     >
                       {registerPasswordLabel}
@@ -4092,9 +4103,10 @@ export default function WebshopComponent({
                     className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
                   >
                     <span 
-                      className="outline-none focus:bg-amber-500 rounded px-2"
+                      className="outline-none focus:bg-amber-500 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerButtonText', e.currentTarget.innerText)}
                     >
                       {registerButtonText}
@@ -4107,6 +4119,7 @@ export default function WebshopComponent({
                     className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-800 rounded px-1 inline-block"
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
+                    onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                     onBlur={(e) => updateSetting('hasAccountText', e.currentTarget.innerText)}
                   >
                     {hasAccountText}
@@ -4116,9 +4129,10 @@ export default function WebshopComponent({
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      className="outline-none focus:bg-slate-800 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginAccountLink', e.currentTarget.innerText)}
                     >
                       {loginAccountLink}
@@ -4134,9 +4148,10 @@ export default function WebshopComponent({
                     className="mt-3 text-xs text-slate-400 hover:text-white font-bold bg-transparent border-none cursor-pointer"
                   >
                     <span
-                      className="outline-none focus:bg-slate-800 rounded px-2"
+                      className="outline-none focus:bg-slate-800 rounded px-2 block"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
+                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('backToShopText', e.currentTarget.innerText)}
                     >
                       {backToShopText}
