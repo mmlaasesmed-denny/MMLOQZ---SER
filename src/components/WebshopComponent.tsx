@@ -86,6 +86,8 @@ export default function WebshopComponent({
   const banner3Title = s.banner3Title || 'Branchevalg sikkerhed eller brand fabrikant - Ajax Systems';
   const newsletterTitle = s.newsletterTitle || 'Tilmeld dig vores nyhedsbrev';
   const newsletterDesc = s.newsletterDesc || 'Modtag eksklusive tilbud og sikkerhedsråd direkte i din indbakke hver uge.';
+  const newsletterPlaceholder = s.newsletterPlaceholder || 'Skriv din e-mailadresse...';
+  const newsletterBtnText = s.newsletterBtnText || 'Tilmeld dig';
   const badge1Title = s.badge1Title || 'Gratis fragt';
   const badge1Desc = s.badge1Desc || 'Alle køb over 555 Dkk er berettiget til gratis forsendelse via USPS First Class Mail';
   const badge2Title = s.badge2Title || 'Nem betaling';
@@ -2425,8 +2427,22 @@ export default function WebshopComponent({
                   paddingRight: s.newsletterLeftPaddingRight !== undefined ? `${s.newsletterLeftPaddingRight}px` : '0px',
                 }}
               >
-                <h4 className="text-lg font-extrabold uppercase tracking-wider">{newsletterTitle}</h4>
-                <p className="text-xs text-slate-400">{newsletterDesc}</p>
+                <h4 
+                  className="text-lg font-extrabold uppercase tracking-wider outline-none focus:bg-slate-700 focus:text-white px-1 rounded -ml-1 transition-colors"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSetting('newsletterTitle', e.currentTarget.innerText)}
+                >
+                  {newsletterTitle}
+                </h4>
+                <p 
+                  className="text-xs text-slate-400 outline-none focus:bg-slate-700 focus:text-white px-1 rounded -ml-1 transition-colors mt-1"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSetting('newsletterDesc', e.currentTarget.innerText)}
+                >
+                  {newsletterDesc}
+                </p>
               </div>
               <div 
                 className="flex items-stretch rounded-xl overflow-hidden bg-white w-full @md:w-auto border border-slate-700"
@@ -2438,14 +2454,31 @@ export default function WebshopComponent({
               >
                 <input 
                   type="email" 
-                  placeholder="Skriv din e-mailadresse..." 
-                  className="px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-full border-none"
+                  placeholder={newsletterPlaceholder} 
+                  className={`px-3 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-full border-none ${!isPreviewMode ? 'cursor-pointer hover:bg-slate-50' : ''}`}
+                  onClick={(e) => {
+                    if (!isPreviewMode) {
+                      e.preventDefault();
+                      const val = window.prompt('Rediger placeholder tekst:', newsletterPlaceholder);
+                      if (val !== null) updateSetting('newsletterPlaceholder', val);
+                    }
+                  }}
+                  readOnly={!isPreviewMode}
                 />
                 <button 
-                  onClick={() => alert('Tak for din tilmelding!')}
-                  className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider border-none cursor-pointer transition-colors shrink-0"
+                  onClick={(e) => {
+                    if (isPreviewMode) {
+                      alert('Tak for din tilmelding!');
+                    } else {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider border-none cursor-pointer transition-colors shrink-0 outline-none focus:ring-2 focus:ring-slate-900"
+                  contentEditable={!isPreviewMode}
+                  suppressContentEditableWarning
+                  onBlur={(e) => updateSetting('newsletterBtnText', e.currentTarget.innerText)}
                 >
-                  Tilmeld dig
+                  {newsletterBtnText}
                 </button>
               </div>
             </div>
