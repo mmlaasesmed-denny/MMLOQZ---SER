@@ -1682,9 +1682,9 @@ export default function WebshopComponent({
         className={`bg-[#333333] flex items-center justify-between py-1 px-4 @md:px-8 @lg:px-12 -mx-4 @md:-mx-8 @lg:-mx-12 mb-6 relative z-50 select-none ${!isPreviewMode ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all' : ''}`}
         onClick={() => !isPreviewMode && promptEditImage('setting', '', 'navMenuSettings')}
       >
-        <div className="flex items-center gap-4 relative">
+        <div className="flex items-center gap-4 @md:relative">
           <div 
-            className="relative"
+            className="@md:relative"
             onMouseEnter={() => setIsMegaMenuOpen(true)}
             onMouseLeave={() => {
               setIsMegaMenuOpen(false);
