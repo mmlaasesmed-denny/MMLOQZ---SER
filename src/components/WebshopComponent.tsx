@@ -194,19 +194,19 @@ export default function WebshopComponent({
   const getGridCols = (colsMobile: number, colsTablet: number, colsDesktop: number) => {
     if (viewportMode === 'mobile') return `grid-cols-${colsMobile}`;
     if (viewportMode === 'tablet') return `grid-cols-${colsTablet}`;
-    return `grid-cols-${colsMobile} sm:grid-cols-${colsTablet} lg:grid-cols-${colsDesktop}`;
+    return `grid-cols-${colsMobile} @sm:grid-cols-${colsTablet} @lg:grid-cols-${colsDesktop}`;
   };
 
   const getCardPadding = (paddingMobile: string, paddingTablet: string, paddingDesktop: string) => {
     if (viewportMode === 'mobile') return paddingMobile;
     if (viewportMode === 'tablet') return paddingTablet;
-    return `${paddingMobile} sm:${paddingTablet} md:${paddingDesktop}`;
+    return `${paddingMobile} @sm:${paddingTablet} @md:${paddingDesktop}`;
   };
 
   const getHeaderFlexClass = () => {
     if (viewportMode === 'mobile') return 'flex-col gap-4 items-center';
     if (viewportMode === 'tablet') return 'flex-row items-center justify-between';
-    return 'flex-col sm:flex-row gap-4 sm:gap-0 items-center justify-between';
+    return 'flex-col @sm:flex-row gap-4 @sm:gap-0 items-center justify-between';
   };
 
   const getMockCityName = (zip: string) => {
@@ -1420,13 +1420,13 @@ export default function WebshopComponent({
   };
 
   return (
-    <div className="w-full bg-white text-slate-800 relative overflow-hidden font-sans py-2 px-4 md:px-8 lg:px-12">
+    <div className="@container w-full bg-white text-slate-800 relative overflow-hidden font-sans py-2 px-4 @md:px-8 @lg:px-12">
       {/* Background Gradients */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
 
       {/* Webshop Header Bar */}
-      <div className="pb-4 md:pb-5 mb-4 relative z-[100] grid grid-cols-2 md:flex md:flex-row items-center md:justify-between gap-y-4 gap-x-2 md:gap-4 border-b border-slate-150">
-        <div className="flex items-center justify-start gap-3 cursor-pointer select-none order-1 md:order-none"
+      <div className="pb-4 @md:pb-5 mb-4 relative z-[100] grid grid-cols-2 @md:flex @md:flex-row items-center @md:justify-between gap-y-4 gap-x-2 @md:gap-4 border-b border-slate-150">
+        <div className="flex items-center justify-start gap-3 cursor-pointer select-none order-1 @md:order-none"
           onClick={() => {
             setView('categories');
             setSelectedCatId(null);
@@ -1518,7 +1518,7 @@ export default function WebshopComponent({
         </div>
 
         {/* Search Bar Container */}
-        <div className="search-container-root relative flex-grow w-full md:max-w-md z-20 order-3 md:order-none col-span-2 md:col-span-1">
+        <div className="search-container-root relative flex-grow w-full @md:max-w-md z-20 order-3 @md:order-none col-span-2 @md:col-span-1">
           <div className="flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-white focus-within:border-amber-400 transition-colors">
             <input
               type="text"
@@ -1602,7 +1602,7 @@ export default function WebshopComponent({
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center justify-end gap-3 md:gap-5 order-2 md:order-none">
+        <div className="flex items-center justify-end gap-3 @md:gap-5 order-2 @md:order-none">
           {/* Account Icon */}
           <div 
             onClick={() => {
@@ -1679,7 +1679,7 @@ export default function WebshopComponent({
 
       {/* Nav Link Bar */}
       <div 
-        className={`bg-[#333333] flex items-center justify-between py-1 px-4 md:px-8 lg:px-12 -mx-4 md:-mx-8 lg:-mx-12 mb-6 relative z-50 select-none ${!isPreviewMode ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all' : ''}`}
+        className={`bg-[#333333] flex items-center justify-between py-1 px-4 @md:px-8 @lg:px-12 -mx-4 @md:-mx-8 @lg:-mx-12 mb-6 relative z-50 select-none ${!isPreviewMode ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all' : ''}`}
         onClick={() => !isPreviewMode && promptEditImage('setting', '', 'navMenuSettings')}
       >
         <div className="flex items-center gap-4 relative">
@@ -2034,9 +2034,9 @@ export default function WebshopComponent({
               <p className="text-xs text-slate-500 mt-1">Se dine profiloplysninger og følg dine ordrer her.</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid @md:grid-cols-3 gap-6">
               {/* Left Column: User Profile Info */}
-              <div className="md:col-span-1 space-y-4">
+              <div className="@md:col-span-1 space-y-4">
                 <div className="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden space-y-4 shadow-xs">
                   <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-amber-500" />
@@ -2064,7 +2064,7 @@ export default function WebshopComponent({
               </div>
 
               {/* Right Column: Order History list */}
-              <div className="md:col-span-2 space-y-4">
+              <div className="@md:col-span-2 space-y-4">
                 <div className="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden space-y-4 shadow-xs">
                   <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
                     <Package className="w-3.5 h-3.5 text-amber-500" />
@@ -2281,7 +2281,7 @@ export default function WebshopComponent({
                 return (
                   <div 
                     key={cat.id} 
-                    className="relative group/catblock flex flex-col md:flex-row bg-slate-50 min-h-[320px]"
+                    className="relative group/catblock flex flex-col @md:flex-row bg-slate-50 min-h-[320px]"
                     style={{
                       '--cat-img-w': `${categoryImageWidth}%`,
                       '--cat-txt-w': `${100 - categoryImageWidth}%`
@@ -2309,7 +2309,7 @@ export default function WebshopComponent({
                     )}
                     {isEven ? (
                       <>
-                        <div className="w-full md:w-[length:var(--cat-img-w)] h-48 md:h-auto relative shrink-0">
+                        <div className="w-full @md:w-[length:var(--cat-img-w)] h-48 @md:h-auto relative shrink-0">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
@@ -2317,8 +2317,8 @@ export default function WebshopComponent({
                             onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
                         </div>
-                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-6 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
-                          <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
+                        <div className="w-full @md:w-[length:var(--cat-txt-w)] p-6 @md:p-12 @lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
+                          <div className="text-xl @md:text-2xl @lg:text-3xl text-slate-900 leading-snug max-w-2xl">
                             <span 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
                               contentEditable={!isPreviewMode}
@@ -2352,7 +2352,7 @@ export default function WebshopComponent({
                               setSelectedProductId(null);
                               if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
                             }}
-                            className="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-sm lg:text-base rounded-sm transition-colors border-none cursor-pointer"
+                            className="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-sm @lg:text-base rounded-sm transition-colors border-none cursor-pointer"
                           >
                             {bt('Se produkter', 'See products')}
                           </button>
@@ -2360,8 +2360,8 @@ export default function WebshopComponent({
                       </>
                     ) : (
                       <>
-                        <div className="w-full md:w-[length:var(--cat-txt-w)] p-6 md:p-12 lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 md:order-1">
-                          <div className="text-xl md:text-2xl lg:text-3xl text-slate-900 leading-snug max-w-2xl">
+                        <div className="w-full @md:w-[length:var(--cat-txt-w)] p-6 @md:p-12 @lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 @md:order-1">
+                          <div className="text-xl @md:text-2xl @lg:text-3xl text-slate-900 leading-snug max-w-2xl">
                             <span 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
                               contentEditable={!isPreviewMode}
@@ -2395,12 +2395,12 @@ export default function WebshopComponent({
                               setSelectedProductId(null);
                               if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
                             }}
-                            className="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-sm lg:text-base rounded-sm transition-colors border-none cursor-pointer"
+                            className="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-sm @lg:text-base rounded-sm transition-colors border-none cursor-pointer"
                           >
                             {bt('Se produkter', 'See products')}
                           </button>
                         </div>
-                        <div className="w-full md:w-[length:var(--cat-img-w)] h-48 md:h-auto relative shrink-0 order-1 md:order-2">
+                        <div className="w-full @md:w-[length:var(--cat-img-w)] h-48 @md:h-auto relative shrink-0 order-1 @md:order-2">
                           <img 
                             src={imgUrl} 
                             alt={cat.name} 
@@ -2416,7 +2416,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Newsletter Sign-up */}
-            <div className="bg-[#1f2937] text-white rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4 border border-slate-800 text-left shadow-lg">
+            <div className="bg-[#1f2937] text-white rounded-3xl p-6 @md:p-8 flex flex-col @md:flex-row items-center justify-between gap-4 border border-slate-800 text-left shadow-lg">
               <div 
                 className="space-y-1 w-full"
                 style={{
@@ -2429,7 +2429,7 @@ export default function WebshopComponent({
                 <p className="text-xs text-slate-400">{newsletterDesc}</p>
               </div>
               <div 
-                className="flex items-stretch rounded-xl overflow-hidden bg-white w-full md:w-auto border border-slate-700"
+                className="flex items-stretch rounded-xl overflow-hidden bg-white w-full @md:w-auto border border-slate-700"
                 style={{
                   minWidth: s.newsletterRightWidth !== undefined ? `${s.newsletterRightWidth}px` : '300px',
                   paddingLeft: s.newsletterRightPaddingLeft !== undefined ? `${s.newsletterRightPaddingLeft}px` : '0px',
@@ -2451,7 +2451,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Trust Badges */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 gap-6 pt-6">
               {[
                 { title: badge1Title, desc: badge1Desc, img: badge1Image, tKey: 'badge1Title', dKey: 'badge1Desc', iKey: 'badge1Image' },
                 { title: badge2Title, desc: badge2Desc, img: badge2Image, tKey: 'badge2Title', dKey: 'badge2Desc', iKey: 'badge2Image' },
@@ -2472,7 +2472,7 @@ export default function WebshopComponent({
                       )}
                     </div>
                     {!isPreviewMode && (
-                      <div className="absolute -bottom-4 right-0 md:-right-4 flex items-center gap-1 bg-indigo-600 border border-indigo-700 rounded-lg shadow-xl p-1 z-30">
+                      <div className="absolute -bottom-4 right-0 @md:-right-4 flex items-center gap-1 bg-indigo-600 border border-indigo-700 rounded-lg shadow-xl p-1 z-30">
                         <button 
                           onClick={(e) => { e.stopPropagation(); updateSetting('badgeSize', String(Math.max(4, badgeSize - 10))); }}
                           className="w-6 h-6 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded text-white font-bold text-lg leading-none cursor-pointer border-none"
@@ -2632,7 +2632,7 @@ export default function WebshopComponent({
 
             {/* Banner Header Image with overlay text */}
             <div 
-              className="relative h-64 overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] -mx-4 md:-mx-8 lg:-mx-12 group"
+              className="relative h-64 overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] -mx-4 @md:-mx-8 @lg:-mx-12 group"
               onClick={() => { if (!isPreviewMode) promptEditImage('subcategory', activeSubcategory.id, 'image'); }}
             >
               <img 
@@ -2648,7 +2648,7 @@ export default function WebshopComponent({
                 </div>
               )}
               <h2 
-                className="relative z-10 text-4xl md:text-5xl font-black text-white uppercase tracking-wider font-sans outline-none focus:bg-slate-900 px-2 rounded"
+                className="relative z-10 text-4xl @md:text-5xl font-black text-white uppercase tracking-wider font-sans outline-none focus:bg-slate-900 px-2 rounded"
                 contentEditable={!isPreviewMode}
                 suppressContentEditableWarning
                 onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerText)}
@@ -2658,8 +2658,8 @@ export default function WebshopComponent({
             </div>
 
             {/* Section 1: Intro + Vigtige Fordele */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-              <div className="md:col-span-2 space-y-4">
+            <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left">
+              <div className="@md:col-span-2 space-y-4">
                 <h4 
                   className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
                   contentEditable={!isPreviewMode}
@@ -2704,7 +2704,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Section 2: Video + Finding Right Locks */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left items-center">
+            <div className="grid grid-cols-1 @md:grid-cols-2 gap-8 text-left items-center">
               <div className="space-y-4">
                 <h4 
                   className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
@@ -2892,7 +2892,7 @@ export default function WebshopComponent({
                     <h4 className="text-lg font-extrabold text-slate-900 uppercase">Andre kategorier</h4>
                     <p className="text-xs text-slate-400 mt-1">Udforsk vores andre relaterede sikringsløsninger.</p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 @md:grid-cols-3 gap-6">
                     {subcategories
                       .filter(s => s.categoryId === activeSubcategory.categoryId && s.id !== activeSubcategory.id)
                       .map(s => {
@@ -2958,7 +2958,7 @@ export default function WebshopComponent({
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
                   {WEBSHOP_BRANDS
                     .filter(brand => activeSubcategory.brandIds.includes(brand.id))
                     .map(brand => {
@@ -3031,9 +3031,9 @@ export default function WebshopComponent({
             </div>
 
             {/* Two column layout: Sidebar filters on left, product rows on right */}
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col @lg:flex-row gap-8">
               {/* Sidebar Filters */}
-              <div className="w-full lg:w-64 shrink-0 text-left space-y-6">
+              <div className="w-full @lg:w-64 shrink-0 text-left space-y-6">
                 <div className="space-y-2">
                   <h4 className="text-xs font-black uppercase text-slate-905 tracking-wider">Kategorier</h4>
                   <ul className="text-xs font-bold text-slate-600 space-y-2 list-none p-0">
@@ -3144,7 +3144,7 @@ export default function WebshopComponent({
                       return (
                         <div 
                           key={product.id}
-                          className="bg-white border border-slate-200 rounded-3xl p-5 flex flex-col md:flex-row gap-5 items-stretch hover:shadow-md transition-shadow"
+                          className="bg-white border border-slate-200 rounded-3xl p-5 flex flex-col @md:flex-row gap-5 items-stretch hover:shadow-md transition-shadow"
                         >
                           {/* Image Box */}
                           <div 
@@ -3153,7 +3153,7 @@ export default function WebshopComponent({
                               setView('product-detail');
                               if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
                             }}
-                            className="md:w-40 shrink-0 flex items-center justify-center bg-[#f9fafb] rounded-2xl border border-slate-150 p-2 cursor-pointer relative"
+                            className="@md:w-40 shrink-0 flex items-center justify-center bg-[#f9fafb] rounded-2xl border border-slate-150 p-2 cursor-pointer relative"
                           >
                             <img src={product.image} alt={product.name} className="max-h-32 max-w-full object-contain rounded-xl" />
                           </div>
@@ -3177,7 +3177,7 @@ export default function WebshopComponent({
                               </h4>
                               
                               {/* Specs Table */}
-                              <div className="border-t border-slate-100 pt-2.5 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] text-slate-500 font-medium">
+                              <div className="border-t border-slate-100 pt-2.5 mt-2 grid grid-cols-1 @sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] text-slate-500 font-medium">
                                 <div className="flex justify-between border-b border-slate-50 pb-0.5">
                                   <span className="text-slate-400">Overflade:</span>
                                   <span>Rustfrit stål A2 børstet</span>
@@ -3195,7 +3195,7 @@ export default function WebshopComponent({
                           </div>
 
                           {/* Purchase/Price Actions */}
-                          <div className="md:w-48 shrink-0 md:border-l border-slate-150 md:pl-5 flex flex-col justify-between items-stretch text-left md:text-right gap-3 pt-3 md:pt-0">
+                          <div className="@md:w-48 shrink-0 @md:border-l border-slate-150 @md:pl-5 flex flex-col justify-between items-stretch text-left @md:text-right gap-3 pt-3 @md:pt-0">
                             <div className="flex flex-col">
                               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Pris Ekskl. moms</span>
                               <span className="text-lg font-black text-slate-900 font-mono mt-1.5 leading-none">
@@ -3204,7 +3204,7 @@ export default function WebshopComponent({
                             </div>
                             
                             <div className="space-y-2">
-                              <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1.5 md:justify-end">
+                              <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1.5 @md:justify-end">
                                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                                 Levering 1-2 hverdage
                               </span>
@@ -3217,7 +3217,7 @@ export default function WebshopComponent({
                                   Læg i kurv
                                 </button>
                               ) : (
-                                <div className="flex items-center justify-center md:justify-end gap-1">
+                                <div className="flex items-center justify-center @md:justify-end gap-1">
                                   <button 
                                     onClick={() => updateQuantity(product.id, -1)}
                                     className="w-7 h-7 bg-amber-400 hover:bg-amber-500 rounded-lg font-black text-sm flex items-center justify-center border-none cursor-pointer text-slate-955 transition-all active:scale-95"
@@ -3298,7 +3298,7 @@ export default function WebshopComponent({
               </div>
 
               {/* Grid block: Left side image gallery, right side info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left items-start">
+              <div className="grid grid-cols-1 @md:grid-cols-2 gap-8 text-left items-start">
                 
                 {/* Left Side: Main Image and Thumbnails */}
                 <div className="space-y-4">
@@ -3502,17 +3502,17 @@ export default function WebshopComponent({
 
             {cart.length > 0 ? (
               <div className="space-y-10">
-                <div className={`grid gap-8 text-left ${viewportMode === 'mobile' ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
+                <div className={`grid gap-8 text-left ${viewportMode === 'mobile' ? 'grid-cols-1' : 'grid-cols-1 @lg:grid-cols-3'}`}>
                   {/* Cart Items list */}
-                  <div className="lg:col-span-2 space-y-4">
+                  <div className="@lg:col-span-2 space-y-4">
                     {cart.map(item => {
                       const formattedPriceExcl = (item.product.price / 1.25).toLocaleString('da-DK', { minimumFractionDigits: 2 });
                       return (
                         <div 
                           key={item.product.id}
-                          className="flex justify-between gap-4 p-5 bg-white border border-slate-200 rounded-3xl items-center flex-col sm:flex-row"
+                          className="flex justify-between gap-4 p-5 bg-white border border-slate-200 rounded-3xl items-center flex-col @sm:flex-row"
                         >
-                          <div className="flex items-center gap-4 w-full sm:w-auto">
+                          <div className="flex items-center gap-4 w-full @sm:w-auto">
                             <div className="w-16 h-16 shrink-0 bg-slate-50 border border-slate-150 rounded-xl p-1 flex items-center justify-center">
                               <img 
                                 src={item.product.image} 
@@ -3526,7 +3526,7 @@ export default function WebshopComponent({
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between gap-6 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                          <div className="flex items-center justify-between gap-6 w-full @sm:w-auto pt-3 @sm:pt-0 border-t @sm:border-t-0 border-slate-100">
                             {/* Quantity controls */}
                             <div className="flex items-center gap-2 bg-slate-50 rounded-xl p-1 border border-slate-200">
                               <button 
@@ -3602,7 +3602,7 @@ export default function WebshopComponent({
                 </div>
 
                 {/* Trust Badges */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
+                <div className="grid grid-cols-1 @sm:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
                   <div className="flex flex-col items-center text-center space-y-2 p-4">
                     <span className="text-3xl">🚚</span>
                     <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">Hurtig Levering</h5>
@@ -3688,9 +3688,9 @@ export default function WebshopComponent({
               </div>
             </div>
 
-            <div className={`grid gap-8 text-left grid-cols-1 lg:grid-cols-3`}>
+            <div className={`grid gap-8 text-left grid-cols-1 @lg:grid-cols-3`}>
               {/* Form container */}
-              <div className="border border-slate-200 rounded-3xl lg:col-span-2 bg-white p-6 shadow-sm">
+              <div className="border border-slate-200 rounded-3xl @lg:col-span-2 bg-white p-6 shadow-sm">
                 <form onSubmit={handleCheckoutSubmit} className="space-y-6">
                   
                   {/* Customer Type Toggle */}
@@ -3718,7 +3718,7 @@ export default function WebshopComponent({
                   
                   {/* Company Fields (if Company customer type selected) */}
                   {customerType === 'company' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in duration-200">
+                    <div className="grid grid-cols-1 @md:grid-cols-2 gap-4 animate-in fade-in duration-200">
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Firma Navn</label>
                         <input 
@@ -3745,7 +3745,7 @@ export default function WebshopComponent({
                   )}
 
                   {/* Name and Email */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Fulde Navn</label>
                       <input 
@@ -3774,7 +3774,7 @@ export default function WebshopComponent({
 
                   {/* Phone and Address fields */}
                   {loggedInUser ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Telefonnummer</label>
                         <input 
@@ -3801,7 +3801,7 @@ export default function WebshopComponent({
                     </div>
                   ) : (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">Telefonnummer</label>
                           <input 
@@ -3827,7 +3827,7 @@ export default function WebshopComponent({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">Postnummer</label>
                           <input 
@@ -4029,7 +4029,7 @@ export default function WebshopComponent({
 
         {/* VIEW: LOGIN */}
         {view === 'login' && (
-          <div className="max-w-md mx-auto p-4 sm:p-6 bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-md mx-auto p-4 @sm:p-6 bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
             <div className="text-center">
               <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 mx-auto mb-3">
                 <Lock className="w-6 h-6" />
@@ -4298,7 +4298,7 @@ export default function WebshopComponent({
 
         {/* VIEW: RESET PASSWORD */}
         {view === 'reset-password' && (
-          <div className="max-w-md mx-auto p-4 sm:p-6 bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-md mx-auto p-4 @sm:p-6 bg-white border border-slate-200 shadow-xl shadow-slate-200/50 rounded-3xl text-left space-y-6 animate-in fade-in duration-300">
             <div className="text-center">
               <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 mx-auto mb-3">
                 <Key className="w-6 h-6" />
@@ -4441,7 +4441,7 @@ export default function WebshopComponent({
 
         {view === 'admin' && (loggedInUser?.email === 'admin@mmlaseshop.dk' || isPreviewMode) && (
           <div className="space-y-6 animate-in fade-in duration-300 text-left">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+            <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
               <div>
                 <h3 className="text-2xl font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
                   <ShieldCheck className="w-6 h-6 text-amber-400" />
@@ -4497,7 +4497,7 @@ export default function WebshopComponent({
             </div>
 
             {/* KPI Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4 gap-4">
               <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl relative overflow-hidden backdrop-blur-md">
                 <div className="absolute -right-2 -bottom-2 opacity-5 text-slate-900">
                   <DollarSign className="w-20 h-20" />
@@ -4608,7 +4608,7 @@ export default function WebshopComponent({
                             <div
                               key={order.id}
                               onClick={() => setActiveDetailOrder(order)}
-                              className="bg-white border border-slate-200 p-4 rounded-2xl hover:border-slate-300 hover:bg-slate-100 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                              className="bg-white border border-slate-200 p-4 rounded-2xl hover:border-slate-300 hover:bg-slate-100 transition-all cursor-pointer flex flex-col @sm:flex-row @sm:items-center justify-between gap-4"
                             >
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
@@ -4632,7 +4632,7 @@ export default function WebshopComponent({
                                 </div>
                               </div>
 
-                              <div className="flex items-center justify-between sm:justify-end gap-3" onClick={e => e.stopPropagation()}>
+                              <div className="flex items-center justify-between @sm:justify-end gap-3" onClick={e => e.stopPropagation()}>
                                 {/* Status Badges */}
                                 <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${
                                   isModtaget ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' :
@@ -4691,7 +4691,7 @@ export default function WebshopComponent({
             {adminTab === 'inventory' && (
               <>
                 {/* Inventory Filter/Search Header */}
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white p-4 border border-slate-200 rounded-2xl">
+                <div className="flex flex-col @md:flex-row gap-4 justify-between items-stretch @md:items-center bg-white p-4 border border-slate-200 rounded-2xl">
                   <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
                     <input
@@ -4977,7 +4977,7 @@ export default function WebshopComponent({
 
             {adminTab === 'products' && (
               <div className="space-y-4">
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center bg-white p-4 border border-slate-200 rounded-2xl">
+                <div className="flex flex-col @md:flex-row gap-4 justify-between items-stretch @md:items-center bg-white p-4 border border-slate-200 rounded-2xl">
                   <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
                     <input
@@ -5002,7 +5002,7 @@ export default function WebshopComponent({
                       isNew: true,
                       data: { id: '', subcategoryId: subcategories[0]?.id || '', brandId: '', name: '', price: 0, description: '', image: '', badges: [], color: '', shape: '', size: '', tags: [], stock: 10 }
                     })}
-                    className="px-3.5 py-2 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none flex items-center gap-1 self-end md:self-auto"
+                    className="px-3.5 py-2 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none flex items-center gap-1 self-end @md:self-auto"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     {bt('Tilføj Produkt', 'Add Product')}
@@ -5651,7 +5651,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Modal Content */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid @md:grid-cols-2 gap-6">
               {/* Left Column: Customer & Shipping Details */}
               <div className="space-y-4">
                 <div className="space-y-1.5">
@@ -5805,7 +5805,7 @@ export default function WebshopComponent({
 
       {/* Footer */}
       <footer className="border-t border-slate-150 pt-8 mt-12 pb-4 text-left relative z-10 select-none">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 @md:grid-cols-4 gap-8">
           {/* Logo Column */}
           <div className="space-y-3">
             {(() => {
@@ -5963,7 +5963,7 @@ export default function WebshopComponent({
             </ul>
           </div>
         </div>
-        <div className="border-t border-slate-100 mt-8 pt-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] text-slate-400">
+        <div className="border-t border-slate-100 mt-8 pt-4 flex flex-col @sm:flex-row justify-between items-center gap-2 text-[10px] text-slate-400">
           <span
             className="outline-none focus:bg-slate-50 px-1 rounded"
             contentEditable={!isPreviewMode}
