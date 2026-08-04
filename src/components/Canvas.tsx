@@ -1309,13 +1309,13 @@ export default function Canvas({
                                           }}
                                         >
                                           <option value="">Size...</option>
-                                          <option value="1">Small</option>
-                                          <option value="2">Normal</option>
-                                          <option value="3">Medium</option>
-                                          <option value="4">Large</option>
-                                          <option value="5">X-Large</option>
-                                          <option value="6">2X-Large</option>
-                                          <option value="7">Huge</option>
+                                          <option value="1">10px</option>
+                                          <option value="2">13px</option>
+                                          <option value="3">16px</option>
+                                          <option value="4">18px</option>
+                                          <option value="5">24px</option>
+                                          <option value="6">32px</option>
+                                          <option value="7">48px</option>
                                         </select>
                                       </div>
                                       
@@ -3483,13 +3483,13 @@ export default function Canvas({
             }}
           >
             <option value="">Size...</option>
-            <option value="1">Small</option>
-            <option value="2">Normal</option>
-            <option value="3">Medium</option>
-            <option value="4">Large</option>
-            <option value="5">X-Large</option>
-            <option value="6">2X-Large</option>
-            <option value="7">Huge</option>
+            <option value="1">10px</option>
+            <option value="2">13px</option>
+            <option value="3">16px</option>
+            <option value="4">18px</option>
+            <option value="5">24px</option>
+            <option value="6">32px</option>
+            <option value="7">48px</option>
           </select>
         </div>
       )}
