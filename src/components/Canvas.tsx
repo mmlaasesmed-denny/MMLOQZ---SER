@@ -1302,20 +1302,37 @@ export default function Canvas({
                                           onChange={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            if (e.target.value) {
-                                              document.execCommand('fontSize', false, e.target.value);
+                                            const size = e.target.value;
+                                            if (size) {
+                                              document.execCommand('fontSize', false, '7');
+                                              const fonts = document.querySelectorAll('font[size="7"]');
+                                              fonts.forEach(f => {
+                                                f.removeAttribute('size');
+                                                f.style.fontSize = `${size}px`;
+                                              });
                                               e.target.value = "";
                                             }
                                           }}
                                         >
                                           <option value="">Size...</option>
-                                          <option value="1">10px</option>
-                                          <option value="2">13px</option>
-                                          <option value="3">16px</option>
-                                          <option value="4">18px</option>
-                                          <option value="5">24px</option>
-                                          <option value="6">32px</option>
-                                          <option value="7">48px</option>
+                                          <option value="8">8px</option>
+                                          <option value="10">10px</option>
+                                          <option value="12">12px</option>
+                                          <option value="14">14px</option>
+                                          <option value="16">16px</option>
+                                          <option value="18">18px</option>
+                                          <option value="20">20px</option>
+                                          <option value="24">24px</option>
+                                          <option value="28">28px</option>
+                                          <option value="32">32px</option>
+                                          <option value="36">36px</option>
+                                          <option value="40">40px</option>
+                                          <option value="48">48px</option>
+                                          <option value="56">56px</option>
+                                          <option value="64">64px</option>
+                                          <option value="72">72px</option>
+                                          <option value="96">96px</option>
+                                          <option value="120">120px</option>
                                         </select>
                                       </div>
                                       
@@ -3469,13 +3486,21 @@ export default function Canvas({
             onChange={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (e.target.value) {
+              const size = e.target.value;
+              if (size) {
                 const sel = window.getSelection();
                 if (sel && selectionRange) {
                   sel.removeAllRanges();
                   sel.addRange(selectionRange);
                 }
-                document.execCommand('fontSize', false, e.target.value);
+                
+                document.execCommand('fontSize', false, '7');
+                const fonts = document.querySelectorAll('font[size="7"]');
+                fonts.forEach(f => {
+                  f.removeAttribute('size');
+                  f.style.fontSize = `${size}px`;
+                });
+                
                 e.target.value = "";
               }
               setSelectionRange(null);
@@ -3483,13 +3508,24 @@ export default function Canvas({
             }}
           >
             <option value="">Size...</option>
-            <option value="1">10px</option>
-            <option value="2">13px</option>
-            <option value="3">16px</option>
-            <option value="4">18px</option>
-            <option value="5">24px</option>
-            <option value="6">32px</option>
-            <option value="7">48px</option>
+            <option value="8">8px</option>
+            <option value="10">10px</option>
+            <option value="12">12px</option>
+            <option value="14">14px</option>
+            <option value="16">16px</option>
+            <option value="18">18px</option>
+            <option value="20">20px</option>
+            <option value="24">24px</option>
+            <option value="28">28px</option>
+            <option value="32">32px</option>
+            <option value="36">36px</option>
+            <option value="40">40px</option>
+            <option value="48">48px</option>
+            <option value="56">56px</option>
+            <option value="64">64px</option>
+            <option value="72">72px</option>
+            <option value="96">96px</option>
+            <option value="120">120px</option>
           </select>
         </div>
       )}
