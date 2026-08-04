@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ShoppingCart, ArrowLeft, Plus, Minus, Trash2, Check, 
   ShoppingBag, Info, ShieldCheck, Key, Phone, ChevronRight,
@@ -67,7 +67,7 @@ interface Order {
 type ShopView = 'categories' | 'subcategories' | 'subcategory-detail' | 'brand-products' | 'product-detail' | 'cart' | 'checkout' | 'login' | 'reset-password' | 'admin' | 'search-results' | 'profile';
 
 
-import React, { useRef, useEffect } from 'react';
+
 
 const EditableText = ({ tag: Tag = 'span', className, style, html, onBlur, onClick, isPreviewMode }: any) => {
   const ref = useRef<HTMLElement>(null);
