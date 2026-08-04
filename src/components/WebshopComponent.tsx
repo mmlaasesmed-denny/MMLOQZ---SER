@@ -158,6 +158,26 @@ export default function WebshopComponent({
   
   const registerNameLabel = s.registerNameLabel || 'Fulde Navn';
   const registerEmailLabel = s.registerEmailLabel || 'E-mail Adresse';
+  
+  // Cart Page Texts
+  const cartTrust1Icon = s.cartTrust1Icon || '🚚';
+  const cartTrust1Title = s.cartTrust1Title || 'Hurtig Levering';
+  const cartTrust1Desc = s.cartTrust1Desc || 'Sendes inden for 24 timer fra vores lager med fuld tracking.';
+  
+  const cartTrust2Icon = s.cartTrust2Icon || '🛡️';
+  const cartTrust2Title = s.cartTrust2Title || '14 Dages Returret';
+  const cartTrust2Desc = s.cartTrust2Desc || 'Nem returret hvis produktet ikke lever op til dine forventninger.';
+  
+  const cartTrust3Icon = s.cartTrust3Icon || '🔒';
+  const cartTrust3Title = s.cartTrust3Title || 'Sikker Betaling';
+  const cartTrust3Desc = s.cartTrust3Desc || 'Alle betalinger behandles over en sikker og krypteret SSL-forbindelse.';
+  
+  const cartFaqTitle = s.cartFaqTitle || 'Ofte stillede spørgsmål (FAQ)';
+  const cartFaq1Question = s.cartFaq1Question || 'Hvor lang er leveringstiden?';
+  const cartFaq1Answer = s.cartFaq1Answer || 'Vi pakker og sender ordrer hver dag. Du kan normalt forvente at modtage dine varer inden for 1-2 hverdage via GLS pakkeshop eller hjemmelevering.';
+  
+  const cartFaq2Question = s.cartFaq2Question || 'Kan jeg returnere eller bytte varen?';
+  const cartFaq2Answer = s.cartFaq2Answer || 'Ja, vi tilbyder 14 dages fuld returret på alle uåbnede produkter i original emballage. Du betaler selv for returfragten.';
   const registerPasswordLabel = s.registerPasswordLabel || 'Vælg Adgangskode';
   const registerButtonText = s.registerButtonText || 'Opret konto nu';
   const hasAccountText = s.hasAccountText || 'Har du allerede en konto?';
@@ -3586,43 +3606,165 @@ export default function WebshopComponent({
                 {/* Trust Badges */}
                 <div className="grid grid-cols-1 @sm:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
                   <div className="flex flex-col items-center text-center space-y-2 p-4">
-                    <span className="text-3xl">🚚</span>
-                    <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">Hurtig Levering</h5>
-                    <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]">Sendes inden for 24 timer fra vores lager med fuld tracking.</p>
+                    <EditableText
+                      id="cartTrust1Icon"
+                      value={cartTrust1Icon}
+                      onUpdate={(val) => updateSetting('cartTrust1Icon', val)}
+                      className="text-3xl"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
+                    <EditableText
+                      id="cartTrust1Title"
+                      value={cartTrust1Title}
+                      onUpdate={(val) => updateSetting('cartTrust1Title', val)}
+                      className="text-xs font-black uppercase text-slate-900 tracking-wider"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
+                    <EditableText
+                      id="cartTrust1Desc"
+                      value={cartTrust1Desc}
+                      onUpdate={(val) => updateSetting('cartTrust1Desc', val)}
+                      className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
                   </div>
                   <div className="flex flex-col items-center text-center space-y-2 p-4">
-                    <span className="text-3xl">🛡️</span>
-                    <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">14 Dages Returret</h5>
-                    <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]">Nem returret hvis produktet ikke lever op til dine forventninger.</p>
+                    <EditableText
+                      id="cartTrust2Icon"
+                      value={cartTrust2Icon}
+                      onUpdate={(val) => updateSetting('cartTrust2Icon', val)}
+                      className="text-3xl"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
+                    <EditableText
+                      id="cartTrust2Title"
+                      value={cartTrust2Title}
+                      onUpdate={(val) => updateSetting('cartTrust2Title', val)}
+                      className="text-xs font-black uppercase text-slate-900 tracking-wider"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
+                    <EditableText
+                      id="cartTrust2Desc"
+                      value={cartTrust2Desc}
+                      onUpdate={(val) => updateSetting('cartTrust2Desc', val)}
+                      className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
                   </div>
                   <div className="flex flex-col items-center text-center space-y-2 p-4">
-                    <span className="text-3xl">🔒</span>
-                    <h5 className="text-xs font-black uppercase text-slate-900 tracking-wider">Sikker Betaling</h5>
-                    <p className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]">Alle betalinger behandles over en sikker og krypteret SSL-forbindelse.</p>
+                    <EditableText
+                      id="cartTrust3Icon"
+                      value={cartTrust3Icon}
+                      onUpdate={(val) => updateSetting('cartTrust3Icon', val)}
+                      className="text-3xl"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
+                    <EditableText
+                      id="cartTrust3Title"
+                      value={cartTrust3Title}
+                      onUpdate={(val) => updateSetting('cartTrust3Title', val)}
+                      className="text-xs font-black uppercase text-slate-900 tracking-wider"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
+                    <EditableText
+                      id="cartTrust3Desc"
+                      value={cartTrust3Desc}
+                      onUpdate={(val) => updateSetting('cartTrust3Desc', val)}
+                      className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]"
+                      isPreviewMode={isPreviewMode}
+                      onClick={(e: any) => {
+                        if (!isPreviewMode) e.stopPropagation();
+                      }}
+                    />
                   </div>
                 </div>
 
                 {/* FAQ section */}
                 <div className="space-y-4 pt-6 border-t border-slate-100 text-left">
-                  <h4 className="text-sm font-black uppercase tracking-wider text-slate-900">Ofte stillede spørgsmål (FAQ)</h4>
+                  <EditableText
+                    id="cartFaqTitle"
+                    value={cartFaqTitle}
+                    onUpdate={(val) => updateSetting('cartFaqTitle', val)}
+                    className="text-sm font-black uppercase tracking-wider text-slate-900 block"
+                    isPreviewMode={isPreviewMode}
+                    onClick={(e: any) => {
+                      if (!isPreviewMode) e.stopPropagation();
+                    }}
+                  />
                   <div className="space-y-3">
                     <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
                       <div className="bg-slate-50 px-5 py-3 border-b border-slate-100 flex items-center justify-between select-none">
-                        <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Hvor lang er leveringstiden?</h4>
+                        <EditableText
+                          id="cartFaq1Question"
+                          value={cartFaq1Question}
+                          onUpdate={(val) => updateSetting('cartFaq1Question', val)}
+                          className="text-xs font-black uppercase text-slate-700 tracking-wider"
+                          isPreviewMode={isPreviewMode}
+                          onClick={(e: any) => {
+                            if (!isPreviewMode) e.stopPropagation();
+                          }}
+                        />
                         <span className="text-xs text-slate-400 font-bold">&#9662;</span>
                       </div>
-                      <div className="p-5 text-xs text-slate-505 leading-relaxed">
-                        Vi pakker og sender ordrer hver dag. Du kan normalt forvente at modtage dine varer inden for 1-2 hverdage via GLS pakkeshop eller hjemmelevering.
-                      </div>
+                      <EditableText
+                        id="cartFaq1Answer"
+                        value={cartFaq1Answer}
+                        onUpdate={(val) => updateSetting('cartFaq1Answer', val)}
+                        className="p-5 text-xs text-slate-505 leading-relaxed block"
+                        isPreviewMode={isPreviewMode}
+                        onClick={(e: any) => {
+                          if (!isPreviewMode) e.stopPropagation();
+                        }}
+                      />
                     </div>
                     <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
                       <div className="bg-slate-50 px-5 py-3 border-b border-slate-100 flex items-center justify-between select-none">
-                        <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Kan jeg returnere eller bytte varen?</h4>
+                        <EditableText
+                          id="cartFaq2Question"
+                          value={cartFaq2Question}
+                          onUpdate={(val) => updateSetting('cartFaq2Question', val)}
+                          className="text-xs font-black uppercase text-slate-700 tracking-wider"
+                          isPreviewMode={isPreviewMode}
+                          onClick={(e: any) => {
+                            if (!isPreviewMode) e.stopPropagation();
+                          }}
+                        />
                         <span className="text-xs text-slate-400 font-bold">&#9662;</span>
                       </div>
-                      <div className="p-5 text-xs text-slate-505 leading-relaxed">
-                        Ja, vi tilbyder 14 dages fuld returret på alle uåbnede produkter i original emballage. Du betaler selv for returfragten.
-                      </div>
+                      <EditableText
+                        id="cartFaq2Answer"
+                        value={cartFaq2Answer}
+                        onUpdate={(val) => updateSetting('cartFaq2Answer', val)}
+                        className="p-5 text-xs text-slate-505 leading-relaxed block"
+                        isPreviewMode={isPreviewMode}
+                        onClick={(e: any) => {
+                          if (!isPreviewMode) e.stopPropagation();
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
