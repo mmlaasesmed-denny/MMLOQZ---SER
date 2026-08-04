@@ -66,6 +66,37 @@ interface Order {
 
 type ShopView = 'categories' | 'subcategories' | 'subcategory-detail' | 'brand-products' | 'product-detail' | 'cart' | 'checkout' | 'login' | 'reset-password' | 'admin' | 'search-results' | 'profile';
 
+
+import React, { useRef, useEffect } from 'react';
+
+const EditableText = ({ tag: Tag = 'span', className, style, html, onBlur, onClick, isPreviewMode }: any) => {
+  const ref = useRef<HTMLElement>(null);
+  
+  useEffect(() => {
+    // Only update innerHTML if it's not the currently focused element (prevents cursor jump)
+    if (ref.current && document.activeElement !== ref.current) {
+      if (ref.current.innerHTML !== (html || '')) {
+        ref.current.innerHTML = html || '';
+      }
+    }
+  }, [html]);
+
+  return (
+    <Tag
+      ref={ref}
+      className={className}
+      style={style}
+      contentEditable={!isPreviewMode}
+      suppressContentEditableWarning
+      onBlur={onBlur}
+      onClick={(e: any) => {
+        if (!isPreviewMode) e.stopPropagation();
+        if (onClick) onClick(e);
+      }}
+    />
+  );
+};
+
 export default function WebshopComponent({ 
   isPreviewMode, 
   theme, 
@@ -1484,29 +1515,23 @@ export default function WebshopComponent({
                   className="rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
                   style={{ width: `${48 * ratio}px`, height: `${48 * ratio}px` }}
                 >
-                  <span 
+                  <EditableText tag="span" isPreviewMode={isPreviewMode} html={logoBadge} 
                     className="text-amber-455 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
                     style={{ fontSize: `${14 * ratio}px` }}
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) => updateSetting('logoBadge', e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: logoBadge }} />
+                                                            onBlur={(e) => updateSetting('logoBadge', e.currentTarget.innerHTML)}
+                   />
                 </div>
                 <div className="text-left">
-                  <h2 
+                  <EditableText tag="h2" isPreviewMode={isPreviewMode} html={logoText} 
                     className="font-black tracking-tighter text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
                     style={{ fontSize: `${logoFontSize}px` }}
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) => updateSetting('logoText', e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: logoText }} />
-                  <span 
+                                                            onBlur={(e) => updateSetting('logoText', e.currentTarget.innerHTML)}
+                   />
+                  <EditableText tag="span" isPreviewMode={isPreviewMode} html={tagline} 
                     className="text-slate-400 font-bold tracking-widest uppercase block outline-none focus:bg-slate-100 px-0.5 rounded"
                     style={{ fontSize: `${8 * ratio}px`, marginTop: `${4 * ratio}px` }}
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) => updateSetting('tagline', e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: tagline }} />
+                                                            onBlur={(e) => updateSetting('tagline', e.currentTarget.innerHTML)}
+                   />
                 </div>
               </>
             );
@@ -2258,12 +2283,10 @@ export default function WebshopComponent({
         {view === 'categories' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-3 duration-300">
             <div className="text-center max-w-lg mx-auto mb-4">
-              <h3 
+              <EditableText tag="h3" isPreviewMode={isPreviewMode} html={productsTitle} 
                 className="text-3xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded inline-block"
-                contentEditable={!isPreviewMode}
-                suppressContentEditableWarning
-                onBlur={(e) => updateSetting('productsTitle', e.currentTarget.innerHTML)}
-               dangerouslySetInnerHTML={{ __html: productsTitle }} />
+                                                onBlur={(e) => updateSetting('productsTitle', e.currentTarget.innerHTML)}
+               />
             </div>
 
             {/* Dynamic Categories Banners */}
@@ -2313,23 +2336,17 @@ export default function WebshopComponent({
                         </div>
                         <div className="w-full @md:w-[length:var(--cat-txt-w)] p-6 @md:p-12 @lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
                           <div className="text-xl @md:text-2xl @lg:text-3xl text-slate-900 leading-snug max-w-2xl">
-                            <span 
+                            <EditableText tag="span" isPreviewMode={isPreviewMode} html={cat.name} 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                              contentEditable={!isPreviewMode}
-                              suppressContentEditableWarning
-                              onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerHTML)}
-                              onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                             dangerouslySetInnerHTML={{ __html: cat.name }} />
+                                                                                          onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerHTML)}
+                                                           />
                             {cat.description && (
                               <>
                                 <span className="font-medium mx-1.5">-</span>
-                                <span 
+                                <EditableText tag="span" isPreviewMode={isPreviewMode} html={cat.description} 
                                   className="font-medium outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                                  contentEditable={!isPreviewMode}
-                                  suppressContentEditableWarning
-                                  onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerHTML)}
-                                  onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                                 dangerouslySetInnerHTML={{ __html: cat.description }} />
+                                                                                                      onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerHTML)}
+                                                                   />
                               </>
                             )}
                           </div>
@@ -2352,23 +2369,17 @@ export default function WebshopComponent({
                       <>
                         <div className="w-full @md:w-[length:var(--cat-txt-w)] p-6 @md:p-12 @lg:p-16 flex flex-col items-center justify-center text-center space-y-6 order-2 @md:order-1">
                           <div className="text-xl @md:text-2xl @lg:text-3xl text-slate-900 leading-snug max-w-2xl">
-                            <span 
+                            <EditableText tag="span" isPreviewMode={isPreviewMode} html={cat.name} 
                               className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                              contentEditable={!isPreviewMode}
-                              suppressContentEditableWarning
-                              onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerHTML)}
-                              onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                             dangerouslySetInnerHTML={{ __html: cat.name }} />
+                                                                                          onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerHTML)}
+                                                           />
                             {cat.description && (
                               <>
                                 <span className="font-medium mx-1.5">-</span>
-                                <span 
+                                <EditableText tag="span" isPreviewMode={isPreviewMode} html={cat.description} 
                                   className="font-medium outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                                  contentEditable={!isPreviewMode}
-                                  suppressContentEditableWarning
-                                  onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerHTML)}
-                                  onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                                 dangerouslySetInnerHTML={{ __html: cat.description }} />
+                                                                                                      onBlur={(e) => updateCategoryField(cat.id, 'description', e.currentTarget.innerHTML)}
+                                                                   />
                               </>
                             )}
                           </div>
@@ -2411,18 +2422,14 @@ export default function WebshopComponent({
                   paddingRight: s.newsletterLeftPaddingRight !== undefined ? `${s.newsletterLeftPaddingRight}px` : '0px',
                 }}
               >
-                <h4 
+                <EditableText tag="h4" isPreviewMode={isPreviewMode} html={newsletterTitle} 
                   className="text-lg font-extrabold uppercase tracking-wider outline-none focus:bg-slate-700 focus:text-white px-1 rounded -ml-1 transition-colors"
-                  contentEditable={!isPreviewMode}
-                  suppressContentEditableWarning
-                  onBlur={(e) => updateSetting('newsletterTitle', e.currentTarget.innerHTML)}
-                 dangerouslySetInnerHTML={{ __html: newsletterTitle }} />
-                <p 
+                                                      onBlur={(e) => updateSetting('newsletterTitle', e.currentTarget.innerHTML)}
+                 />
+                <EditableText tag="p" isPreviewMode={isPreviewMode} html={newsletterDesc} 
                   className="text-xs text-slate-400 outline-none focus:bg-slate-700 focus:text-white px-1 rounded -ml-1 transition-colors mt-1"
-                  contentEditable={!isPreviewMode}
-                  suppressContentEditableWarning
-                  onBlur={(e) => updateSetting('newsletterDesc', e.currentTarget.innerHTML)}
-                 dangerouslySetInnerHTML={{ __html: newsletterDesc }} />
+                                                      onBlur={(e) => updateSetting('newsletterDesc', e.currentTarget.innerHTML)}
+                 />
               </div>
               <div 
                 className="flex items-stretch rounded-xl overflow-hidden bg-white w-full @md:w-auto border border-slate-700"
@@ -2456,8 +2463,10 @@ export default function WebshopComponent({
                   className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-xs uppercase tracking-wider border-none cursor-pointer transition-colors shrink-0 outline-none focus:ring-2 focus:ring-slate-900"
                   contentEditable={!isPreviewMode}
                   suppressContentEditableWarning
-                  onBlur={(e) => updateSetting('newsletterBtnText', e.currentTarget.innerHTML)}
-                 dangerouslySetInnerHTML={{ __html: newsletterBtnText }} />
+                  onBlur={(e) => updateSetting('newsletterBtnText', e.currentTarget.innerText)}
+                >
+                  {newsletterBtnText}
+                </button>
               </div>
             </div>
 
@@ -2501,20 +2510,16 @@ export default function WebshopComponent({
                       </div>
                     )}
                   </div>
-                  <h5 
+                  <EditableText tag="h5" isPreviewMode={isPreviewMode} html={badge.title} 
                     className="font-black uppercase text-slate-900 tracking-wider outline-none focus:bg-slate-100 px-1 rounded"
                     style={{ fontSize: `${badgeTitleSize}px` }}
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) => updateSetting(badge.tKey, e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: badge.title }} />
-                  <p 
+                                                            onBlur={(e) => updateSetting(badge.tKey, e.currentTarget.innerHTML)}
+                   />
+                  <EditableText tag="p" isPreviewMode={isPreviewMode} html={badge.desc} 
                     className="text-slate-500 leading-relaxed max-w-[200px] outline-none focus:bg-slate-100 px-1 rounded"
                     style={{ fontSize: `${badgeTextSize}px` }}
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) => updateSetting(badge.dKey, e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: badge.desc }} />
+                                                            onBlur={(e) => updateSetting(badge.dKey, e.currentTarget.innerHTML)}
+                   />
                 </div>
               ))}
             </div>
@@ -2538,12 +2543,10 @@ export default function WebshopComponent({
               </button>
               <div>
                 <span className="text-[10px] text-amber-400 font-extrabold uppercase tracking-widest block">Kategori</span>
-                <h3 
+                <EditableText tag="h3" isPreviewMode={isPreviewMode} html={activeCategory.name} 
                   className="text-xl font-extrabold text-white uppercase outline-none focus:bg-slate-800 px-1 rounded"
-                  contentEditable={!isPreviewMode}
-                  suppressContentEditableWarning
-                  onBlur={(e) => updateCategoryField(activeCategory.id, 'name', e.currentTarget.innerHTML)}
-                 dangerouslySetInnerHTML={{ __html: activeCategory.name }} />
+                                                      onBlur={(e) => updateCategoryField(activeCategory.id, 'name', e.currentTarget.innerHTML)}
+                 />
               </div>
             </div>
 
@@ -2580,20 +2583,14 @@ export default function WebshopComponent({
                       </div>
                       <div className={`flex flex-col justify-between flex-grow ${getCardPadding('p-4', 'p-5', 'p-5')}`}>
                         <div>
-                          <h4 
+                          <EditableText tag="h4" isPreviewMode={isPreviewMode} html={subcategory.name} 
                             className="text-sm font-extrabold uppercase text-slate-900 group-hover:text-amber-600 transition-colors outline-none focus:bg-slate-100 px-1 rounded"
-                            contentEditable={!isPreviewMode}
-                            suppressContentEditableWarning
-                            onBlur={(e) => updateSubcategoryField(subcategory.id, 'name', e.currentTarget.innerHTML)}
-                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                           dangerouslySetInnerHTML={{ __html: subcategory.name }} />
-                          <p 
+                                                                                    onBlur={(e) => updateSubcategoryField(subcategory.id, 'name', e.currentTarget.innerHTML)}
+                                                       />
+                          <EditableText tag="p" isPreviewMode={isPreviewMode} html={subcategory.description} 
                             className="text-xs text-slate-600 mt-2 leading-relaxed outline-none focus:bg-slate-100 px-1 rounded line-clamp-3 font-medium"
-                            contentEditable={!isPreviewMode}
-                            suppressContentEditableWarning
-                            onBlur={(e) => updateSubcategoryField(subcategory.id, 'description', e.currentTarget.innerHTML)}
-                            onClick={(e) => { if (!isPreviewMode) e.stopPropagation(); }}
-                           dangerouslySetInnerHTML={{ __html: subcategory.description }} />
+                                                                                    onBlur={(e) => updateSubcategoryField(subcategory.id, 'description', e.currentTarget.innerHTML)}
+                                                       />
                         </div>
                         <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                           <span className="text-[9px] font-bold text-slate-500 uppercase">Se beskrivelse</span>
@@ -2648,12 +2645,10 @@ export default function WebshopComponent({
                   <Plus className="w-3.5 h-3.5" /> Skift Banner
                 </div>
               )}
-              <h2 
+              <EditableText tag="h2" isPreviewMode={isPreviewMode} html={activeSubcategory.name} 
                 className="relative z-10 text-4xl @md:text-5xl font-black text-white uppercase tracking-wider font-sans outline-none focus:bg-slate-900 px-2 rounded"
-                contentEditable={!isPreviewMode}
-                suppressContentEditableWarning
-                onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerHTML)}
-               dangerouslySetInnerHTML={{ __html: activeSubcategory.name }} />
+                                                onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerHTML)}
+               />
             </div>
 
             {/* Section 1: Intro + Vigtige Fordele */}
@@ -2667,12 +2662,10 @@ export default function WebshopComponent({
                 >
                   {s[`subcatIntroTitle_${activeSubcategory.id}`] || `${activeSubcategory.name}-forbedrede løsninger til sikre og holdbare døre`}
                 </h4>
-                <p 
+                <EditableText tag="p" isPreviewMode={isPreviewMode} html={activeSubcategory.detailedDescription || activeSubcategory.description} 
                   className="text-sm text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 px-2 rounded"
-                  contentEditable={!isPreviewMode}
-                  suppressContentEditableWarning
-                  onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'detailedDescription', e.currentTarget.innerHTML)}
-                 dangerouslySetInnerHTML={{ __html: activeSubcategory.detailedDescription || activeSubcategory.description }} />
+                                                      onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'detailedDescription', e.currentTarget.innerHTML)}
+                 />
               </div>
               <div className="bg-amber-400 text-slate-900 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                 <div>
@@ -3283,12 +3276,10 @@ export default function WebshopComponent({
                   <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest block">
                     {brandName}
                   </span>
-                  <h3 
+                  <EditableText tag="h3" isPreviewMode={isPreviewMode} html={activeProduct.name} 
                     className="text-xl font-extrabold text-slate-900 uppercase leading-tight outline-none focus:bg-slate-100 px-1 rounded"
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) => updateProductField(activeProduct.id, 'name', e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: activeProduct.name }} />
+                                                            onBlur={(e) => updateProductField(activeProduct.id, 'name', e.currentTarget.innerHTML)}
+                   />
                 </div>
               </div>
 
@@ -3414,12 +3405,10 @@ export default function WebshopComponent({
                         <h4 className="text-xs font-black uppercase text-slate-700 tracking-wider">Beskrivelse</h4>
                         <span className="text-xs text-slate-400 font-bold">&#9662;</span>
                       </div>
-                      <div 
+                      <EditableText tag="div" isPreviewMode={isPreviewMode} html={activeProduct.description} 
                         className="p-5 text-xs text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 rounded"
-                        contentEditable={!isPreviewMode}
-                        suppressContentEditableWarning
-                        onBlur={(e) => updateProductField(activeProduct.id, 'description', e.currentTarget.innerHTML)}
-                       dangerouslySetInnerHTML={{ __html: activeProduct.description }} />
+                                                                        onBlur={(e) => updateProductField(activeProduct.id, 'description', e.currentTarget.innerHTML)}
+                       />
                     </div>
 
                     {/* Collapsible 2: Specifikationer Table */}
@@ -4027,20 +4016,16 @@ export default function WebshopComponent({
               <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-400 mx-auto mb-3">
                 <Lock className="w-6 h-6" />
               </div>
-              <h3 
+              <EditableText tag="h3" isPreviewMode={isPreviewMode} html={authMode === 'login' ? loginTitle : registerTitle} 
                 className="text-xl font-extrabold text-slate-900 uppercase tracking-wider outline-none focus:bg-slate-100 rounded px-1"
-                contentEditable={!isPreviewMode}
-                suppressContentEditableWarning
-                onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                 onBlur={(e) => updateSetting(authMode === 'login' ? 'loginTitle' : 'registerTitle', e.currentTarget.innerHTML)}
-               dangerouslySetInnerHTML={{ __html: authMode === 'login' ? loginTitle : registerTitle }} />
-              <p 
+               />
+              <EditableText tag="p" isPreviewMode={isPreviewMode} html={authMode === 'login' ? loginDesc : registerDesc} 
                 className="text-xs text-slate-500 mt-2 outline-none focus:bg-slate-100 rounded px-1"
-                contentEditable={!isPreviewMode}
-                suppressContentEditableWarning
-                onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                 onBlur={(e) => updateSetting(authMode === 'login' ? 'loginDesc' : 'registerDesc', e.currentTarget.innerHTML)}
-               dangerouslySetInnerHTML={{ __html: authMode === 'login' ? loginDesc : registerDesc }} />
+               />
             </div>
 
             {authMode === 'login' ? (
@@ -4052,13 +4037,11 @@ export default function WebshopComponent({
                 )}
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label 
+                    <EditableText tag="label" isPreviewMode={isPreviewMode} html={loginEmailLabel} 
                       className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginEmailLabel', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: loginEmailLabel }} />
+                     />
                     <input 
                       type="email" 
                       value={loginEmail}
@@ -4070,13 +4053,11 @@ export default function WebshopComponent({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label 
+                    <EditableText tag="label" isPreviewMode={isPreviewMode} html={loginPasswordLabel} 
                       className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginPasswordLabel', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: loginPasswordLabel }} />
+                     />
                     <input 
                       type="password" 
                       value={loginPassword}
@@ -4091,35 +4072,28 @@ export default function WebshopComponent({
                     type="submit"
                     className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
                   >
-                    <span 
+                    <EditableText tag="span" isPreviewMode={isPreviewMode} html={loginButtonText} 
                       className="outline-none focus:bg-amber-500 rounded px-2 block"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginButtonText', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: loginButtonText }} />
+                     />
                   </button>
                 </form>
 
                 <div className="border-t border-slate-100 pt-4 text-center">
-                  <p 
+                  <EditableText tag="p" isPreviewMode={isPreviewMode} html={noAccountText} 
                     className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-100 rounded px-1 inline-block"
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                            onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                     onBlur={(e) => updateSetting('noAccountText', e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: noAccountText }} />
+                   />
                   <button
                     onClick={() => setAuthMode('register')}
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
-                    <span
-                      className="outline-none focus:bg-slate-100 rounded px-2 block"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                    <EditableText tag="span" isPreviewMode={isPreviewMode} html={createAccountLink}                       className="outline-none focus:bg-slate-100 rounded px-2 block"
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('createAccountLink', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: createAccountLink }} />
+                     />
                   </button>
                   <button
                     onClick={() => {
@@ -4130,13 +4104,10 @@ export default function WebshopComponent({
                     }}
                     className="mt-3 text-xs text-slate-500 hover:text-slate-800 font-bold bg-transparent border-none cursor-pointer"
                   >
-                    <span
-                      className="outline-none focus:bg-slate-100 rounded px-2 block"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                    <EditableText tag="span" isPreviewMode={isPreviewMode} html={backToShopText}                       className="outline-none focus:bg-slate-100 rounded px-2 block"
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('backToShopText', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: backToShopText }} />
+                     />
                   </button>
                 </div>
               </>
@@ -4149,13 +4120,11 @@ export default function WebshopComponent({
                 )}
                 <form onSubmit={handleRegisterSubmit} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label 
+                    <EditableText tag="label" isPreviewMode={isPreviewMode} html={registerNameLabel} 
                       className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerNameLabel', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: registerNameLabel }} />
+                     />
                     <input 
                       type="text" 
                       value={registerName}
@@ -4167,13 +4136,11 @@ export default function WebshopComponent({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label 
+                    <EditableText tag="label" isPreviewMode={isPreviewMode} html={registerEmailLabel} 
                       className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerEmailLabel', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: registerEmailLabel }} />
+                     />
                     <input 
                       type="email" 
                       value={registerEmail}
@@ -4185,13 +4152,11 @@ export default function WebshopComponent({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label 
+                    <EditableText tag="label" isPreviewMode={isPreviewMode} html={registerPasswordLabel} 
                       className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide outline-none focus:bg-slate-100 rounded px-1"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerPasswordLabel', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: registerPasswordLabel }} />
+                     />
                     <input 
                       type="password" 
                       value={registerPassword}
@@ -4206,35 +4171,28 @@ export default function WebshopComponent({
                     type="submit"
                     className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
                   >
-                    <span 
+                    <EditableText tag="span" isPreviewMode={isPreviewMode} html={registerButtonText} 
                       className="outline-none focus:bg-amber-500 rounded px-2 block"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('registerButtonText', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: registerButtonText }} />
+                     />
                   </button>
                 </form>
 
                 <div className="border-t border-slate-100 pt-4 text-center">
-                  <p 
+                  <EditableText tag="p" isPreviewMode={isPreviewMode} html={hasAccountText} 
                     className="text-[11px] text-slate-500 font-medium outline-none focus:bg-slate-100 rounded px-1 inline-block"
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                                                            onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                     onBlur={(e) => updateSetting('hasAccountText', e.currentTarget.innerHTML)}
-                   dangerouslySetInnerHTML={{ __html: hasAccountText }} />
+                   />
                   <button
                     onClick={() => setAuthMode('login')}
                     className="mt-3 text-xs text-amber-400 hover:underline font-bold bg-transparent border-none cursor-pointer block w-full"
                   >
-                    <span
-                      className="outline-none focus:bg-slate-100 rounded px-2 block"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                    <EditableText tag="span" isPreviewMode={isPreviewMode} html={loginAccountLink}                       className="outline-none focus:bg-slate-100 rounded px-2 block"
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('loginAccountLink', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: loginAccountLink }} />
+                     />
                   </button>
                   <button
                     onClick={() => {
@@ -4245,13 +4203,10 @@ export default function WebshopComponent({
                     }}
                     className="mt-3 text-xs text-slate-500 hover:text-slate-800 font-bold bg-transparent border-none cursor-pointer"
                   >
-                    <span
-                      className="outline-none focus:bg-slate-100 rounded px-2 block"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
+                    <EditableText tag="span" isPreviewMode={isPreviewMode} html={backToShopText}                       className="outline-none focus:bg-slate-100 rounded px-2 block"
+                                                                  onClick={(e) => { if (!isPreviewMode) { e.preventDefault(); e.stopPropagation(); } }}
                       onBlur={(e) => updateSetting('backToShopText', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: backToShopText }} />
+                     />
                   </button>
                 </div>
               </>
@@ -5816,23 +5771,19 @@ export default function WebshopComponent({
                       className="w-10 h-10 rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
                       style={{ width: `${40 * ratio}px`, height: `${40 * ratio}px` }}
                     >
-                      <span 
+                      <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerLogoBadge || s.logoBadge || 'MM'} 
                         className="text-amber-455 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
                         style={{ fontSize: `${12 * ratio}px` }}
-                        contentEditable={!isPreviewMode}
-                        suppressContentEditableWarning
-                        onBlur={(e) => updateSetting('footerLogoBadge', e.currentTarget.innerHTML)}
-                       dangerouslySetInnerHTML={{ __html: s.footerLogoBadge || s.logoBadge || 'MM' }} />
+                                                                        onBlur={(e) => updateSetting('footerLogoBadge', e.currentTarget.innerHTML)}
+                       />
                     </div>
                   )}
                   {(!fLogoType || fLogoType === 'text') && (
-                    <h4 
+                    <EditableText tag="h4" isPreviewMode={isPreviewMode} html={s.footerLogoText || s.logoText || 'MM LÅSESMED'} 
                       className="font-black text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
                       style={{ fontSize: `${fLogoFontSize}px` }}
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onBlur={(e) => updateSetting('footerLogoText', e.currentTarget.innerHTML)}
-                     dangerouslySetInnerHTML={{ __html: s.footerLogoText || s.logoText || 'MM LÅSESMED' }} />
+                                                                  onBlur={(e) => updateSetting('footerLogoText', e.currentTarget.innerHTML)}
+                     />
                   )}
                   {/* Invisible dropzone to switch from text to image */}
                   {!isPreviewMode && fLogoType !== 'image' && (
@@ -5846,22 +5797,18 @@ export default function WebshopComponent({
                 </div>
               );
             })()}
-            <p 
+            <EditableText tag="p" isPreviewMode={isPreviewMode} html={s.footerDesc || 'Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder.'} 
               className="text-xs text-slate-400 leading-relaxed max-w-xs outline-none focus:bg-slate-50 px-1 rounded"
-              contentEditable={!isPreviewMode}
-              suppressContentEditableWarning
-              onBlur={(e) => updateSetting('footerDesc', e.currentTarget.innerHTML)}
-             dangerouslySetInnerHTML={{ __html: s.footerDesc || 'Låsesystemer af høj kvalitet lavet af miljøvenlige materialer. Designet til moderne og minimalistiske lejligheder.' }} />
+                                          onBlur={(e) => updateSetting('footerDesc', e.currentTarget.innerHTML)}
+             />
           </div>
 
           {/* Areas Column */}
           <div>
-            <h5 
+            <EditableText tag="h5" isPreviewMode={isPreviewMode} html={s.footerCol2Title || 'Områder'} 
               className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3 outline-none focus:bg-slate-100 px-1 rounded"
-              contentEditable={!isPreviewMode}
-              suppressContentEditableWarning
-              onBlur={(e) => updateSetting('footerCol2Title', e.currentTarget.innerHTML)}
-             dangerouslySetInnerHTML={{ __html: s.footerCol2Title || 'Områder' }} />
+                                          onBlur={(e) => updateSetting('footerCol2Title', e.currentTarget.innerHTML)}
+             />
             <ul 
               className="text-xs text-slate-500 space-y-1.5 list-none p-0 outline-none focus:bg-slate-50 px-1 rounded"
               contentEditable={!isPreviewMode}
@@ -5876,12 +5823,10 @@ export default function WebshopComponent({
 
           {/* Address Column */}
           <div>
-            <h5 
+            <EditableText tag="h5" isPreviewMode={isPreviewMode} html={s.footerCol3Title || 'Adresse'} 
               className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3 outline-none focus:bg-slate-100 px-1 rounded"
-              contentEditable={!isPreviewMode}
-              suppressContentEditableWarning
-              onBlur={(e) => updateSetting('footerCol3Title', e.currentTarget.innerHTML)}
-             dangerouslySetInnerHTML={{ __html: s.footerCol3Title || 'Adresse' }} />
+                                          onBlur={(e) => updateSetting('footerCol3Title', e.currentTarget.innerHTML)}
+             />
             <ul 
               className="text-xs text-slate-505 space-y-1.5 list-none p-0 outline-none focus:bg-slate-50 px-1 rounded"
               contentEditable={!isPreviewMode}
@@ -5896,12 +5841,10 @@ export default function WebshopComponent({
 
           {/* Info Column */}
           <div>
-            <h5 
+            <EditableText tag="h5" isPreviewMode={isPreviewMode} html={s.footerCol4Title || 'Information'} 
               className="text-[10px] font-black uppercase text-slate-900 tracking-wider mb-3 outline-none focus:bg-slate-100 px-1 rounded"
-              contentEditable={!isPreviewMode}
-              suppressContentEditableWarning
-              onBlur={(e) => updateSetting('footerCol4Title', e.currentTarget.innerHTML)}
-             dangerouslySetInnerHTML={{ __html: s.footerCol4Title || 'Information' }} />
+                                          onBlur={(e) => updateSetting('footerCol4Title', e.currentTarget.innerHTML)}
+             />
             <ul 
               className="text-xs text-slate-505 space-y-1.5 list-none p-0 outline-none focus:bg-slate-50 px-1 rounded"
               contentEditable={!isPreviewMode}
@@ -5915,25 +5858,18 @@ export default function WebshopComponent({
           </div>
         </div>
         <div className="border-t border-slate-100 mt-8 pt-4 flex flex-col @sm:flex-row justify-between items-center gap-2 text-[10px] text-slate-400">
-          <span
-            className="outline-none focus:bg-slate-50 px-1 rounded"
-            contentEditable={!isPreviewMode}
-            suppressContentEditableWarning
-            onBlur={(e) => updateSetting('footerCopyright', e.currentTarget.innerHTML)}
-           dangerouslySetInnerHTML={{ __html: s.footerCopyright || 'Copyright © 2019 MM-COMMERCE. All Rights Reserved.' }} />
+          <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerCopyright || 'Copyright © 2019 MM-COMMERCE. All Rights Reserved.'}             className="outline-none focus:bg-slate-50 px-1 rounded"
+                                    onBlur={(e) => updateSetting('footerCopyright', e.currentTarget.innerHTML)}
+           />
           <div className="flex gap-3">
-            <span 
+            <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerTerms || 'Terms Of Use'} 
               className="hover:underline cursor-pointer outline-none focus:bg-slate-50 px-1 rounded"
-              contentEditable={!isPreviewMode}
-              suppressContentEditableWarning
-              onBlur={(e) => updateSetting('footerTerms', e.currentTarget.innerHTML)}
-             dangerouslySetInnerHTML={{ __html: s.footerTerms || 'Terms Of Use' }} />
-            <span 
+                                          onBlur={(e) => updateSetting('footerTerms', e.currentTarget.innerHTML)}
+             />
+            <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerPrivacy || 'Privacy Policy'} 
               className="hover:underline cursor-pointer outline-none focus:bg-slate-50 px-1 rounded"
-              contentEditable={!isPreviewMode}
-              suppressContentEditableWarning
-              onBlur={(e) => updateSetting('footerPrivacy', e.currentTarget.innerHTML)}
-             dangerouslySetInnerHTML={{ __html: s.footerPrivacy || 'Privacy Policy' }} />
+                                          onBlur={(e) => updateSetting('footerPrivacy', e.currentTarget.innerHTML)}
+             />
           </div>
         </div>
       </footer>
