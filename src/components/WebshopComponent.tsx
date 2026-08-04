@@ -5985,18 +5985,20 @@ export default function WebshopComponent({
             </ul>
           </div>
         </div>
-        <div className="border-t border-slate-100 mt-8 pt-4 flex flex-col @sm:flex-row justify-between items-center gap-2 text-[10px] text-slate-400">
-          <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerCopyright || 'Copyright © 2019 MM-COMMERCE. All Rights Reserved.'}             className="outline-none focus:bg-slate-50 px-1 rounded"
-                                    onBlur={(e) => updateSetting('footerCopyright', e.currentTarget.innerHTML)}
-           />
+        <div className="border-t border-slate-100 mt-8 pt-4 flex flex-col @sm:flex-row justify-center @sm:justify-end items-center relative gap-4 @sm:gap-0 text-[10px] text-slate-400">
+          <div className="text-center @sm:absolute @sm:left-1/2 @sm:-translate-x-1/2">
+            <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerCopyright || 'Copyright © 2019 MM-COMMERCE. All Rights Reserved.'}             className="outline-none focus:bg-slate-50 px-1 rounded"
+                                      onBlur={(e: any) => updateSetting('footerCopyright', e.currentTarget.innerHTML)}
+             />
+          </div>
           <div className="flex gap-3">
             <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerTerms || 'Terms Of Use'} 
               className="hover:underline cursor-pointer outline-none focus:bg-slate-50 px-1 rounded"
-                                          onBlur={(e) => updateSetting('footerTerms', e.currentTarget.innerHTML)}
+                                          onBlur={(e: any) => updateSetting('footerTerms', e.currentTarget.innerHTML)}
              />
             <EditableText tag="span" isPreviewMode={isPreviewMode} html={s.footerPrivacy || 'Privacy Policy'} 
               className="hover:underline cursor-pointer outline-none focus:bg-slate-50 px-1 rounded"
-                                          onBlur={(e) => updateSetting('footerPrivacy', e.currentTarget.innerHTML)}
+                                          onBlur={(e: any) => updateSetting('footerPrivacy', e.currentTarget.innerHTML)}
              />
           </div>
         </div>
