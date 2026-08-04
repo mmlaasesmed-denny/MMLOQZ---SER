@@ -3607,9 +3607,8 @@ export default function WebshopComponent({
                 <div className="grid grid-cols-1 @sm:grid-cols-3 gap-6 pt-6 border-t border-slate-100">
                   <div className="flex flex-col items-center text-center space-y-2 p-4">
                     <EditableText
-                      id="cartTrust1Icon"
-                      value={cartTrust1Icon}
-                      onUpdate={(val) => updateSetting('cartTrust1Icon', val)}
+                      html={cartTrust1Icon}
+                      onBlur={(e: any) => updateSetting('cartTrust1Icon', e.target.innerHTML)}
                       className="text-3xl"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3617,9 +3616,8 @@ export default function WebshopComponent({
                       }}
                     />
                     <EditableText
-                      id="cartTrust1Title"
-                      value={cartTrust1Title}
-                      onUpdate={(val) => updateSetting('cartTrust1Title', val)}
+                      html={cartTrust1Title}
+                      onBlur={(e: any) => updateSetting('cartTrust1Title', e.target.innerHTML)}
                       className="text-xs font-black uppercase text-slate-900 tracking-wider"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3627,9 +3625,8 @@ export default function WebshopComponent({
                       }}
                     />
                     <EditableText
-                      id="cartTrust1Desc"
-                      value={cartTrust1Desc}
-                      onUpdate={(val) => updateSetting('cartTrust1Desc', val)}
+                      html={cartTrust1Desc}
+                      onBlur={(e: any) => updateSetting('cartTrust1Desc', e.target.innerHTML)}
                       className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3639,9 +3636,8 @@ export default function WebshopComponent({
                   </div>
                   <div className="flex flex-col items-center text-center space-y-2 p-4">
                     <EditableText
-                      id="cartTrust2Icon"
-                      value={cartTrust2Icon}
-                      onUpdate={(val) => updateSetting('cartTrust2Icon', val)}
+                      html={cartTrust2Icon}
+                      onBlur={(e: any) => updateSetting('cartTrust2Icon', e.target.innerHTML)}
                       className="text-3xl"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3649,9 +3645,8 @@ export default function WebshopComponent({
                       }}
                     />
                     <EditableText
-                      id="cartTrust2Title"
-                      value={cartTrust2Title}
-                      onUpdate={(val) => updateSetting('cartTrust2Title', val)}
+                      html={cartTrust2Title}
+                      onBlur={(e: any) => updateSetting('cartTrust2Title', e.target.innerHTML)}
                       className="text-xs font-black uppercase text-slate-900 tracking-wider"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3659,9 +3654,8 @@ export default function WebshopComponent({
                       }}
                     />
                     <EditableText
-                      id="cartTrust2Desc"
-                      value={cartTrust2Desc}
-                      onUpdate={(val) => updateSetting('cartTrust2Desc', val)}
+                      html={cartTrust2Desc}
+                      onBlur={(e: any) => updateSetting('cartTrust2Desc', e.target.innerHTML)}
                       className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3671,9 +3665,8 @@ export default function WebshopComponent({
                   </div>
                   <div className="flex flex-col items-center text-center space-y-2 p-4">
                     <EditableText
-                      id="cartTrust3Icon"
-                      value={cartTrust3Icon}
-                      onUpdate={(val) => updateSetting('cartTrust3Icon', val)}
+                      html={cartTrust3Icon}
+                      onBlur={(e: any) => updateSetting('cartTrust3Icon', e.target.innerHTML)}
                       className="text-3xl"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3681,9 +3674,8 @@ export default function WebshopComponent({
                       }}
                     />
                     <EditableText
-                      id="cartTrust3Title"
-                      value={cartTrust3Title}
-                      onUpdate={(val) => updateSetting('cartTrust3Title', val)}
+                      html={cartTrust3Title}
+                      onBlur={(e: any) => updateSetting('cartTrust3Title', e.target.innerHTML)}
                       className="text-xs font-black uppercase text-slate-900 tracking-wider"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3691,9 +3683,8 @@ export default function WebshopComponent({
                       }}
                     />
                     <EditableText
-                      id="cartTrust3Desc"
-                      value={cartTrust3Desc}
-                      onUpdate={(val) => updateSetting('cartTrust3Desc', val)}
+                      html={cartTrust3Desc}
+                      onBlur={(e: any) => updateSetting('cartTrust3Desc', e.target.innerHTML)}
                       className="text-[10px] text-slate-500 leading-relaxed max-w-[200px]"
                       isPreviewMode={isPreviewMode}
                       onClick={(e: any) => {
@@ -3706,9 +3697,8 @@ export default function WebshopComponent({
                 {/* FAQ section */}
                 <div className="space-y-4 pt-6 border-t border-slate-100 text-left">
                   <EditableText
-                    id="cartFaqTitle"
-                    value={cartFaqTitle}
-                    onUpdate={(val) => updateSetting('cartFaqTitle', val)}
+                    html={cartFaqTitle}
+                    onBlur={(e: any) => updateSetting('cartFaqTitle', e.target.innerHTML)}
                     className="text-sm font-black uppercase tracking-wider text-slate-900 block"
                     isPreviewMode={isPreviewMode}
                     onClick={(e: any) => {
@@ -3719,9 +3709,8 @@ export default function WebshopComponent({
                     <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
                       <div className="bg-slate-50 px-5 py-3 border-b border-slate-100 flex items-center justify-between select-none">
                         <EditableText
-                          id="cartFaq1Question"
-                          value={cartFaq1Question}
-                          onUpdate={(val) => updateSetting('cartFaq1Question', val)}
+                          html={cartFaq1Question}
+                          onBlur={(e: any) => updateSetting('cartFaq1Question', e.target.innerHTML)}
                           className="text-xs font-black uppercase text-slate-700 tracking-wider"
                           isPreviewMode={isPreviewMode}
                           onClick={(e: any) => {
@@ -3731,9 +3720,8 @@ export default function WebshopComponent({
                         <span className="text-xs text-slate-400 font-bold">&#9662;</span>
                       </div>
                       <EditableText
-                        id="cartFaq1Answer"
-                        value={cartFaq1Answer}
-                        onUpdate={(val) => updateSetting('cartFaq1Answer', val)}
+                        html={cartFaq1Answer}
+                        onBlur={(e: any) => updateSetting('cartFaq1Answer', e.target.innerHTML)}
                         className="p-5 text-xs text-slate-505 leading-relaxed block"
                         isPreviewMode={isPreviewMode}
                         onClick={(e: any) => {
@@ -3744,9 +3732,8 @@ export default function WebshopComponent({
                     <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
                       <div className="bg-slate-50 px-5 py-3 border-b border-slate-100 flex items-center justify-between select-none">
                         <EditableText
-                          id="cartFaq2Question"
-                          value={cartFaq2Question}
-                          onUpdate={(val) => updateSetting('cartFaq2Question', val)}
+                          html={cartFaq2Question}
+                          onBlur={(e: any) => updateSetting('cartFaq2Question', e.target.innerHTML)}
                           className="text-xs font-black uppercase text-slate-700 tracking-wider"
                           isPreviewMode={isPreviewMode}
                           onClick={(e: any) => {
@@ -3756,9 +3743,8 @@ export default function WebshopComponent({
                         <span className="text-xs text-slate-400 font-bold">&#9662;</span>
                       </div>
                       <EditableText
-                        id="cartFaq2Answer"
-                        value={cartFaq2Answer}
-                        onUpdate={(val) => updateSetting('cartFaq2Answer', val)}
+                        html={cartFaq2Answer}
+                        onBlur={(e: any) => updateSetting('cartFaq2Answer', e.target.innerHTML)}
                         className="p-5 text-xs text-slate-505 leading-relaxed block"
                         isPreviewMode={isPreviewMode}
                         onClick={(e: any) => {
