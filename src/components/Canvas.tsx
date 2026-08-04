@@ -1296,6 +1296,27 @@ export default function Canvas({
                                           <option value="Arial">Arial</option>
                                           <option value="Georgia">Georgia</option>
                                         </select>
+                                        <span className="w-[1px] h-4 bg-slate-700 mx-1"></span>
+                                        <select 
+                                          className="bg-slate-800 text-white text-[10px] font-bold border border-slate-700 rounded px-1.5 py-1 cursor-pointer focus:outline-none hover:bg-slate-750"
+                                          onChange={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            if (e.target.value) {
+                                              document.execCommand('fontSize', false, e.target.value);
+                                              e.target.value = "";
+                                            }
+                                          }}
+                                        >
+                                          <option value="">Size...</option>
+                                          <option value="1">Small</option>
+                                          <option value="2">Normal</option>
+                                          <option value="3">Medium</option>
+                                          <option value="4">Large</option>
+                                          <option value="5">X-Large</option>
+                                          <option value="6">2X-Large</option>
+                                          <option value="7">Huge</option>
+                                        </select>
                                       </div>
                                       
                                       <div
@@ -3441,6 +3462,34 @@ export default function Canvas({
             <option value="Outfit">Outfit</option>
             <option value="Arial">Arial</option>
             <option value="Georgia">Georgia</option>
+          </select>
+          <span className="w-[1px] h-3.5 bg-slate-850 mx-1"></span>
+          <select 
+            className="bg-slate-900 text-white text-[10px] font-bold border border-slate-750 rounded px-1.5 py-1 cursor-pointer focus:outline-none hover:bg-slate-800"
+            onChange={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (e.target.value) {
+                const sel = window.getSelection();
+                if (sel && selectionRange) {
+                  sel.removeAllRanges();
+                  sel.addRange(selectionRange);
+                }
+                document.execCommand('fontSize', false, e.target.value);
+                e.target.value = "";
+              }
+              setSelectionRange(null);
+              setSelectionRect(null);
+            }}
+          >
+            <option value="">Size...</option>
+            <option value="1">Small</option>
+            <option value="2">Normal</option>
+            <option value="3">Medium</option>
+            <option value="4">Large</option>
+            <option value="5">X-Large</option>
+            <option value="6">2X-Large</option>
+            <option value="7">Huge</option>
           </select>
         </div>
       )}
