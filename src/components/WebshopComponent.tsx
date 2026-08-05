@@ -3276,7 +3276,7 @@ export default function WebshopComponent({
                                 setView('product-detail');
                                 if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
                               }}
-                              className="text-base font-bold text-slate-900 leading-snug cursor-pointer hover:text-[#11549B] transition-colors mb-4"
+                              className="text-base font-bold text-slate-900 leading-snug cursor-pointer hover:text-amber-500 transition-colors mb-4"
                             >
                               {product.name}
                             </h4>
@@ -3313,7 +3313,7 @@ export default function WebshopComponent({
                                 setView('product-detail');
                                 if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
                               }}
-                              className="w-full py-3 bg-[#11549B] hover:bg-[#0c4078] text-white font-bold text-sm uppercase rounded transition-colors border-none cursor-pointer text-center shadow-sm"
+                              className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-sm uppercase rounded transition-colors border-none cursor-pointer text-center shadow-sm"
                             >
                               VIS VARIANTER
                             </button>
@@ -3325,7 +3325,7 @@ export default function WebshopComponent({
                                   setView('product-detail');
                                   if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
                                 }}
-                                className="text-sm font-bold text-slate-900 underline cursor-pointer hover:text-[#11549B] underline-offset-4"
+                                className="text-sm font-bold text-slate-900 underline cursor-pointer hover:text-amber-500 underline-offset-4"
                               >
                                 7 Varianter
                               </span>
