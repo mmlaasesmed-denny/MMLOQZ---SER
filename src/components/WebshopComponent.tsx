@@ -369,7 +369,35 @@ export default function WebshopComponent({
   };
 
   // Cart states
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_cart') : null;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        } else if (parsed && parsed.items) {
+          const session = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_session') : null;
+          if (!session && parsed.expiry && Date.now() > parsed.expiry) {
+            localStorage.removeItem('mm_lase_cart');
+            return [];
+          }
+          return parsed.items || [];
+        }
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const session = localStorage.getItem('mm_lase_session');
+      const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000;
+      localStorage.setItem('mm_lase_cart', JSON.stringify({ items: cart, expiry }));
+    }
+  }, [cart]);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>(() => {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_wishlist') : null;
@@ -1710,6 +1738,10 @@ export default function WebshopComponent({
                   onClick={() => {
                     localStorage.removeItem('mm_lase_session');
                     setLoggedInUser(null);
+                    setCart([]);
+                    setWishlist([]);
+                    localStorage.removeItem('mm_lase_cart');
+                    localStorage.removeItem('mm_lase_wishlist');
                     setIsProfileDropdownOpen(false);
                     setView('categories');
                     if (isPreviewMode) window.location.hash = 'shop';
