@@ -425,7 +425,8 @@ export default function WebshopComponent({
 
   const toggleWishlist = (productId: string) => {
     setWishlist(prev => {
-      const next = prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId];
+      const isAdding = !prev.includes(productId);
+      const next = isAdding ? [...prev, productId] : prev.filter(id => id !== productId);
       if (typeof window !== 'undefined') {
         const session = localStorage.getItem('mm_lase_session');
         const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days for guests
