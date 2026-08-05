@@ -431,6 +431,7 @@ export default function WebshopComponent({
 
   // Account & Auth states
   const [loggedInUser, setLoggedInUser] = useState<Account | null>(null);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [simulatedEmail, setSimulatedEmail] = useState<{ to: string; subject: string; body: string; tempPass: string } | null>(null);
   
   // Admin & Order states
@@ -683,12 +684,15 @@ export default function WebshopComponent({
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [subcategories, products, isPreviewMode]);
 
-  // Click outside detection for search suggestions
+  // Click outside detection for search suggestions and profile dropdown
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target.closest('.search-container-root')) {
         setShowSuggestions(false);
+      }
+      if (!target.closest('.profile-dropdown-root')) {
+        setIsProfileDropdownOpen(false);
       }
     };
     document.addEventListener('click', handleGlobalClick);
@@ -1661,32 +1665,60 @@ export default function WebshopComponent({
         {/* Header Actions */}
         <div className="flex items-center justify-end gap-3 @md:gap-5 order-2 @md:order-none">
           {/* Account Icon */}
-          <div 
-            onClick={() => {
-              if (loggedInUser) {
-                setView('profile');
-                if (isPreviewMode) window.location.hash = 'shop/profile';
-              } else {
-                setView('login');
-                if (isPreviewMode) window.location.hash = 'shop/login';
-              }
-            }}
-            className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
-          >
-            {loggedInUser ? (
-              <>
-                <div className="w-5 h-5 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-bold text-[10px]">
-                  {loggedInUser.name.charAt(0).toUpperCase()}
-                </div>
-                <span className="text-[9px] font-extrabold uppercase tracking-wider truncate max-w-[40px] text-center" title={loggedInUser.name}>
-                  {loggedInUser.name.split(' ')[0]}
-                </span>
-              </>
-            ) : (
-              <>
-                <User className="w-5 h-5 text-slate-750" />
-                <span className="text-[9px] font-extrabold uppercase tracking-wider">Konto</span>
-              </>
+          <div className="relative profile-dropdown-root">
+            <div 
+              onClick={() => {
+                if (loggedInUser) {
+                  setIsProfileDropdownOpen(!isProfileDropdownOpen);
+                } else {
+                  setView('login');
+                  if (isPreviewMode) window.location.hash = 'shop/login';
+                }
+              }}
+              className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+            >
+              {loggedInUser ? (
+                <>
+                  <div className="w-5 h-5 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-bold text-[10px]">
+                    {loggedInUser.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider truncate max-w-[40px] text-center" title={loggedInUser.name}>
+                    {loggedInUser.name.split(' ')[0]}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <User className="w-5 h-5 text-slate-750" />
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider">Konto</span>
+                </>
+              )}
+            </div>
+            
+            {loggedInUser && isProfileDropdownOpen && (
+              <div className="absolute top-full right-1/2 translate-x-1/2 @sm:translate-x-0 @sm:right-0 mt-3 w-40 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                <button
+                  onClick={() => {
+                    setView('profile');
+                    setIsProfileDropdownOpen(false);
+                    if (isPreviewMode) window.location.hash = 'shop/profile';
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100"
+                >
+                  Min Profil
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('mm_lase_session');
+                    setLoggedInUser(null);
+                    setIsProfileDropdownOpen(false);
+                    setView('categories');
+                    if (isPreviewMode) window.location.hash = 'shop';
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors"
+                >
+                  Log ud
+                </button>
+              </div>
             )}
           </div>
 
@@ -1720,22 +1752,6 @@ export default function WebshopComponent({
               </span>
             )}
           </div>
-
-          {/* Admin button removed for stealth mode */}
-
-          {loggedInUser && (
-            <button
-              onClick={() => {
-                localStorage.removeItem('mm_lase_session');
-                setLoggedInUser(null);
-                setView('categories');
-                if (isPreviewMode) window.location.hash = 'shop';
-              }}
-              className="px-2.5 py-1 text-[10px] bg-slate-100 hover:bg-rose-50 text-rose-500 rounded-lg border border-slate-200 cursor-pointer font-bold transition-all"
-            >
-              Log ud
-            </button>
-          )}
         </div>
       </div>
 
