@@ -375,7 +375,19 @@ export default function WebshopComponent({
     const saved = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_wishlist') : null;
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Backward compatibility for old arrays
+          return parsed;
+        } else if (parsed && parsed.items) {
+          // Check expiration only if there's no active session
+          const session = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_session') : null;
+          if (!session && parsed.expiry && Date.now() > parsed.expiry) {
+            localStorage.removeItem('mm_lase_wishlist');
+            return [];
+          }
+          return parsed.items || [];
+        }
       } catch (e) {
         return [];
       }
@@ -386,7 +398,11 @@ export default function WebshopComponent({
   const toggleWishlist = (productId: string) => {
     setWishlist(prev => {
       const next = prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId];
-      if (typeof window !== 'undefined') localStorage.setItem('mm_lase_wishlist', JSON.stringify(next));
+      if (typeof window !== 'undefined') {
+        const session = localStorage.getItem('mm_lase_session');
+        const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days for guests
+        localStorage.setItem('mm_lase_wishlist', JSON.stringify({ items: next, expiry }));
+      }
       return next;
     });
   };
@@ -1677,10 +1693,15 @@ export default function WebshopComponent({
           {/* Wishlist */}
           <div 
             onClick={() => alert('Ønskeliste er ikke tilgængelig i denne demo.')}
-            className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+            className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
           >
             <Heart className="w-5 h-5 text-slate-750" />
             <span className="text-[9px] font-extrabold uppercase tracking-wider">Wishlist</span>
+            {wishlist.length > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                {wishlist.length}
+              </span>
+            )}
           </div>
 
           {/* Cart */}
