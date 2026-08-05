@@ -4285,16 +4285,45 @@ export default function WebshopComponent({
               <div className="border border-slate-200 rounded-3xl h-fit space-y-4 bg-white p-6 shadow-sm">
                 <h4 className="text-xs font-black uppercase text-slate-900 tracking-widest pb-3 border-b border-slate-100">Din Bestilling</h4>
                 
-                <div className="max-h-60 overflow-y-auto space-y-3 pr-1">
-                  {cart.map(item => (
-                    <div key={item.product.id} className="flex justify-between items-start gap-2 text-left">
-                      <div className="flex-1">
-                        <span className="text-[10.5px] font-bold text-slate-800 uppercase block leading-tight">{item.product.name}</span>
-                        <span className="text-[10px] text-slate-400 font-medium">Antal: {item.quantity} x {(item.product.price / 1.25).toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
+                <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-1">
+                  {cart.map(item => {
+                    const brand = brands.find(b => b.id === item.product.brandId)?.name || 'FASTCAP';
+                    return (
+                    <div key={item.product.id} className="flex flex-row items-stretch border border-slate-200 rounded-sm bg-white overflow-hidden shadow-sm hover:shadow transition-shadow text-left">
+                      {/* Left Image */}
+                      <div className="w-20 bg-[#f4f4f4] p-3 flex items-center justify-center shrink-0">
+                        <img src={item.product.image} className="max-h-full max-w-full mix-blend-multiply drop-shadow-sm" alt={item.product.name} />
                       </div>
-                      <span className="text-xs font-mono font-bold text-slate-900 shrink-0">{(item.product.price * item.quantity / 1.25).toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
+                      
+                      {/* Middle Info */}
+                      <div className="flex-1 p-3 border-r border-slate-200 flex flex-col justify-center">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider leading-none">{brand}</span>
+                          <span className="text-[8px] text-slate-400">Variant {item.product.id.substring(0,4)}</span>
+                        </div>
+                        <h5 className="text-[11px] font-bold text-slate-900 leading-tight mb-3">{item.product.name}</h5>
+                        
+                        <div className="space-y-1.5 mt-auto">
+                          <div className="flex justify-between items-end border-b border-slate-100 pb-1">
+                            <span className="text-[9px] text-slate-600">Pris pr. stk</span>
+                            <span className="text-[9px] font-mono text-slate-700">{item.product.price.toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
+                          </div>
+                          <div className="flex justify-between items-end border-b border-slate-100 pb-1">
+                            <span className="text-[9px] text-slate-600">Antal i kurv</span>
+                            <span className="text-[9px] font-bold text-slate-900">{item.quantity}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Price */}
+                      <div className="w-[90px] p-3 flex flex-col items-center justify-center bg-white shrink-0">
+                        <div className="text-center w-full">
+                          <span className="text-[8px] text-slate-400 block leading-none mb-1">inkl. moms, fra</span>
+                          <span className="text-[12px] font-black text-slate-900 block leading-none">{(item.product.price * item.quantity).toLocaleString('da-DK', { minimumFractionDigits: 2 })} DKK</span>
+                        </div>
+                      </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
 
                 <div className="border-t border-slate-100 pt-4 space-y-2.5">
