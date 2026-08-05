@@ -64,7 +64,7 @@ interface Order {
   refundReason?: string;
 }
 
-type ShopView = 'categories' | 'subcategories' | 'subcategory-detail' | 'brand-products' | 'product-detail' | 'cart' | 'checkout' | 'login' | 'reset-password' | 'admin' | 'search-results' | 'profile';
+type ShopView = 'categories' | 'subcategories' | 'subcategory-detail' | 'brand-products' | 'product-detail' | 'cart' | 'checkout' | 'login' | 'reset-password' | 'admin' | 'search-results' | 'profile' | 'wishlist';
 
 
 
@@ -687,6 +687,8 @@ export default function WebshopComponent({
         }
       } else if (hash === '#shop/cart') {
         setView('cart');
+      } else if (hash === '#shop/wishlist') {
+        setView('wishlist');
       } else if (hash === '#shop/checkout') {
         setView('checkout');
       } else if (hash === '#shop/login') {
@@ -1777,7 +1779,10 @@ export default function WebshopComponent({
 
           {/* Wishlist */}
           <div 
-            onClick={() => alert('Ønskeliste er ikke tilgængelig i denne demo.')}
+            onClick={() => {
+              setView('wishlist');
+              if (isPreviewMode) window.location.hash = 'shop/wishlist';
+            }}
             className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
           >
             <Heart className="w-5 h-5 text-slate-750" />
@@ -3569,6 +3574,93 @@ export default function WebshopComponent({
             </div>
           );
         })()}
+
+        {/* VIEW 5.5: WISHLIST PAGE */}
+        {view === 'wishlist' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+            {/* Header / Breadcrumb */}
+            <div className="flex items-center gap-3 text-left">
+              <button 
+                onClick={() => {
+                  setView('categories');
+                  if (isPreviewMode) window.location.hash = 'shop';
+                }}
+                className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200 cursor-pointer flex items-center justify-center shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4 text-slate-700" />
+              </button>
+              <div>
+                <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest block">Wishlist</span>
+                <h3 className="text-xl font-extrabold text-slate-900 uppercase">Din Ønskeliste</h3>
+              </div>
+            </div>
+
+            {wishlist.length > 0 ? (
+              <div className="space-y-10">
+                <div className={`grid gap-8 text-left ${viewportMode === 'mobile' ? 'grid-cols-1' : 'grid-cols-1 @lg:grid-cols-3'}`}>
+                  {/* Wishlist Items list */}
+                  <div className="@lg:col-span-2 space-y-4">
+                    {wishlist.map(productId => {
+                      const product = products.find(p => p.id === productId) || WEBSHOP_PRODUCTS.find(p => p.id === productId);
+                      if (!product) return null;
+                      const formattedPriceExcl = (product.price / 1.25).toLocaleString('da-DK', { minimumFractionDigits: 2 });
+                      return (
+                        <div 
+                          key={product.id}
+                          className="flex justify-between gap-4 p-5 bg-white border border-slate-200 rounded-3xl items-center flex-col @sm:flex-row"
+                        >
+                          <div className="flex items-center gap-4 w-full @sm:w-auto">
+                            <div className="w-16 h-16 shrink-0 bg-slate-50 border border-slate-150 rounded-xl p-1 flex items-center justify-center">
+                              <img 
+                                src={product.image} 
+                                alt={product.name} 
+                                className="max-h-full max-w-full object-contain rounded-lg"
+                              />
+                            </div>
+                            <div>
+                              <h4 className="text-xs font-extrabold text-slate-800 uppercase leading-snug tracking-wide">{product.name}</h4>
+                              <span className="text-xs text-slate-400 font-bold mt-1 block">Pris: {formattedPriceExcl} DKK excl. moms</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-6 w-full @sm:w-auto pt-3 @sm:pt-0 border-t @sm:border-t-0 border-slate-100">
+                            <button 
+                              onClick={() => addToCart(product)}
+                              className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap"
+                            >
+                              Tilføj til kurv
+                            </button>
+                            <button 
+                              onClick={() => toggleWishlist(product.id)}
+                              className="p-2 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-xl transition-colors cursor-pointer border-none bg-transparent shrink-0"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-slate-50 rounded-3xl border border-slate-100">
+                <Heart className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <h4 className="text-slate-900 font-extrabold uppercase mb-2 tracking-wide">Din ønskeliste er tom</h4>
+                <p className="text-slate-500 text-sm mb-6">Tilføj produkter du kan lide for at gemme dem til senere.</p>
+                <button 
+                  onClick={() => {
+                    setView('categories');
+                    if (isPreviewMode) window.location.hash = 'shop';
+                  }}
+                  className="bg-amber-400 hover:bg-amber-500 text-slate-900 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Gå til forsiden
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* VIEW 6: CART PAGE */}
         {view === 'cart' && (
