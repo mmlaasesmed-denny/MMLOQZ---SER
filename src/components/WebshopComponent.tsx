@@ -3250,7 +3250,7 @@ export default function WebshopComponent({
                       return (
                         <div 
                           key={product.id}
-                          className="bg-white border border-slate-200 rounded-3xl p-5 flex flex-col @md:flex-row gap-5 items-stretch hover:shadow-md transition-shadow"
+                          className="bg-white border border-slate-200 flex flex-col @md:flex-row items-stretch hover:shadow-md transition-shadow mb-4"
                         >
                           {/* Image Box */}
                           <div 
@@ -3259,86 +3259,76 @@ export default function WebshopComponent({
                               setView('product-detail');
                               if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
                             }}
-                            className="@md:w-40 shrink-0 flex items-center justify-center bg-[#f9fafb] rounded-2xl border border-slate-150 p-2 cursor-pointer relative"
+                            className="w-full @md:w-[220px] shrink-0 flex items-center justify-center bg-[#f4f4f4] p-6 cursor-pointer"
                           >
-                            <img src={product.image} alt={product.name} className="max-h-32 max-w-full object-contain rounded-xl" />
+                            <img src={product.image} alt={product.name} className="max-h-36 max-w-full object-contain mix-blend-multiply drop-shadow-sm" />
                           </div>
 
                           {/* Info Column */}
-                          <div className="flex-grow text-left space-y-2 flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center justify-between text-[10px] font-black text-slate-400 tracking-wider uppercase">
-                                <span>{activeBrand.name}</span>
-                                <span>VARENR: {product.id}</span>
+                          <div className="flex-grow text-left flex flex-col p-5 bg-white border-b @md:border-b-0 @md:border-r border-slate-200">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-black text-slate-400 uppercase">{activeBrand.name}</span>
+                              <span className="text-xs text-slate-500 font-medium">+6 varianter</span>
+                            </div>
+                            <h4 
+                              onClick={() => {
+                                setSelectedProductId(product.id);
+                                setView('product-detail');
+                                if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
+                              }}
+                              className="text-base font-bold text-slate-900 leading-snug cursor-pointer hover:text-[#11549B] transition-colors mb-4"
+                            >
+                              {product.name}
+                            </h4>
+                            
+                            {/* Specs Table */}
+                            <div className="mt-auto space-y-1.5">
+                              <div className="flex justify-between border-t border-slate-200 pt-1.5 pb-0.5 text-xs text-slate-800">
+                                <span className="font-medium">Diameter mm</span>
+                                <span className="text-slate-600">9 &rarr; 57</span>
                               </div>
-                              <h4 
-                                onClick={() => {
-                                  setSelectedProductId(product.id);
-                                  setView('product-detail');
-                                  if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
-                                }}
-                                className="text-sm font-extrabold text-slate-800 uppercase leading-snug cursor-pointer hover:text-amber-500 transition-colors mt-0.5"
-                              >
-                                {product.name}
-                              </h4>
-                              
-                              {/* Specs Table */}
-                              <div className="border-t border-slate-100 pt-2.5 mt-2 grid grid-cols-1 @sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] text-slate-500 font-medium">
-                                <div className="flex justify-between border-b border-slate-50 pb-0.5">
-                                  <span className="text-slate-400">Overflade:</span>
-                                  <span>Rustfrit stål A2 børstet</span>
-                                </div>
-                                <div className="flex justify-between border-b border-slate-50 pb-0.5">
-                                  <span className="text-slate-400">Bredde mm:</span>
-                                  <span>39</span>
-                                </div>
-                                <div className="flex justify-between border-b border-slate-50 pb-0.5">
-                                  <span className="text-slate-400">Højde mm:</span>
-                                  <span>{product.id === '40009100' ? '298' : '310'}</span>
-                                </div>
+                              <div className="flex justify-between border-t border-slate-200 pt-1.5 pb-0.5 text-xs text-slate-800">
+                                <span className="font-medium">Farve</span>
+                                <span className="text-slate-600">Hvid</span>
+                              </div>
+                              <div className="flex justify-between border-t border-slate-200 pt-1.5 pb-0.5 text-xs text-slate-800">
+                                <span className="font-medium">Antal pr. pakke</span>
+                                <span className="text-slate-600">4 &rarr; 2600</span>
                               </div>
                             </div>
                           </div>
 
                           {/* Purchase/Price Actions */}
-                          <div className="@md:w-48 shrink-0 @md:border-l border-slate-150 @md:pl-5 flex flex-col justify-between items-stretch text-left @md:text-right gap-3 pt-3 @md:pt-0">
-                            <div className="flex flex-col">
-                              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Pris Ekskl. moms</span>
-                              <span className="text-lg font-black text-slate-900 font-mono mt-1.5 leading-none">
-                                {formattedPrice} DKK /Styk
+                          <div className="w-full @md:w-[240px] shrink-0 p-5 flex flex-col justify-center items-stretch text-left gap-4 bg-white">
+                            <div>
+                              <span className="text-[11px] text-slate-400 block mb-1">inkl. moms, fra</span>
+                              <span className="text-xl font-bold text-slate-900 leading-none flex items-baseline gap-1">
+                                {formattedPrice} DKK<span className="text-xs text-slate-500 font-normal">/Ark</span>
                               </span>
                             </div>
                             
-                            <div className="space-y-2">
-                              <span className="text-[10px] font-bold text-amber-500 flex items-center gap-1.5 @md:justify-end">
-                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                                Levering 1-2 hverdage
+                            <button 
+                              onClick={() => {
+                                setSelectedProductId(product.id);
+                                setView('product-detail');
+                                if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
+                              }}
+                              className="w-full py-3 bg-[#11549B] hover:bg-[#0c4078] text-white font-bold text-sm uppercase rounded transition-colors border-none cursor-pointer text-center shadow-sm"
+                            >
+                              VIS VARIANTER
+                            </button>
+                            
+                            <div className="text-center mt-1">
+                              <span 
+                                onClick={() => {
+                                  setSelectedProductId(product.id);
+                                  setView('product-detail');
+                                  if (isPreviewMode) window.location.hash = `shop/product/${product.id}`;
+                                }}
+                                className="text-sm font-bold text-slate-900 underline cursor-pointer hover:text-[#11549B] underline-offset-4"
+                              >
+                                7 Varianter
                               </span>
-
-                              {inCartQty === 0 ? (
-                                <button 
-                                  onClick={() => addToCart(product)}
-                                  className="w-full py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-955 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all border-none cursor-pointer text-center"
-                                >
-                                  Læg i kurv
-                                </button>
-                              ) : (
-                                <div className="flex items-center justify-center @md:justify-end gap-1">
-                                  <button 
-                                    onClick={() => updateQuantity(product.id, -1)}
-                                    className="w-7 h-7 bg-amber-400 hover:bg-amber-500 rounded-lg font-black text-sm flex items-center justify-center border-none cursor-pointer text-slate-955 transition-all active:scale-95"
-                                  >
-                                    -
-                                  </button>
-                                  <span className="w-8 text-center font-mono font-bold text-xs">{inCartQty}</span>
-                                  <button 
-                                    onClick={() => updateQuantity(product.id, 1)}
-                                    className="w-7 h-7 bg-amber-400 hover:bg-amber-500 rounded-lg font-black text-sm flex items-center justify-center border-none cursor-pointer text-slate-955 transition-all active:scale-95"
-                                  >
-                                    +
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
