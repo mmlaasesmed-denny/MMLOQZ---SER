@@ -431,6 +431,7 @@ export default function WebshopComponent({
         const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days for guests
         localStorage.setItem('mm_lase_wishlist', JSON.stringify({ items: next, expiry }));
       }
+      showToast(isAdding ? 'Tilføjet til ønskeliste' : 'Fjernet fra ønskeliste', isAdding ? 'success' : 'info');
       return next;
     });
   };
@@ -461,6 +462,16 @@ export default function WebshopComponent({
   const [loggedInUser, setLoggedInUser] = useState<Account | null>(null);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [simulatedEmail, setSimulatedEmail] = useState<{ to: string; subject: string; body: string; tempPass: string } | null>(null);
+  
+  // Toast state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error'; id: number } | null>(null);
+  const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
+    const id = Date.now();
+    setToast({ message, type, id });
+    setTimeout(() => {
+      setToast(prev => prev && prev.id === id ? null : prev);
+    }, 3000);
+  };
   
   // Admin & Order states
   const [orders, setOrders] = useState<Order[]>([]);
@@ -949,6 +960,7 @@ export default function WebshopComponent({
     }
     
     setLoggedInUser(newUser);
+    showToast('Konto oprettet med succes!');
     setRegisterName('');
     setRegisterEmail('');
     setRegisterPassword('');
@@ -973,6 +985,7 @@ export default function WebshopComponent({
       };
       localStorage.setItem('mm_lase_session', JSON.stringify(adminUser));
       setLoggedInUser(adminUser);
+      showToast(`Velkommen tilbage, ${adminUser.name}!`);
       setLoginEmail('');
       setLoginPassword('');
       setLoginError('');
@@ -990,6 +1003,7 @@ export default function WebshopComponent({
     if (user) {
       localStorage.setItem('mm_lase_session', JSON.stringify(user));
       setLoggedInUser(user);
+      showToast(`Velkommen tilbage, ${user.name}!`);
       setLoginEmail('');
       setLoginPassword('');
       setLoginError('');
@@ -1066,6 +1080,7 @@ export default function WebshopComponent({
       }
       return [...prevCart, { product, quantity: 1 }];
     });
+    showToast('Tilføjet til indkøbskurv');
     if (isPreviewMode) {
       window.location.hash = 'shop/cart';
     } else {
@@ -1100,6 +1115,7 @@ export default function WebshopComponent({
 
   const removeFromCart = (productId: string) => {
     setCart(prevCart => prevCart.filter(item => item.product.id !== productId));
+    showToast('Fjernet fra indkøbskurv', 'info');
   };
 
   const getCartTotal = () => {
@@ -1218,6 +1234,11 @@ export default function WebshopComponent({
       });
       localStorage.setItem('mm_lase_products', JSON.stringify(updatedProducts));
       setProducts(updatedProducts);
+      
+      setCart([]);
+      setCheckoutSuccess(true);
+      showToast('Ordre placeret med succes!');
+      setTimeout(() => setCheckoutSuccess(false), 5000);
     } catch (err) {
       console.error('Failed to save order to localStorage', err);
     }
@@ -6072,6 +6093,22 @@ export default function WebshopComponent({
           </div>
         </div>
       </footer>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className={`px-4 py-3 rounded-xl shadow-lg border flex items-center gap-3 min-w-[250px]
+            ${toast.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-800' : ''}
+            ${toast.type === 'error' ? 'bg-rose-50 border-rose-100 text-rose-800' : ''}
+            ${toast.type === 'info' ? 'bg-blue-50 border-blue-100 text-blue-800' : ''}
+          `}>
+            {toast.type === 'success' && <CheckCircle className="w-5 h-5 text-emerald-500" />}
+            {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-500" />}
+            {toast.type === 'info' && <Info className="w-5 h-5 text-blue-500" />}
+            <span className="text-sm font-bold">{toast.message}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
