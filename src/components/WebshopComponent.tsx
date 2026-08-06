@@ -1550,18 +1550,180 @@ export default function WebshopComponent({
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
 
       {/* Webshop Header Bar */}
-      <div className="pb-4 @md:pb-5 mb-4 relative z-[100] grid grid-cols-2 @md:flex @md:flex-row items-center @md:justify-between gap-y-4 gap-x-2 @md:gap-4 border-b border-slate-150">
-        <div className="flex items-center justify-start gap-3 cursor-pointer select-none order-1 @md:order-none"
-          onClick={() => {
-            setView('categories');
-            setSelectedCatId(null);
-            setSelectedSubcatId(null);
-            setSelectedBrandId(null);
-            setSelectedProductId(null);
-            if (isPreviewMode) window.location.hash = 'shop';
-          }}
-        >
-          {(() => {
+      <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4 @md:flex-row @md:items-center @md:justify-between @md:gap-4 border-b border-slate-150">
+        
+        {/* Mobile Top Row: Hamburger, Logo, Actions */}
+        <div className="flex items-center justify-between w-full @md:hidden relative">
+          
+          {/* Mobile Hamburger Menu */}
+          <div 
+            className="flex items-center relative z-50"
+            onMouseEnter={() => setIsMegaMenuOpen(true)}
+            onMouseLeave={() => {
+              setIsMegaMenuOpen(false);
+              setMegaMenuHoverCatId(null);
+              setMegaMenuHoverSubcatId(null);
+            }}
+          >
+            <button 
+              onClick={() => {
+                setView('categories');
+                setSelectedCatId(null);
+                setSelectedSubcatId(null);
+                setSelectedBrandId(null);
+                setSelectedProductId(null);
+                setIsMegaMenuOpen(false);
+                if (isPreviewMode) window.location.hash = 'shop';
+              }}
+              className="text-3xl text-slate-800 hover:text-amber-500 bg-transparent border-none py-2 pr-4 cursor-pointer transition-colors flex items-center justify-center leading-none"
+            >
+              <span>☰</span>
+            </button>
+
+            {/* Mega Menu Flyout */}
+            {isMegaMenuOpen && (
+              <div 
+                className="absolute top-full left-4 right-4 @md:left-0 @md:right-auto mt-2 w-auto @md:w-[800px] min-h-[400px] max-h-[80vh] overflow-y-auto @md:overflow-hidden bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col @md:flex-row z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Column 1: Categories */}
+                <div className="w-full @md:w-1/3 bg-slate-50 border-b @md:border-b-0 @md:border-r border-slate-200 py-4 shrink-0">
+                  <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Kategorier</h4>
+                  <ul className="space-y-1">
+                    {categories.map(cat => (
+                      <li key={cat.id}>
+                        <button
+                          onMouseEnter={() => {
+                            setMegaMenuHoverCatId(cat.id);
+                            setMegaMenuHoverSubcatId(null);
+                          }}
+                          onClick={() => {
+                            setSelectedCatId(cat.id);
+                            setView('subcategories');
+                            setIsMegaMenuOpen(false);
+                            if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
+                          }}
+                          className={`w-full text-left px-6 py-2.5 font-bold transition-colors flex justify-between items-center ${
+                            megaMenuHoverCatId === cat.id ? 'bg-amber-100' : 'hover:bg-slate-100'
+                          }`}
+                          style={{ 
+                            fontSize: `${megaMenuFontSize}px`,
+                            color: megaMenuHoverCatId === cat.id ? megaMenuActiveColor : megaMenuTextColor
+                          }}
+                        >
+                          <span>{cat.name}</span>
+                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>&rsaquo;</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Column 2: Subcategories (if category hovered) */}
+                {megaMenuHoverCatId && (
+                  <div className="w-full @md:w-1/3 bg-white border-b @md:border-b-0 @md:border-r border-slate-100 py-4 shrink-0">
+                    <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Underkategorier</h4>
+                    <ul className="space-y-1">
+                      {subcategories
+                        .filter(sub => sub.categoryId === megaMenuHoverCatId)
+                        .map(sub => (
+                          <li key={sub.id}>
+                            <button
+                              onMouseEnter={() => setMegaMenuHoverSubcatId(sub.id)}
+                              onClick={() => {
+                                setSelectedCatId(megaMenuHoverCatId);
+                                setSelectedSubcatId(sub.id);
+                                setView('subcategory-detail');
+                                setIsMegaMenuOpen(false);
+                                if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
+                              }}
+                              className={`w-full text-left px-6 py-2 font-semibold transition-colors flex justify-between items-center ${
+                                megaMenuHoverSubcatId === sub.id ? 'bg-slate-50' : 'hover:bg-slate-50'
+                              }`}
+                              style={{ 
+                                fontSize: `${megaMenuFontSize}px`,
+                                color: megaMenuHoverSubcatId === sub.id ? megaMenuActiveColor : megaMenuTextColor
+                              }}
+                            >
+                              <span>{sub.name}</span>
+                              <span style={{ color: megaMenuTextColor, opacity: 0.3 }}>&rsaquo;</span>
+                            </button>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Column 3: Products (if subcategory hovered) */}
+                {megaMenuHoverSubcatId && (
+                  <div className="w-full @md:w-1/3 bg-white py-4 overflow-y-auto max-h-[400px] shrink-0">
+                    <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Udvalgte Produkter</h4>
+                    <ul className="space-y-3 px-6">
+                      {products
+                        .filter(p => p.subcategoryId === megaMenuHoverSubcatId)
+                        .slice(0, 5) // Show only up to 5 products in mega menu
+                        .map(prod => (
+                          <li 
+                            key={prod.id} 
+                            className="group cursor-pointer" 
+                            onMouseEnter={() => setMegaMenuHoverProdId(prod.id)}
+                            onMouseLeave={() => setMegaMenuHoverProdId(null)}
+                            onClick={() => {
+                              setSelectedProductId(prod.id);
+                              setView('product-detail');
+                              setIsMegaMenuOpen(false);
+                              if (isPreviewMode) window.location.hash = `shop/product/${prod.id}`;
+                            }}
+                          >
+                            <div className="flex gap-3 items-center">
+                              <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                                <img src={prod.image} alt={prod.name} className="max-h-full max-w-full object-contain" />
+                              </div>
+                              <div>
+                                <h5 className="font-bold transition-colors leading-tight line-clamp-1" style={{ 
+                                  fontSize: `${megaMenuFontSize}px`,
+                                  color: megaMenuHoverProdId === prod.id ? megaMenuActiveColor : megaMenuTextColor
+                                }}>
+                                  {prod.name}
+                                </h5>
+                                <span className="font-bold text-slate-400" style={{ fontSize: `${Math.max(8, megaMenuFontSize - 2)}px` }}>{prod.price} kr.</span>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                    </ul>
+                    <div className="px-6 mt-4 pt-4 border-t border-slate-100">
+                      <button 
+                        onClick={() => {
+                          setSelectedCatId(megaMenuHoverCatId);
+                          setSelectedSubcatId(megaMenuHoverSubcatId);
+                          setView('subcategory-detail');
+                          setIsMegaMenuOpen(false);
+                          if (isPreviewMode) window.location.hash = `shop/subcat/${megaMenuHoverSubcatId}`;
+                        }}
+                        className="text-[10px] font-black uppercase text-amber-500 hover:text-amber-600 tracking-wider"
+                      >
+                        Se alle produkter &rarr;
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Logo Centered */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center cursor-pointer select-none"
+            onClick={() => {
+              setView('categories');
+              setSelectedCatId(null);
+              setSelectedSubcatId(null);
+              setSelectedBrandId(null);
+              setSelectedProductId(null);
+              if (isPreviewMode) window.location.hash = 'shop';
+            }}
+          >
+            {(() => {
             const logoType = s.logoType || 'text';
             const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
             const logoSrc = s.logoSrc || '';
@@ -1628,94 +1790,10 @@ export default function WebshopComponent({
               </>
             );
           })()}
-        </div>
-
-        {/* Search Bar Container */}
-        <div className="search-container-root relative flex-grow w-full @md:max-w-md z-20 order-3 @md:order-none col-span-2 @md:col-span-1">
-          <div className="flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-white focus-within:border-amber-400 transition-colors">
-            <input
-              type="text"
-              placeholder={searchPlaceholder}
-              value={searchInputValue}
-              onChange={(e) => {
-                const val = e.target.value;
-                setSearchInputValue(val);
-                setShowSuggestions(val.trim().length >= 1);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearchSubmit(searchInputValue);
-                }
-              }}
-              className="w-full text-xs pl-3 pr-8 py-2 border-none bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none"
-            />
-            {searchInputValue && (
-              <button
-                onClick={() => {
-                  setSearchInputValue('');
-                  setShowSuggestions(false);
-                }}
-                className="px-2 text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer"
-              >
-                ✕
-              </button>
-            )}
-            <button
-              onClick={() => handleSearchSubmit(searchInputValue)}
-              className="px-4 bg-amber-400 hover:bg-amber-500 text-slate-900 flex items-center justify-center border-none cursor-pointer transition-colors"
-            >
-              <Search className="w-4 h-4 text-slate-955" />
-            </button>
           </div>
 
-          {/* Autocomplete Dropdown suggestions list */}
-          {showSuggestions && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50 text-slate-850">
-              {getSuggestions(searchInputValue).length === 0 ? (
-                <div className="p-3 text-xs text-slate-400 text-center">
-                  Ingen resultater fundet
-                </div>
-              ) : (
-                <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto">
-                  {getSuggestions(searchInputValue).map((p) => {
-                    const brand = WEBSHOP_BRANDS.find(b => b.id === p.brandId);
-                    return (
-                      <div
-                        key={p.id}
-                        onClick={() => {
-                          setSelectedProductId(p.id);
-                          setView('product-detail');
-                          setShowSuggestions(false);
-                          setSearchInputValue('');
-                          if (isPreviewMode) {
-                            window.location.hash = `shop/product/${p.id}`;
-                          }
-                        }}
-                        className="flex items-center gap-3 p-2.5 hover:bg-slate-50 cursor-pointer transition-colors text-left"
-                      >
-                        <img src={p.image} className="w-8 h-8 rounded-lg object-cover bg-slate-100 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[9px] text-amber-500 font-bold uppercase tracking-wider leading-none">
-                            {brand ? brand.name : ''}
-                          </div>
-                          <div className="text-xs text-slate-700 font-bold truncate mt-0.5">
-                            {p.name}
-                          </div>
-                        </div>
-                        <div className="text-[10px] font-mono font-bold text-slate-900 whitespace-nowrap">
-                          {p.price.toLocaleString('da-DK')},- DKK
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Header Actions */}
-        <div className="flex items-center justify-end gap-3 @md:gap-5 order-2 @md:order-none">
+          {/* Mobile Actions */}
+          <div className="flex items-center justify-end gap-3 @md:gap-5 order-2 @md:order-none">
           {/* Account Icon */}
           <div className="relative profile-dropdown-root">
             <div 
@@ -1812,11 +1890,280 @@ export default function WebshopComponent({
             )}
           </div>
         </div>
+        </div>
+
+        {/* Desktop Layout Elements */}
+        
+        {/* Desktop Logo */}
+        <div className="hidden @md:flex items-center justify-start gap-3 cursor-pointer select-none order-1 @md:order-none"
+          onClick={() => {
+            setView('categories');
+            setSelectedCatId(null);
+            setSelectedSubcatId(null);
+            setSelectedBrandId(null);
+            setSelectedProductId(null);
+            if (isPreviewMode) window.location.hash = 'shop';
+          }}
+        >
+          {(() => {
+            const logoType = s.logoType || 'text';
+            const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
+            const logoSrc = s.logoSrc || '';
+            const ratio = logoFontSize / 18;
+
+            if (logoType === 'image' && logoSrc) {
+              return (
+                <div className="relative group">
+                  <div 
+                    className={`flex items-center justify-center shrink-0 ${!isPreviewMode ? 'cursor-pointer outline-dashed outline-1 outline-transparent hover:outline-slate-300' : ''}`}
+                    onClick={(e) => {
+                      if (!isPreviewMode) {
+                        e.stopPropagation();
+                        promptEditImage('setting', '', 'logoSrc');
+                      }
+                    }}
+                  >
+                    <img src={logoSrc} alt="Logo" className="max-h-32 object-contain" style={{ height: `${48 * ratio}px` }} />
+                  </div>
+                  {!isPreviewMode && (
+                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-white border border-slate-200 rounded-md shadow-sm p-1 z-50">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); updateSetting('logoFontSize', String(Math.max(10, logoFontSize - 2))); }}
+                        className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                      >
+                        -
+                      </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); updateSetting('logoFontSize', String(Math.min(72, logoFontSize + 2))); }}
+                        className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <>
+                <div 
+                  className="rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
+                  style={{ width: `${48 * ratio}px`, height: `${48 * ratio}px` }}
+                >
+                  <EditableText tag="span" isPreviewMode={isPreviewMode} html={logoBadge} 
+                    className="text-amber-455 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
+                    style={{ fontSize: `${14 * ratio}px` }}
+                                                            onBlur={(e) => updateSetting('logoBadge', e.currentTarget.innerHTML)}
+                   />
+                </div>
+                <div className="text-left">
+                  <EditableText tag="h2" isPreviewMode={isPreviewMode} html={logoText} 
+                    className="font-black tracking-tighter text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
+                    style={{ fontSize: `${logoFontSize}px` }}
+                                                            onBlur={(e) => updateSetting('logoText', e.currentTarget.innerHTML)}
+                   />
+                  <EditableText tag="span" isPreviewMode={isPreviewMode} html={tagline} 
+                    className="text-slate-400 font-bold tracking-widest uppercase block outline-none focus:bg-slate-100 px-0.5 rounded"
+                    style={{ fontSize: `${8 * ratio}px`, marginTop: `${4 * ratio}px` }}
+                                                            onBlur={(e) => updateSetting('tagline', e.currentTarget.innerHTML)}
+                   />
+                </div>
+              </>
+            );
+          })()}
+        </div>
+
+        {/* Search Bar (Both Mobile & Desktop) */}
+        {/* Search Bar Container */}
+        <div className="search-container-root relative flex-grow w-full @md:max-w-md z-20 order-3 @md:order-none">
+          <div className="flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-white focus-within:border-amber-400 transition-colors">
+            <input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={searchInputValue}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchInputValue(val);
+                setShowSuggestions(val.trim().length >= 1);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchSubmit(searchInputValue);
+                }
+              }}
+              className="w-full text-xs pl-3 pr-8 py-2 border-none bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none"
+            />
+            {searchInputValue && (
+              <button
+                onClick={() => {
+                  setSearchInputValue('');
+                  setShowSuggestions(false);
+                }}
+                className="px-2 text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
+            <button
+              onClick={() => handleSearchSubmit(searchInputValue)}
+              className="px-4 bg-amber-400 hover:bg-amber-500 text-slate-900 flex items-center justify-center border-none cursor-pointer transition-colors"
+            >
+              <Search className="w-4 h-4 text-slate-955" />
+            </button>
+          </div>
+
+          {/* Autocomplete Dropdown suggestions list */}
+          {showSuggestions && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50 text-slate-850">
+              {getSuggestions(searchInputValue).length === 0 ? (
+                <div className="p-3 text-xs text-slate-400 text-center">
+                  Ingen resultater fundet
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto">
+                  {getSuggestions(searchInputValue).map((p) => {
+                    const brand = WEBSHOP_BRANDS.find(b => b.id === p.brandId);
+                    return (
+                      <div
+                        key={p.id}
+                        onClick={() => {
+                          setSelectedProductId(p.id);
+                          setView('product-detail');
+                          setShowSuggestions(false);
+                          setSearchInputValue('');
+                          if (isPreviewMode) {
+                            window.location.hash = `shop/product/${p.id}`;
+                          }
+                        }}
+                        className="flex items-center gap-3 p-2.5 hover:bg-slate-50 cursor-pointer transition-colors text-left"
+                      >
+                        <img src={p.image} className="w-8 h-8 rounded-lg object-cover bg-slate-100 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[9px] text-amber-500 font-bold uppercase tracking-wider leading-none">
+                            {brand ? brand.name : ''}
+                          </div>
+                          <div className="text-xs text-slate-700 font-bold truncate mt-0.5">
+                            {p.name}
+                          </div>
+                        </div>
+                        <div className="text-[10px] font-mono font-bold text-slate-900 whitespace-nowrap">
+                          {p.price.toLocaleString('da-DK')},- DKK
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Actions */}
+        <div className="hidden @md:flex">
+          <div className="flex items-center justify-end gap-3 @md:gap-5 order-2 @md:order-none">
+          {/* Account Icon */}
+          <div className="relative profile-dropdown-root">
+            <div 
+              onClick={() => {
+                if (loggedInUser) {
+                  setIsProfileDropdownOpen(!isProfileDropdownOpen);
+                } else {
+                  setView('login');
+                  if (isPreviewMode) window.location.hash = 'shop/login';
+                }
+              }}
+              className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+            >
+              {loggedInUser ? (
+                <>
+                  <div className="w-5 h-5 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-bold text-[10px]">
+                    {loggedInUser.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider truncate max-w-[40px] text-center" title={loggedInUser.name}>
+                    {loggedInUser.name.split(' ')[0]}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <User className="w-5 h-5 text-slate-750" />
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider">Konto</span>
+                </>
+              )}
+            </div>
+            
+            {loggedInUser && isProfileDropdownOpen && (
+              <div className="absolute top-full right-1/2 translate-x-1/2 @sm:translate-x-0 @sm:right-0 mt-3 w-40 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                <button
+                  onClick={() => {
+                    setView('profile');
+                    setIsProfileDropdownOpen(false);
+                    if (isPreviewMode) window.location.hash = 'shop/profile';
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100"
+                >
+                  Min Profil
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('mm_lase_session');
+                    setLoggedInUser(null);
+                    setCart([]);
+                    setWishlist([]);
+                    localStorage.removeItem('mm_lase_cart');
+                    localStorage.removeItem('mm_lase_wishlist');
+                    setIsProfileDropdownOpen(false);
+                    setView('categories');
+                    if (isPreviewMode) window.location.hash = 'shop';
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors"
+                >
+                  Log ud
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Wishlist */}
+          <div 
+            onClick={() => {
+              setView('wishlist');
+              if (isPreviewMode) window.location.hash = 'shop/wishlist';
+            }}
+            className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+          >
+            <Heart className="w-5 h-5 text-slate-750" />
+            <span className="text-[9px] font-extrabold uppercase tracking-wider">Wishlist</span>
+            {wishlist.length > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                {wishlist.length}
+              </span>
+            )}
+          </div>
+
+          {/* Cart */}
+          <div 
+            onClick={() => {
+              setView('cart');
+              if (isPreviewMode) window.location.hash = 'shop/cart';
+            }}
+            className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+          >
+            <ShoppingCart className="w-5 h-5 text-slate-755" />
+            <span className="text-[9px] font-extrabold uppercase tracking-wider">cart</span>
+            {getCartItemsCount() > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                {getCartItemsCount()}
+              </span>
+            )}
+          </div>
+        </div>
+        </div>
       </div>
 
       {/* Nav Link Bar */}
       <div 
-        className={`bg-[#333333] flex items-center justify-between py-1 px-4 @md:px-8 @lg:px-12 -mx-4 @md:-mx-8 @lg:-mx-12 mb-6 relative z-50 select-none ${!isPreviewMode ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all' : ''}`}
+        className={`hidden @md:flex bg-[#333333] items-center justify-between py-1 px-4 @md:px-8 @lg:px-12 -mx-4 @md:-mx-8 @lg:-mx-12 mb-6 relative z-50 select-none ${!isPreviewMode ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all' : ''}`}
         onClick={() => !isPreviewMode && promptEditImage('setting', '', 'navMenuSettings')}
       >
         <div className="flex items-center gap-4 @md:relative">
