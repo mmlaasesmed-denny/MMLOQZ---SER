@@ -534,6 +534,20 @@ export default function WebshopComponent({
   useEffect(() => {
     localStorage.setItem('mm_lase_products', JSON.stringify(products));
   }, [products]);
+
+  // Hide the global mobile bottom navigation specifically for the webshop
+  useEffect(() => {
+    const bottomNav = document.getElementById('mobile-bottom-nav');
+    if (bottomNav) {
+      bottomNav.style.display = 'none';
+    }
+    
+    return () => {
+      if (bottomNav) {
+        bottomNav.style.display = 'flex'; // restore original display
+      }
+    };
+  }, []);
   const [activeFilter, setActiveFilter] = useState<'all' | 'modtaget' | 'godkendt' | 'afsendt' | 'annulleret'>('all');
   const [activeDetailOrder, setActiveDetailOrder] = useState<Order | null>(null);
   const [adminTab, setAdminTab] = useState<'orders' | 'inventory' | 'categories' | 'subcategories' | 'products'>('orders');
