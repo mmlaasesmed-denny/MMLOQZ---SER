@@ -2847,8 +2847,8 @@ export default function WebshopComponent({
             </div>
 
             {/* Section 2: Video + Finding Right Locks */}
-            <div className="grid grid-cols-1 @md:grid-cols-2 gap-8 text-left items-center">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left items-center">
+              <div className="@md:col-span-2 space-y-4">
                 <h4 
                   className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
                   contentEditable={!isPreviewMode}
