@@ -2746,29 +2746,63 @@ export default function WebshopComponent({
 
             {/* Banner Header Image with overlay text */}
             <div 
-              className="relative h-64 overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] -mx-4 @md:-mx-8 @lg:-mx-12 group"
-              onClick={() => { if (!isPreviewMode) promptEditImage('subcategory', activeSubcategory.id, 'image'); }}
+              className={`relative overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] group transition-all duration-300 ${
+                (s[`subcatBannerWidth_${activeSubcategory.id}`] || 'full') === 'full' 
+                  ? '-mx-4 @md:-mx-8 @lg:-mx-12' 
+                  : 'rounded-3xl mx-0 my-4'
+              }`}
+              style={{ height: `${s[`subcatBannerHeight_${activeSubcategory.id}`] || 256}px` }}
             >
               <img 
                 src={activeSubcategory.image || "https://images.unsplash.com/photo-1558002038-1055907df827?w=1200&auto=format&fit=crop&q=80"} 
                 alt={activeSubcategory.name}
-                className={`absolute inset-0 w-full h-full object-cover opacity-85 transition-opacity ${!isPreviewMode ? 'group-hover:opacity-100 cursor-pointer' : ''}`}
+                className="absolute inset-0 w-full h-full object-cover opacity-85"
               />
               <div className="absolute inset-0 bg-black/35 pointer-events-none" />
               
               {!isPreviewMode && (
-                <div className="absolute top-4 right-4 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow flex items-center gap-2">
-                  <Plus className="w-3.5 h-3.5" /> Skift Banner
+                <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity bg-white/95 text-slate-900 px-4 py-2 rounded-xl shadow-lg flex items-center gap-5 border border-slate-200">
+                  <div 
+                    className="flex items-center gap-1.5 cursor-pointer font-bold text-xs hover:text-indigo-600 transition-colors" 
+                    onClick={() => promptEditImage('subcategory', activeSubcategory.id, 'image')}
+                  >
+                    <Plus className="w-4 h-4" /> Billede
+                  </div>
+                  <div className="flex items-center gap-2 border-l border-slate-200 pl-5">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Højde</span>
+                    <input 
+                      type="range" 
+                      min="100" 
+                      max="800" 
+                      step="10"
+                      value={s[`subcatBannerHeight_${activeSubcategory.id}`] || 256} 
+                      onChange={(e) => updateSetting(`subcatBannerHeight_${activeSubcategory.id}`, e.target.value)} 
+                      onClick={e => e.stopPropagation()}
+                      className="w-24 accent-indigo-600 cursor-ew-resize" 
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 border-l border-slate-200 pl-5">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Bredde</span>
+                    <select 
+                      className="text-xs py-1 px-2 rounded-md bg-slate-100 border-none font-bold text-slate-700 cursor-pointer outline-none focus:ring-2 focus:ring-indigo-500/50" 
+                      value={s[`subcatBannerWidth_${activeSubcategory.id}`] || 'full'} 
+                      onChange={(e) => updateSetting(`subcatBannerWidth_${activeSubcategory.id}`, e.target.value)} 
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <option value="full">Fuld (Edge-to-edge)</option>
+                      <option value="contained">Boks (Contained)</option>
+                    </select>
+                  </div>
                 </div>
               )}
               <EditableText tag="h2" isPreviewMode={isPreviewMode} html={activeSubcategory.name} 
                 className="relative z-10 text-4xl @md:text-5xl font-black text-white uppercase tracking-wider font-sans outline-none focus:bg-slate-900 px-2 rounded"
-                                                onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerHTML)}
+                onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerHTML)}
                />
             </div>
 
             {/* Section 1: Intro + Vigtige Fordele */}
-            <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left">
+            <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left mt-8">
               <div className="@md:col-span-2 space-y-4">
                 <h4 
                   className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
