@@ -2746,19 +2746,19 @@ export default function WebshopComponent({
 
             {/* Banner Header Image with overlay text */}
             <div 
-              className={`relative overflow-hidden shadow-md flex items-center justify-center bg-[#f3f4f6] group transition-all duration-300 ${
+              className={`relative overflow-hidden flex items-center justify-center group transition-all duration-300 ${
                 (s[`subcatBannerWidth_${activeSubcategory.id}`] || 'full') === 'full' 
                   ? '-mx-4 @md:-mx-8 @lg:-mx-12' 
-                  : 'rounded-3xl mx-0 my-4'
+                  : 'mx-0 my-4'
               }`}
               style={{ height: `${s[`subcatBannerHeight_${activeSubcategory.id}`] || 256}px` }}
             >
               <img 
                 src={activeSubcategory.image || "https://images.unsplash.com/photo-1558002038-1055907df827?w=1200&auto=format&fit=crop&q=80"} 
                 alt={activeSubcategory.name}
-                className="absolute inset-0 w-full h-full object-cover opacity-85"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+              <div className="absolute inset-0 pointer-events-none" />
               
               {!isPreviewMode && (
                 <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity bg-white/95 text-slate-900 px-4 py-2 rounded-xl shadow-lg flex items-center gap-5 border border-slate-200">
@@ -2796,7 +2796,7 @@ export default function WebshopComponent({
                 </div>
               )}
               <EditableText tag="h2" isPreviewMode={isPreviewMode} html={activeSubcategory.name} 
-                className="relative z-10 text-4xl @md:text-5xl font-black text-white uppercase tracking-wider font-sans outline-none focus:bg-slate-900 px-2 rounded"
+                className="relative z-10 text-4xl @md:text-5xl font-black text-slate-900 uppercase tracking-wider font-sans outline-none focus:bg-white/50 px-2 rounded drop-shadow-sm text-center"
                 onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerHTML)}
                />
             </div>
@@ -2817,10 +2817,10 @@ export default function WebshopComponent({
                                                       onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'detailedDescription', e.currentTarget.innerHTML)}
                  />
               </div>
-              <div className="bg-amber-400 text-slate-900 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+              <div className="bg-amber-400 text-slate-900 p-8 shadow-sm flex flex-col justify-between">
                 <div>
                   <h5 
-                    className="text-sm font-black uppercase tracking-wider mb-4 outline-none focus:bg-amber-300 px-1 rounded"
+                    className="text-lg font-black tracking-wider mb-5 outline-none focus:bg-amber-300 px-1 rounded"
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
                     onBlur={(e) => updateSetting(`subcatBenefitsTitle_${activeSubcategory.id}`, e.currentTarget.innerText)}
@@ -2828,16 +2828,19 @@ export default function WebshopComponent({
                     {s[`subcatBenefitsTitle_${activeSubcategory.id}`] || 'Vigtige fordele'}
                   </h5>
                   <ul 
-                    className="text-xs space-y-2.5 list-none p-0 font-extrabold outline-none focus:bg-amber-300 px-1 rounded"
+                    className="text-xs space-y-4 list-disc pl-4 font-extrabold outline-none focus:bg-amber-300 px-1 rounded"
                     contentEditable={!isPreviewMode}
                     suppressContentEditableWarning
                     onBlur={(e) => updateSetting(`subcatBenefitsList_${activeSubcategory.id}`, e.currentTarget.innerText)}
                   >
-                    {(s[`subcatBenefitsList_${activeSubcategory.id}`] || '• Kan bruges til nødudgang og flugtveje\n• Kan opsætte med passagetid (låses kun uden for åbningstid)\n• Kan montere med rigtig lås selvom bruger blot åbner døren med håndtaget.\n• Kan låses remote eller via tidsindstilling.').split('\n').map((line: string, i: number) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <span>{line}</span>
+                    {(s[`subcatBenefitsList_${activeSubcategory.id}`] || 'Kan bruges til nødudgang og flugtveje\nKan opsætte med passagetid (låses kun uden for åbningstid)\nKan montere med rigtig lås selvom bruger blot åbner døren med håndtaget.\nKan låses remote eller via tidsindstilling.').split('\n').map((line: string, i: number) => {
+                      const cleanLine = line.replace(/^[•\-\*]\s*/, '');
+                      return (
+                      <li key={i} className="pl-1 leading-relaxed">
+                        <span>{cleanLine}</span>
                       </li>
-                    ))}
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
@@ -2890,7 +2893,7 @@ export default function WebshopComponent({
                 }
                 
                 return (
-                  <div className="relative aspect-video rounded-3xl overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
+                  <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
                     {embedUrl ? (
                       <iframe 
                         src={embedUrl} 
@@ -3067,7 +3070,8 @@ export default function WebshopComponent({
               </>
             ) : (
               <div className="space-y-6 pt-6 border-t border-slate-100">
-                {(!isPreviewMode || s[`hideBrandHeader_${activeSubcategory.id}`] !== 'true') && (
+                {/* Hidden Brand Header to match screenshot */}
+                <div className="hidden">
                   <div className={`text-left relative group/brandheader ${s[`hideBrandHeader_${activeSubcategory.id}`] === 'true' ? 'opacity-30' : ''}`}>
                     <h4 
                       className="text-lg font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded inline-block"
@@ -3086,17 +3090,8 @@ export default function WebshopComponent({
                     >
                       {s[`subcatBrandDesc_${activeSubcategory.id}`] ?? 'Vi fører kun forsikringsgodkendte mærker, der er testet til det barske nordiske klima.'}
                     </p>
-                    
-                    {!isPreviewMode && (
-                      <button 
-                        onClick={() => updateSetting(`hideBrandHeader_${activeSubcategory.id}`, s[`hideBrandHeader_${activeSubcategory.id}`] === 'true' ? 'false' : 'true')}
-                        className="absolute top-0 right-0 opacity-0 group-hover/brandheader:opacity-100 px-3 py-1 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-full text-[10px] font-bold transition-all border-none cursor-pointer"
-                      >
-                        {s[`hideBrandHeader_${activeSubcategory.id}`] === 'true' ? 'Vis igen' : 'Skjul i preview'}
-                      </button>
-                    )}
                   </div>
-                )}
+                </div>
 
                 <div className="grid grid-cols-1 @md:grid-cols-2 gap-6">
                   {WEBSHOP_BRANDS
@@ -3118,19 +3113,23 @@ export default function WebshopComponent({
                               window.location.hash = `shop/brand/${selectedSubcatId}/${brand.id}`;
                             }
                           }}
-                          className="relative h-64 rounded-3xl overflow-hidden shadow-md group cursor-pointer flex flex-col justify-end p-6 text-left"
+                          className="relative h-[26rem] rounded-xl overflow-hidden shadow-md group cursor-pointer flex flex-col justify-between p-8 text-left border border-slate-200"
                         >
                           <img 
                             src={bgImg} 
                             alt={brand.name} 
-                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-transparent" />
-                          <div className="relative z-10 space-y-2">
-                            <h5 className="text-2xl font-black text-white uppercase tracking-wide leading-none">{brand.name}</h5>
-                            <p className="text-xs text-slate-200 font-medium max-w-sm">{brandSubtext}</p>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
+                          
+                          <div className="relative z-10 pt-2">
+                            <h5 className="text-[28px] font-black text-white tracking-wide leading-none drop-shadow-md">{brand.name}</h5>
+                          </div>
+                          
+                          <div className="relative z-10 flex flex-col items-start gap-3 mt-auto">
+                            <p className="text-xl font-bold text-white max-w-xs leading-snug drop-shadow-md">{brandSubtext}</p>
                             <button 
-                              className="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all border-none"
+                              className="px-5 py-3 mt-2 bg-[#FFC502] hover:bg-amber-400 text-slate-900 font-extrabold text-sm tracking-wider rounded-none transition-colors border-none"
                             >
                               Fra {startingPrice}
                             </button>
