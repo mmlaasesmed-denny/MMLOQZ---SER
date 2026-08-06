@@ -3048,9 +3048,12 @@ export default function Canvas({
           ? (menuOverlay?.settings?.menuContentMobile || menuOverlay?.content)
           : (menuOverlay?.settings?.menuContentTablet || menuOverlay?.content)) || '';
         
+        const isWebshopPage = sections.some(s => s.columns.some(c => c.elements.some(e => e.type === 'webshop')));
+
         return (
           <>
             {/* Fixed Bottom Navigation Bar */}
+            {!isWebshopPage && (
             <div 
               style={{
                 position: 'fixed',
@@ -3128,6 +3131,7 @@ export default function Canvas({
                 );
               })}
             </div>
+            )}
 
             {/* Full-Screen Drawer Menu */}
             {isMobileMenuOpen && (
