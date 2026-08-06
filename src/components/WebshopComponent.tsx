@@ -1580,14 +1580,10 @@ export default function WebshopComponent({
             }}
           >
             <button 
-              onClick={() => {
-                setView('categories');
-                setSelectedCatId(null);
-                setSelectedSubcatId(null);
-                setSelectedBrandId(null);
-                setSelectedProductId(null);
-                setIsMegaMenuOpen(false);
-                if (isPreviewMode) window.location.hash = 'shop';
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsMegaMenuOpen(!isMegaMenuOpen);
               }}
               className="text-3xl text-slate-800 hover:text-amber-500 bg-transparent border-none py-2 pr-4 cursor-pointer transition-colors flex items-center justify-center leading-none"
             >
@@ -1608,10 +1604,20 @@ export default function WebshopComponent({
                       <li key={cat.id}>
                         <button
                           onMouseEnter={() => {
-                            setMegaMenuHoverCatId(cat.id);
-                            setMegaMenuHoverSubcatId(null);
+                            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                              setMegaMenuHoverCatId(cat.id);
+                              setMegaMenuHoverSubcatId(null);
+                            }
                           }}
-                          onClick={() => {
+                          onClick={(e) => {
+                            if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                              e.preventDefault();
+                              if (megaMenuHoverCatId !== cat.id) {
+                                setMegaMenuHoverCatId(cat.id);
+                                setMegaMenuHoverSubcatId(null);
+                                return;
+                              }
+                            }
                             setSelectedCatId(cat.id);
                             setView('subcategories');
                             setIsMegaMenuOpen(false);
