@@ -1632,16 +1632,109 @@ export default function WebshopComponent({
                           }}
                         >
                           <span>{cat.name}</span>
-                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>&rsaquo;</span>
+                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }} className="hidden @md:inline">&rsaquo;</span>
+                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }} className="@md:hidden">
+                            {megaMenuHoverCatId === cat.id ? '▼' : '▶'}
+                          </span>
                         </button>
+                        
+                        {/* MOBILE ONLY: Inline Subcategories (Accordion) */}
+                        {megaMenuHoverCatId === cat.id && (
+                          <div className="w-full bg-white @md:hidden border-b border-slate-100">
+                            <ul className="space-y-0 py-1">
+                              {subcategories
+                                .filter(sub => sub.categoryId === cat.id)
+                                .map(sub => (
+                                  <li key={sub.id}>
+                                    <button
+                                      onClick={(e) => {
+                                        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                                          e.preventDefault();
+                                          if (megaMenuHoverSubcatId !== sub.id) {
+                                            setMegaMenuHoverSubcatId(sub.id);
+                                            return;
+                                          }
+                                        }
+                                        setSelectedCatId(cat.id);
+                                        setSelectedSubcatId(sub.id);
+                                        setView('subcategory-detail');
+                                        setIsMegaMenuOpen(false);
+                                        if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
+                                      }}
+                                      className={`w-full text-left pl-10 pr-6 py-2 font-semibold transition-colors flex justify-between items-center ${
+                                        megaMenuHoverSubcatId === sub.id ? 'bg-slate-50' : 'hover:bg-white'
+                                      }`}
+                                      style={{ 
+                                        fontSize: `${megaMenuFontSize}px`,
+                                        color: megaMenuHoverSubcatId === sub.id ? megaMenuActiveColor : megaMenuTextColor
+                                      }}
+                                    >
+                                      <span>{sub.name}</span>
+                                      <span style={{ color: megaMenuTextColor, opacity: 0.3 }} className="@md:hidden">
+                                        {megaMenuHoverSubcatId === sub.id ? '▼' : '▶'}
+                                      </span>
+                                    </button>
+
+                                    {/* MOBILE ONLY: Inline Products (Accordion) */}
+                                    {megaMenuHoverSubcatId === sub.id && (
+                                      <div className="w-full bg-slate-50 py-2 border-t border-slate-100 @md:hidden">
+                                        <ul className="space-y-2">
+                                          {products
+                                            .filter(p => p.subcategoryId === sub.id)
+                                            .slice(0, 5)
+                                            .map(prod => (
+                                              <li key={prod.id}>
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setSelectedProductId(prod.id);
+                                                    setView('product-detail');
+                                                    setIsMegaMenuOpen(false);
+                                                    if (isPreviewMode) window.location.hash = `shop/product/${prod.id}`;
+                                                  }}
+                                                  className="w-full text-left pl-14 pr-6 py-1 transition-colors hover:bg-slate-100 flex items-center gap-3"
+                                                >
+                                                  <div className="w-8 h-8 bg-white border border-slate-200 rounded-md flex items-center justify-center overflow-hidden shrink-0">
+                                                    <img src={prod.image} alt={prod.name} className="max-h-full max-w-full object-contain" />
+                                                  </div>
+                                                  <div className="flex flex-col">
+                                                    <span className="font-bold text-[11px] leading-tight text-slate-700 line-clamp-1">{prod.name}</span>
+                                                    <span className="font-bold text-slate-400 text-[10px]">{prod.price} kr.</span>
+                                                  </div>
+                                                </button>
+                                              </li>
+                                            ))}
+                                          <li>
+                                            <button 
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                setSelectedCatId(cat.id);
+                                                setSelectedSubcatId(sub.id);
+                                                setView('subcategory-detail');
+                                                setIsMegaMenuOpen(false);
+                                                if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
+                                              }}
+                                              className="w-full text-left pl-14 pr-6 pt-2 text-[10px] font-black uppercase text-amber-500 hover:text-amber-600 tracking-wider"
+                                            >
+                                              Se alle produkter &rarr;
+                                            </button>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                    )}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Column 2: Subcategories (if category hovered) */}
+                {/* Column 2: Subcategories (Desktop ONLY) */}
                 {megaMenuHoverCatId && (
-                  <div className="w-full @md:w-1/3 bg-white border-b @md:border-b-0 @md:border-r border-slate-100 py-4 shrink-0">
+                  <div className="hidden @md:block w-full @md:w-1/3 bg-white border-b @md:border-b-0 @md:border-r border-slate-100 py-4 shrink-0">
                     <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Underkategorier</h4>
                     <ul className="space-y-1">
                       {subcategories
@@ -1674,9 +1767,9 @@ export default function WebshopComponent({
                   </div>
                 )}
 
-                {/* Column 3: Products (if subcategory hovered) */}
+                {/* Column 3: Products (Desktop ONLY) */}
                 {megaMenuHoverSubcatId && (
-                  <div className="w-full @md:w-1/3 bg-white py-4 overflow-y-auto max-h-[400px] shrink-0">
+                  <div className="hidden @md:block w-full @md:w-1/3 bg-white py-4 overflow-y-auto max-h-[400px] shrink-0">
                     <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Udvalgte Produkter</h4>
                     <ul className="space-y-3 px-6">
                       {products
