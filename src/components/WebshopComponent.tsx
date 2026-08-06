@@ -1602,28 +1602,19 @@ export default function WebshopComponent({
                   <ul className="space-y-1">
                     {categories.map(cat => (
                       <li key={cat.id}>
+                        {/* DESKTOP CATEGORY BUTTON */}
                         <button
                           onMouseEnter={() => {
-                            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
-                              setMegaMenuHoverCatId(cat.id);
-                              setMegaMenuHoverSubcatId(null);
-                            }
+                            setMegaMenuHoverCatId(cat.id);
+                            setMegaMenuHoverSubcatId(null);
                           }}
-                          onClick={(e) => {
-                            if (typeof window !== 'undefined' && window.innerWidth < 768) {
-                              e.preventDefault();
-                              if (megaMenuHoverCatId !== cat.id) {
-                                setMegaMenuHoverCatId(cat.id);
-                                setMegaMenuHoverSubcatId(null);
-                                return;
-                              }
-                            }
+                          onClick={() => {
                             setSelectedCatId(cat.id);
                             setView('subcategories');
                             setIsMegaMenuOpen(false);
                             if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
                           }}
-                          className={`w-full text-left px-6 py-2.5 font-bold transition-colors flex justify-between items-center ${
+                          className={`hidden @md:flex w-full text-left px-6 py-2.5 font-bold transition-colors justify-between items-center ${
                             megaMenuHoverCatId === cat.id ? 'bg-amber-100' : 'hover:bg-slate-100'
                           }`}
                           style={{ 
@@ -1632,8 +1623,33 @@ export default function WebshopComponent({
                           }}
                         >
                           <span>{cat.name}</span>
-                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }} className="hidden @md:inline">&rsaquo;</span>
-                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }} className="@md:hidden">
+                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>&rsaquo;</span>
+                        </button>
+
+                        {/* MOBILE CATEGORY BUTTON */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (megaMenuHoverCatId !== cat.id) {
+                              setMegaMenuHoverCatId(cat.id);
+                              setMegaMenuHoverSubcatId(null);
+                            } else {
+                              setSelectedCatId(cat.id);
+                              setView('subcategories');
+                              setIsMegaMenuOpen(false);
+                              if (isPreviewMode) window.location.hash = `shop/cat/${cat.id}`;
+                            }
+                          }}
+                          className={`flex @md:hidden w-full text-left px-6 py-2.5 font-bold transition-colors justify-between items-center ${
+                            megaMenuHoverCatId === cat.id ? 'bg-amber-100' : 'hover:bg-slate-100'
+                          }`}
+                          style={{ 
+                            fontSize: `${megaMenuFontSize}px`,
+                            color: megaMenuHoverCatId === cat.id ? megaMenuActiveColor : megaMenuTextColor
+                          }}
+                        >
+                          <span>{cat.name}</span>
+                          <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>
                             {megaMenuHoverCatId === cat.id ? '▼' : '▶'}
                           </span>
                         </button>
@@ -1648,18 +1664,16 @@ export default function WebshopComponent({
                                   <li key={sub.id}>
                                     <button
                                       onClick={(e) => {
-                                        if (typeof window !== 'undefined' && window.innerWidth < 768) {
-                                          e.preventDefault();
-                                          if (megaMenuHoverSubcatId !== sub.id) {
-                                            setMegaMenuHoverSubcatId(sub.id);
-                                            return;
-                                          }
+                                        e.preventDefault();
+                                        if (megaMenuHoverSubcatId !== sub.id) {
+                                          setMegaMenuHoverSubcatId(sub.id);
+                                        } else {
+                                          setSelectedCatId(cat.id);
+                                          setSelectedSubcatId(sub.id);
+                                          setView('subcategory-detail');
+                                          setIsMegaMenuOpen(false);
+                                          if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
                                         }
-                                        setSelectedCatId(cat.id);
-                                        setSelectedSubcatId(sub.id);
-                                        setView('subcategory-detail');
-                                        setIsMegaMenuOpen(false);
-                                        if (isPreviewMode) window.location.hash = `shop/subcat/${sub.id}`;
                                       }}
                                       className={`w-full text-left pl-10 pr-6 py-2 font-semibold transition-colors flex justify-between items-center ${
                                         megaMenuHoverSubcatId === sub.id ? 'bg-slate-50' : 'hover:bg-white'
