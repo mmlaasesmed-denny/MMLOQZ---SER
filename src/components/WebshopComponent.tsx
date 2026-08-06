@@ -1571,7 +1571,7 @@ export default function WebshopComponent({
           
           {/* Mobile Hamburger Menu */}
           <div 
-            className="flex items-center relative z-50"
+            className="flex items-center z-50"
             onMouseEnter={() => setIsMegaMenuOpen(true)}
             onMouseLeave={() => {
               setIsMegaMenuOpen(false);
