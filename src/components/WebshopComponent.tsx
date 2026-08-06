@@ -4311,7 +4311,7 @@ export default function WebshopComponent({
                 
                 <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-1">
                   {cart.map(item => {
-                    const brand = brands.find(b => b.id === item.product.brandId)?.name || 'FASTCAP';
+                    const brand = WEBSHOP_BRANDS.find(b => b.id === item.product.brandId)?.name || 'FASTCAP';
                     return (
                     <div key={item.product.id} className="flex flex-row items-stretch border border-slate-200 rounded-sm bg-white overflow-hidden shadow-sm hover:shadow transition-shadow text-left">
                       {/* Left Image */}
