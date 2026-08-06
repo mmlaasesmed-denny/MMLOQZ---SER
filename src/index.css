@@ -57,3 +57,8 @@ section div.select-none.flex > div.flex-col > span:last-child {
   line-height: 1.2 !important;
 }
 
+/* Force Poppins font on absolutely everything per user request */
+* {
+  font-family: 'Poppins', sans-serif !important;
+}
+
