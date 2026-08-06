@@ -8,6 +8,7 @@ import {
 import { Section, PageElement, SiteTheme, ElementStyles, ElementType, OverlayItem, DropdownLink } from '../types';
 import { COLOR_THEMES, TEMPLATES } from '../templates';
 import { getDefaultDropdownLinks } from './Canvas';
+import { useLanguage } from '../i18n';
 
 interface SidebarProps {
   sections: Section[];
@@ -378,6 +379,7 @@ export default function Sidebar({
   activePageId,
   onNavigatePage
 }: SidebarProps) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'content' | 'elements' | 'sections' | 'theme' | 'webshop' | 'ai'>('content');
   const [aiPrompt, setAiPrompt] = useState('');
 
@@ -780,7 +782,7 @@ export default function Sidebar({
           title="Component Spacing & Style Inspector"
         >
           <Sliders className="w-4 h-4 mb-0.5" />
-          <span>Inspector</span>
+          <span>{t('Inspector')}</span>
         </button>
 
         <button
@@ -793,7 +795,7 @@ export default function Sidebar({
           title="Add Components Library"
         >
           <PlusCircle className="w-4 h-4 mb-0.5" />
-          <span>Elements</span>
+          <span>{t('Elements')}</span>
         </button>
 
         <button
@@ -806,7 +808,7 @@ export default function Sidebar({
           title="Opret og administrer webshop layouts"
         >
           <ShoppingBag className="w-4 h-4 mb-0.5" />
-          <span>Webshop</span>
+          <span>{t('Webshop')}</span>
         </button>
 
         <button
@@ -819,7 +821,7 @@ export default function Sidebar({
           title="Manage Layout Sections"
         >
           <Layers className="w-4 h-4 mb-0.5" />
-          <span>Layout</span>
+          <span>{t('Layout')}</span>
         </button>
 
         <button
@@ -832,7 +834,7 @@ export default function Sidebar({
           title="Change Fonts and Color Palettes"
         >
           <Palette className="w-4 h-4 mb-0.5" />
-          <span>Themes</span>
+          <span>{t('Themes')}</span>
         </button>
 
         <button
@@ -845,7 +847,7 @@ export default function Sidebar({
           title="Gemini Copywriting Assistant"
         >
           <Sparkles className="w-4 h-4 mb-0.5 text-amber-500" />
-          <span>AI Writer</span>
+          <span>{t('AI Writer')}</span>
         </button>
       </div>
 

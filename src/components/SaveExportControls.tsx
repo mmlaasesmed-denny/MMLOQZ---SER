@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Code, Download, RefreshCw, Upload, Check, Database, Wifi, WifiOff, Server, Trash2, LogOut, Lock, Monitor, Tablet, Smartphone, Moon, Sun } from 'lucide-react';
+import { Eye, EyeOff, Code, Download, RefreshCw, Upload, Check, Database, Wifi, WifiOff, Server, Trash2, LogOut, Lock, Monitor, Tablet, Smartphone, Moon, Sun, Globe } from 'lucide-react';
 import { Section, SiteTheme } from '../types';
 import { WEBSHOP_CATEGORIES as WEBSHOP_CATEGORIES_ORIG, WEBSHOP_SUBCATEGORIES as WEBSHOP_SUBCATEGORIES_ORIG, WEBSHOP_BRANDS, WEBSHOP_PRODUCTS as WEBSHOP_PRODUCTS_ORIG } from '../webshopData';
+import { useLanguage } from '../i18n';
 
 interface SaveExportControlsProps {
   isPreviewMode: boolean;
@@ -50,6 +51,7 @@ export default function SaveExportControls({
   activePageDbId,
   onUpdatePageDbId
 }: SaveExportControlsProps) {
+  const { language, setLanguage } = useLanguage();
   const [showCodeExport, setShowCodeExport] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
 
@@ -4189,6 +4191,18 @@ export default function SaveExportControls({
             title={isDarkMode ? "Skift til lys tilstand" : "Skift til mørk tilstand"}
           >
             {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          </button>
+        </div>
+
+        {/* Language Toggle */}
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+          <button
+            onClick={() => setLanguage(language === 'da' ? 'en' : 'da')}
+            className={`px-2 py-1 rounded transition-all flex items-center gap-1.5 cursor-pointer border-none bg-transparent text-xs font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 uppercase`}
+            title={language === 'da' ? "Switch to English" : "Skift til Dansk"}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            {language}
           </button>
         </div>
       </div>
