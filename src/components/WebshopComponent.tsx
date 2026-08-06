@@ -221,6 +221,38 @@ export default function WebshopComponent({
     setProducts(prev => prev.map(c => c.id === id ? { ...c, [field]: value } : c));
   };
 
+  const updateProductSpec = (id: string, index: number, keyOrValue: 'key' | 'value', val: string) => {
+    if (isPreviewMode) return;
+    setProducts(prev => prev.map(p => {
+      if (p.id !== id) return p;
+      const specs = [...(p.specifications || [])];
+      if (specs[index]) {
+        specs[index] = { ...specs[index], [keyOrValue]: val };
+      }
+      return { ...p, specifications: specs };
+    }));
+  };
+
+  const addProductSpec = (id: string) => {
+    if (isPreviewMode) return;
+    setProducts(prev => prev.map(p => {
+      if (p.id !== id) return p;
+      const specs = [...(p.specifications || [])];
+      specs.push({ key: 'Ny specifikation', value: 'Værdi' });
+      return { ...p, specifications: specs };
+    }));
+  };
+
+  const removeProductSpec = (id: string, index: number) => {
+    if (isPreviewMode) return;
+    setProducts(prev => prev.map(p => {
+      if (p.id !== id) return p;
+      const specs = [...(p.specifications || [])];
+      specs.splice(index, 1);
+      return { ...p, specifications: specs };
+    }));
+  };
+
   const promptEditImage = (type: 'category'|'subcategory'|'product'|'setting', id: string, field: string) => {
     if (isPreviewMode) return;
     const input = document.createElement('input');
@@ -512,10 +544,36 @@ export default function WebshopComponent({
     const productsStr = typeof window !== 'undefined' ? localStorage.getItem('mm_lase_products') : null;
     if (productsStr) {
       try {
-        return JSON.parse(productsStr);
+        let parsed = JSON.parse(productsStr);
+        // Migration: add default specs if missing
+        parsed = parsed.map((p: any) => {
+          if (!p.specifications) {
+            p.specifications = [
+              { key: 'Overflade', value: 'Rustfrit stål A2 børstet' },
+              { key: 'Model', value: 'Evolo/Exivo' },
+              { key: 'Bredde mm', value: '39' },
+              { key: 'Højde mm', value: '310' },
+              { key: 'Låsesystem', value: 'Kaba evolo' }
+            ];
+          }
+          return p;
+        });
+        return parsed;
       } catch (e) {
-        console.error('Failed to parse products', e);
+        console.error("Failed to parse mm_lase_products", e);
       }
+    } else {
+      const initialProducts = WEBSHOP_PRODUCTS.map(p => ({
+        ...p,
+        specifications: p.specifications || [
+          { key: 'Overflade', value: 'Rustfrit stål A2 børstet' },
+          { key: 'Model', value: 'Evolo/Exivo' },
+          { key: 'Bredde mm', value: '39' },
+          { key: 'Højde mm', value: '310' },
+          { key: 'Låsesystem', value: 'Kaba evolo' }
+        ]
+      }));
+      return initialProducts;
     }
     // Initialize mock stock levels
     return WEBSHOP_PRODUCTS.map((p, idx) => {
@@ -4036,33 +4094,48 @@ export default function WebshopComponent({
                             <tr>
                               <td className="py-2 text-slate-400 font-semibold w-1/3">Varenummer:</td>
                               <td className="py-2 text-slate-900 font-bold">{activeProduct.id}</td>
+                              {!isPreviewMode && <td className="w-8"></td>}
                             </tr>
                             <tr>
                               <td className="py-2 text-slate-400 font-semibold">Producent:</td>
                               <td className="py-2 text-slate-900 font-bold">{brandName}</td>
+                              {!isPreviewMode && <td className="w-8"></td>}
                             </tr>
-                            <tr>
-                              <td className="py-2 text-slate-400 font-semibold">Overflade:</td>
-                              <td className="py-2 text-slate-900 font-bold">Rustfrit stål A2 børstet</td>
-                            </tr>
-                            <tr>
-                              <td className="py-2 text-slate-400 font-semibold">Model:</td>
-                              <td className="py-2 text-slate-900 font-bold">Evolo/Exivo</td>
-                            </tr>
-                            <tr>
-                              <td className="py-2 text-slate-400 font-semibold">Bredde mm:</td>
-                              <td className="py-2 text-slate-900 font-bold">39</td>
-                            </tr>
-                            <tr>
-                              <td className="py-2 text-slate-400 font-semibold">Højde mm:</td>
-                              <td className="py-2 text-slate-900 font-bold">310</td>
-                            </tr>
-                            <tr>
-                              <td className="py-2 text-slate-400 font-semibold">Låsesystem:</td>
-                              <td className="py-2 text-slate-900 font-bold">Kaba evolo</td>
-                            </tr>
+                            {(activeProduct.specifications || []).map((spec, index) => (
+                              <tr key={index} className="group/spec">
+                                <td className="py-2 text-slate-400 font-semibold align-top pt-2.5">
+                                  <EditableText tag="span" isPreviewMode={isPreviewMode} html={spec.key} 
+                                    className="outline-none focus:bg-slate-100 rounded px-1 -ml-1 transition-colors"
+                                    onBlur={(e) => updateProductSpec(activeProduct.id, index, 'key', e.currentTarget.innerHTML)}
+                                  />
+                                  :
+                                </td>
+                                <td className="py-2 text-slate-900 font-bold align-top pt-2.5">
+                                  <EditableText tag="span" isPreviewMode={isPreviewMode} html={spec.value} 
+                                    className="outline-none focus:bg-amber-50 rounded px-1 -ml-1 transition-colors"
+                                    onBlur={(e) => updateProductSpec(activeProduct.id, index, 'value', e.currentTarget.innerHTML)}
+                                  />
+                                </td>
+                                {!isPreviewMode && (
+                                  <td className="py-2 text-right w-8 align-top pt-2.5 opacity-0 group-hover/spec:opacity-100 transition-opacity">
+                                    <button onClick={() => removeProductSpec(activeProduct.id, index)} className="text-rose-400 hover:text-rose-600">
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </td>
+                                )}
+                              </tr>
+                            ))}
                           </tbody>
                         </table>
+                        
+                        {!isPreviewMode && (
+                          <button 
+                            onClick={() => addProductSpec(activeProduct.id)}
+                            className="mt-4 flex items-center gap-1.5 text-[10px] font-bold text-amber-500 hover:text-amber-600 bg-amber-50 hover:bg-amber-100 px-3 py-1.5 rounded-lg uppercase tracking-widest transition-colors w-full justify-center"
+                          >
+                            <Plus className="w-3 h-3" /> Tilføj specifikation
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>

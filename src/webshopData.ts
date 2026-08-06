@@ -39,6 +39,7 @@ export interface WebshopProduct {
   size?: string;
   tags?: string[];
   stock?: number;
+  specifications?: { key: string; value: string }[];
 }
 
 export const WEBSHOP_CATEGORIES: WebshopCategory[] = [
