@@ -3775,26 +3775,6 @@ export default function SaveExportControls({
     ${sectionHTML}
   </main>
 
-  <!-- Fixed Bottom Navigation Bar for Mobile -->
-  <div id="mobile-bottom-nav" class="pointer-events-auto shadow-lg md:hidden" style="position: fixed; bottom: 0px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 768px; background-color: #FFC502; color: #0f172a; height: 64px; display: flex; align-items: center; justify-content: space-around; box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15); z-index: 100; border-top: 1px solid rgba(15, 23, 42, 0.1); border-top-left-radius: 16px; border-top-right-radius: 16px;">
-    <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5" style="border: none; background: transparent; cursor: pointer;">
-      <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-      <span class="text-[10px] font-bold" style="font-size: 10px;">Hjem</span>
-    </button>
-    <button onclick="window.location.hash = 'shop'" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5" style="border: none; background: transparent; cursor: pointer;">
-      <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-      <span class="text-[10px] font-bold" style="font-size: 10px;">Shop</span>
-    </button>
-    <a href="tel:31111115" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5 no-underline animate-pulse" style="text-decoration: none;">
-      <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-      <span class="text-[10px] font-bold" style="font-size: 10px;">31111115</span>
-    </a>
-    <button onclick="toggleMobileMenu(true)" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-900 border-none bg-transparent cursor-pointer hover:bg-black/5 rounded-xl transition-colors gap-0.5" style="border: none; background: transparent; cursor: pointer;">
-      <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-      <span class="text-[10px] font-bold" style="font-size: 10px;">Menu</span>
-    </button>
-  </div>
-
   <!-- Full-Screen Drawer Menu for Mobile -->
   <div id="mobile-drawer-menu" class="pointer-events-auto hidden md:hidden" style="position: fixed; top: 0px; bottom: 0px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 768px; background-color: ${menuOverlay?.settings?.drawerBgColorMobile || menuOverlay?.settings?.drawerBgColor || '#ffffff'}; color: ${menuOverlay?.settings?.drawerTextColorMobile || menuOverlay?.settings?.drawerTextColor || '#0f172a'}; z-index: 110; flex-direction: column; box-shadow: 0 -10px 25px rgba(0,0,0,0.15), 0 10px 25px rgba(0,0,0,0.15); overflow-y: auto;">
     <!-- Header -->
