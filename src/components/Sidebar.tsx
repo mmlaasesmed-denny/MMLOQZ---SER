@@ -3464,23 +3464,40 @@ export default function Sidebar({
 
                   {/* Element Image Settings */}
                   {(selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
-                    <div className="space-y-2 border-t border-slate-100 dark:border-slate-800/60 pt-3">
-                      <span className="text-xs font-semibold text-slate-500 block">Image Source Settings</span>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={selectedElement.src || ''}
-                          onChange={(e) => onUpdateElement(selectedElement.id, {}, undefined, undefined, e.target.value || undefined)}
-                          className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100"
-                          placeholder="Paste image URL..."
-                        />
-                        <button
-                          onClick={() => onChangeImageClick && onChangeImageClick(selectedElement.id)}
-                          className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer"
-                          title="Upload or choose photo"
-                        >
-                          Choose
-                        </button>
+                    <div className="space-y-4 border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                      <div className="space-y-2">
+                        <span className="text-xs font-semibold text-slate-500 block">Image Source Settings</span>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={selectedElement.src || ''}
+                            onChange={(e) => onUpdateElement(selectedElement.id, {}, undefined, undefined, e.target.value || undefined)}
+                            className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100"
+                            placeholder="Paste image URL..."
+                          />
+                          <button
+                            onClick={() => onChangeImageClick && onChangeImageClick(selectedElement.id)}
+                            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer"
+                            title="Upload or choose photo"
+                          >
+                            Choose
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 bg-indigo-50/50 dark:bg-indigo-900/10 p-3 rounded-xl border border-indigo-100 dark:border-indigo-800/50">
+                        <label className="text-[10px] text-indigo-600 dark:text-indigo-400 block font-bold uppercase tracking-wider">Image Link URL</label>
+                        <div className="flex items-center gap-2">
+                          <Link className="w-4 h-4 text-indigo-500" />
+                          <input
+                            type="text"
+                            value={selectedElement.link || ''}
+                            onChange={(e) => onUpdateElement(selectedElement.id, {}, undefined, e.target.value)}
+                            className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            placeholder="#section-id or https://..."
+                          />
+                        </div>
+                        <p className="text-[9px] text-slate-400 leading-tight">Gør billedet eller ikonet klikbart og videresend til en anden sektion eller URL.</p>
                       </div>
                     </div>
                   )}
