@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Section, PageElement, SiteTheme, ElementStyles, ElementType, Column } from './types';
 import { TEMPLATES, COLOR_THEMES } from './templates';
 import Canvas from './components/Canvas';
