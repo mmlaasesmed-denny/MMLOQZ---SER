@@ -955,9 +955,28 @@ export default function Canvas({
                 : 'max-w-5xl rounded-xl shadow-2xl border border-slate-200/60 dark:border-slate-800 min-h-[85vh]')
             : 'max-w-full rounded-none shadow-none min-h-0'
         }`}
-        style={{ backgroundColor: theme.background, color: theme.text }}
+        style={{ 
+          backgroundColor: theme.background, 
+          color: theme.text
+        }}
         id="builder-app-stage"
       >
+        <style>
+          {`
+            #builder-app-stage p,
+            #builder-app-stage span:not(.lucide),
+            #builder-app-stage h1,
+            #builder-app-stage h2,
+            #builder-app-stage h3,
+            #builder-app-stage h4,
+            #builder-app-stage h5,
+            #builder-app-stage h6,
+            #builder-app-stage li,
+            #builder-app-stage a {
+              line-height: ${theme.baseLineHeight || '1.5'};
+            }
+          `}
+        </style>
         {sections.map((rawSection, sIdx) => {
           const section = getResolvedSection(rawSection);
           const isSectionSelected = selectedSectionId === section.id;

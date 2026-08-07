@@ -1686,6 +1686,20 @@ export default function SaveExportControls({
       color: ${theme.text};
     }
     
+    body p,
+    body span:not(.lucide),
+    body h1,
+    body h2,
+    body h3,
+    body h4,
+    body h5,
+    body h6,
+    body li,
+    body a {
+      line-height: ${theme.baseLineHeight || '1.5'};
+    }
+
+    
     .font-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
     .font-serif { font-family: 'Playfair Display', Georgia, serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }

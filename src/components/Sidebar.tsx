@@ -4374,6 +4374,27 @@ export default function Sidebar({
               </div>
             </div>
 
+            {/* Global Typography Formatting */}
+            <div className="space-y-4 border-t border-slate-150 dark:border-slate-850 pt-4" id="global-typography-editor">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Global Text Formatting</span>
+              
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-500">Base Line Height</span>
+                  <span className="font-mono text-indigo-500 text-xs font-semibold">{theme.baseLineHeight || '1.5'}</span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="2.5"
+                  step="0.05"
+                  value={parseFloat(theme.baseLineHeight || '1.5') || 1.5}
+                  onChange={(e) => onSelectTheme({ ...theme, baseLineHeight: e.target.value })}
+                  className="w-full accent-indigo-500"
+                />
+              </div>
+            </div>
+
             {/* Colors Preset Picker */}
             <div className="space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400 font-sans">Squarespace / Wix Color Sets</span>

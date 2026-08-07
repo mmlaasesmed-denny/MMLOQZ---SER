@@ -157,6 +157,7 @@ export interface SiteTheme {
   accent: string;
   border: string;
   fontFamily: 'sans' | 'serif' | 'mono' | 'display';
+  baseLineHeight?: string; // Global line-height override
   slug?: string;
 }
 
