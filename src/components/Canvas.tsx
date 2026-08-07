@@ -1233,6 +1233,24 @@ export default function Canvas({
                                     <ArrowDown className="w-3.5 h-3.5" />
                                   </button>
                                   <span className="w-px h-3 bg-slate-800"></span>
+                                  {(el.type === 'image' || el.type === 'button' || el.type === 'image-banner' || el.type === 'text') && (
+                                    <>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          const url = prompt("Indtast link URL (f.eks. #shop eller /about eller https://google.com):", el.link || "");
+                                          if (url !== null) {
+                                            onUpdateElement(el.id, {}, undefined, url);
+                                          }
+                                        }}
+                                        className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white flex items-center gap-1"
+                                        title="Rediger Link URL"
+                                      >
+                                        <Link className="w-3.5 h-3.5" />
+                                      </button>
+                                      <span className="w-px h-3 bg-slate-800"></span>
+                                    </>
+                                  )}
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
