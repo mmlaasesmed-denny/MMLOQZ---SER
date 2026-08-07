@@ -222,30 +222,44 @@ const renderQuickMenuIcon = (
   const iconColor = styles.color || '#f59e0b';
   const borderRadius = styles.borderRadius || '9999px';
 
+  const iconContent = (
+    <div 
+      className="flex items-center justify-center shadow-lg transition-all duration-200 group-hover:scale-110"
+      style={{
+        width: containerWidth,
+        height: containerHeight,
+        fontSize: iconSize,
+        color: iconColor,
+        backgroundColor: bgColor,
+        borderColor: borderColor,
+        borderWidth: styles.borderWidth || '1px',
+        borderStyle: 'solid',
+        borderRadius: borderRadius,
+      }}
+    >
+      <IconComponent 
+        size={parseInt(iconSize) || 24}
+        style={{
+          color: iconColor,
+        }}
+        className="transition-colors group-hover:text-amber-400"
+      />
+    </div>
+  );
+
   return (
     <div className="relative group mx-auto mb-2">
-      <div 
-        className="flex items-center justify-center shadow-lg transition-all duration-200 group-hover:scale-110"
-        style={{
-          width: containerWidth,
-          height: containerHeight,
-          fontSize: iconSize,
-          color: iconColor,
-          backgroundColor: bgColor,
-          borderColor: borderColor,
-          borderWidth: styles.borderWidth || '1px',
-          borderStyle: 'solid',
-          borderRadius: borderRadius,
-        }}
-      >
-        <IconComponent 
-          size={parseInt(iconSize) || 24}
-          style={{
-            color: iconColor,
-          }}
-          className="transition-colors group-hover:text-amber-400"
-        />
-      </div>
+      {el.link ? (
+        <a 
+          href={el.link}
+          onClick={(e) => { if (!isPreviewMode) e.preventDefault(); }}
+          className="block"
+        >
+          {iconContent}
+        </a>
+      ) : (
+        iconContent
+      )}
       {!isPreviewMode && onUpdateElement && (
         <div className="absolute -bottom-4 right-0 md:-right-4 flex items-center gap-1 bg-indigo-600 border border-indigo-700 rounded-lg shadow-xl p-1 z-30">
           <button 
@@ -1466,18 +1480,39 @@ export default function Canvas({
                                     renderQuickMenuIcon(el, isPreviewMode, onUpdateElement)
                                   ) : (
                                     <>
-                                      <img
-                                        src={el.src || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80'}
-                                        alt={el.alt || 'Visual Item'}
-                                        referrerPolicy="no-referrer"
-                                        className={`${el.styles.width === 'auto' ? 'w-auto' : 'w-full'} h-full transition-transform duration-300`}
-                                        style={{ 
-                                          borderRadius: formatStyleVal(el.styles.borderRadius) || '12px',
-                                          borderWidth: formatStyleVal(el.styles.borderWidth) || '0px',
+                                      {el.link ? (
+                                        <a 
+                                          href={el.link}
+                                          onClick={(e) => { if (!isPreviewMode) e.preventDefault(); }}
+                                          className="block w-full h-full"
+                                        >
+                                          <img
+                                            src={el.src || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80'}
+                                            alt={el.alt || 'Visual Item'}
+                                            referrerPolicy="no-referrer"
+                                            className={`${el.styles.width === 'auto' ? 'w-auto' : 'w-full'} h-full transition-transform duration-300`}
+                                            style={{ 
+                                              borderRadius: formatStyleVal(el.styles.borderRadius) || '12px',
+                                              borderWidth: formatStyleVal(el.styles.borderWidth) || '0px',
+                                              borderColor: el.styles.borderColor || 'transparent',
+                                              objectFit: el.styles.objectFit || (el.styles.width === 'auto' ? 'contain' : 'cover'),
+                                            }}
+                                          />
+                                        </a>
+                                      ) : (
+                                        <img
+                                          src={el.src || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80'}
+                                          alt={el.alt || 'Visual Item'}
+                                          referrerPolicy="no-referrer"
+                                          className={`${el.styles.width === 'auto' ? 'w-auto' : 'w-full'} h-full transition-transform duration-300`}
+                                          style={{ 
+                                            borderRadius: formatStyleVal(el.styles.borderRadius) || '12px',
+                                            borderWidth: formatStyleVal(el.styles.borderWidth) || '0px',
                                           borderColor: el.styles.borderColor || 'transparent',
                                           objectFit: el.styles.objectFit || (el.styles.width === 'auto' ? 'contain' : 'cover'),
                                         }}
                                       />
+                                    )}
                                   
                                   {/* Background overlay tint for readability */}
                                   {((el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch) || (el.overlays && el.overlays.length > 0) || (!isPreviewMode && !el.id.includes('foot') && !el.id.includes('logo') && !(section.name && section.name.toLowerCase().includes('foot')) && (el.overlayTitle || el.overlaySubtext || el.showOverlayButton || el.showOverlaySearch))) && (

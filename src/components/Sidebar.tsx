@@ -2145,7 +2145,7 @@ export default function Sidebar({
                         </div>
                       </div>
                     ) : (
-                      (selectedElement.type === 'button' || selectedElement.type === 'text') && (
+                      (selectedElement.type === 'button' || selectedElement.type === 'text' || selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
                         <div className="space-y-1">
                           <label className="text-[10px] text-slate-400 block font-semibold">Redirection Link URL</label>
                           <input
