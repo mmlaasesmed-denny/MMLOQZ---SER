@@ -88,6 +88,23 @@ const EditableText = ({ tag: Tag = 'span', className, style, html, onBlur, onCli
     }
   }, [html]);
 
+  const handleFocus = () => {
+    setIsFocused(true);
+    // Expose to window for Sidebar to pick up
+    (window as any).activeWebshopEditableNode = ref.current;
+    (window as any).activeWebshopEditableNodeApplyStyle = handleApplyStyle;
+    
+    // Dispatch custom event to notify Sidebar
+    window.dispatchEvent(new CustomEvent('webshopTextFocused'));
+  };
+
+  const handleBlur = (e: any) => {
+    setIsFocused(false);
+    // Don't nullify immediately so Sidebar sliders can still use it while dragging
+    if (onBlur) onBlur(e);
+  };
+
+
   const handleApplyStyle = (prop: string, val: string) => {
     if (!ref.current) return;
     
@@ -122,60 +139,14 @@ const EditableText = ({ tag: Tag = 'span', className, style, html, onBlur, onCli
 
   return (
     <div className={wrapperClass}>
-      {/* Floating Toolbar - only visible when focused and not in preview mode */}
-      {!isPreviewMode && isFocused && (
-        <div 
-          className="absolute -top-12 left-0 bg-slate-900 shadow-xl rounded-lg border border-slate-700 flex items-center p-1.5 gap-2 z-[9999]"
-          onMouseDown={(e) => e.preventDefault()} // prevent focus loss
-        >
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[9px] text-slate-400 font-bold uppercase px-1 leading-none">Line Height</span>
-            <select 
-              className="bg-slate-800 text-white text-[10px] rounded px-1 py-0.5 border-none outline-none cursor-pointer h-5"
-              value={lineHeight}
-              onChange={(e) => handleApplyStyle('line-height', e.target.value)}
-            >
-              <option value="inherit">Default</option>
-              <option value="1.0">1.0 (Tight)</option>
-              <option value="1.2">1.2</option>
-              <option value="1.5">1.5 (Relaxed)</option>
-              <option value="1.8">1.8</option>
-              <option value="2.0">2.0 (Loose)</option>
-              <option value="2.5">2.5</option>
-            </select>
-          </div>
-          <div className="w-px h-6 bg-slate-700"></div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[9px] text-slate-400 font-bold uppercase px-1 leading-none">Font Size</span>
-            <select 
-              className="bg-slate-800 text-white text-[10px] rounded px-1 py-0.5 border-none outline-none cursor-pointer h-5"
-              value={fontSize}
-              onChange={(e) => handleApplyStyle('font-size', e.target.value)}
-            >
-              <option value="inherit">Default</option>
-              <option value="10px">10px</option>
-              <option value="12px">12px</option>
-              <option value="14px">14px</option>
-              <option value="16px">16px</option>
-              <option value="20px">20px</option>
-              <option value="24px">24px</option>
-              <option value="32px">32px</option>
-              <option value="48px">48px</option>
-            </select>
-          </div>
-        </div>
-      )}
       <Tag
         ref={ref}
         className={className}
         style={style}
         contentEditable={!isPreviewMode}
         suppressContentEditableWarning
-        onFocus={() => setIsFocused(true)}
-        onBlur={(e: any) => {
-          setIsFocused(false);
-          if (onBlur) onBlur(e);
-        }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         onClick={(e: any) => {
           if (!isPreviewMode) e.stopPropagation();
           if (onClick) onClick(e);

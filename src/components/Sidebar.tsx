@@ -383,6 +383,16 @@ export default function Sidebar({
   const [activeTab, setActiveTab] = useState<'content' | 'elements' | 'sections' | 'theme' | 'webshop' | 'ai'>('content');
   const [aiPrompt, setAiPrompt] = useState('');
 
+  const [activeWebshopNode, setActiveWebshopNode] = useState<any>(null);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      setActiveWebshopNode((window as any).activeWebshopEditableNode);
+    };
+    window.addEventListener('webshopTextFocused', handleFocus);
+    return () => window.removeEventListener('webshopTextFocused', handleFocus);
+  }, []);
+
   // Automatically switch to Inspector tab when an element or section is selected
   useEffect(() => {
     if (selectedElement || selectedSection) {
@@ -1215,6 +1225,57 @@ export default function Sidebar({
                         Åbn butiksadministration
                       </button>
                     </div>
+
+                    {/* Interactive Webshop Text Editor Block */}
+                    {activeWebshopNode && (
+                      <div className="bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 rounded-xl p-3.5 space-y-4 shadow-sm animate-fade-in-up">
+                        <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-[11px] uppercase tracking-wider">
+                          <Type className="w-4 h-4" />
+                          <span>Selected Text Formatting</span>
+                        </div>
+                        <p className="text-[10px] text-slate-500 leading-relaxed font-sans">
+                          You have selected a text element in the Webshop. Use the scrollers below to adjust its styling.
+                        </p>
+                        
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-slate-600 dark:text-slate-300 font-semibold">Line spacing (Height)</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="1.0"
+                            max="2.5"
+                            step="0.1"
+                            defaultValue="1.5"
+                            onChange={(e) => {
+                              if ((window as any).activeWebshopEditableNodeApplyStyle) {
+                                (window as any).activeWebshopEditableNodeApplyStyle('line-height', e.target.value);
+                              }
+                            }}
+                            className="w-full accent-indigo-600 cursor-pointer h-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 appearance-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-slate-600 dark:text-slate-300 font-semibold">Font size (px)</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="10"
+                            max="60"
+                            step="1"
+                            defaultValue="16"
+                            onChange={(e) => {
+                              if ((window as any).activeWebshopEditableNodeApplyStyle) {
+                                (window as any).activeWebshopEditableNodeApplyStyle('font-size', e.target.value + 'px');
+                              }
+                            }}
+                            className="w-full accent-indigo-600 cursor-pointer h-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 appearance-none"
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="space-y-3">
                       {/* Logo Type Selector for Webshop */}
