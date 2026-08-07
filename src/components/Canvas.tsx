@@ -1210,68 +1210,70 @@ export default function Canvas({
                               )}
                               {/* Selected Component Quick toolbar helper - Sleek Dark Pill */}
                               {!isPreviewMode && isElementSelected && (
-                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-35 flex items-center gap-1.5 bg-slate-900 border border-slate-800 text-white text-[11px] py-1 px-2.5 rounded-full shadow-xl animate-in fade-in zoom-in-95 duration-150 font-sans tracking-wide">
-                                  <span className="font-semibold uppercase tracking-wider text-[9px] text-indigo-400 mr-1.5">{el.type}</span>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onMoveElement(el.id, 'up');
-                                    }}
-                                    className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white"
-                                    title="Move Element Up"
-                                  >
-                                    <ArrowUp className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onMoveElement(el.id, 'down');
-                                    }}
-                                    className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white"
-                                    title="Move Element Down"
-                                  >
-                                    <ArrowDown className="w-3.5 h-3.5" />
-                                  </button>
-                                  <span className="w-px h-3 bg-slate-800"></span>
+                                <>
+                                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-35 flex items-center gap-1.5 bg-slate-900 border border-slate-800 text-white text-[11px] py-1 px-2.5 rounded-full shadow-xl animate-in fade-in zoom-in-95 duration-150 font-sans tracking-wide">
+                                    <span className="font-semibold uppercase tracking-wider text-[9px] text-indigo-400 mr-1.5">{el.type}</span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onMoveElement(el.id, 'up');
+                                      }}
+                                      className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white"
+                                      title="Move Element Up"
+                                    >
+                                      <ArrowUp className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onMoveElement(el.id, 'down');
+                                      }}
+                                      className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white"
+                                      title="Move Element Down"
+                                    >
+                                      <ArrowDown className="w-3.5 h-3.5" />
+                                    </button>
+                                    <span className="w-px h-3 bg-slate-800"></span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onCloneElement(el.id);
+                                      }}
+                                      className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white"
+                                      title="Duplicate Component"
+                                    >
+                                      <Copy className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDeleteElement(el.id);
+                                      }}
+                                      className="p-1 hover:bg-rose-950/40 rounded transition-colors text-rose-400"
+                                      title="Delete Component"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                  
+                                  {/* Floating URL Input Box directly side to the image/button */}
                                   {(el.type === 'image' || el.type === 'button' || el.type === 'image-banner' || el.type === 'text') && (
-                                    <>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          const url = prompt("Indtast link URL (f.eks. #shop eller /about eller https://google.com):", el.link || "");
-                                          if (url !== null) {
-                                            onUpdateElement(el.id, {}, undefined, url);
-                                          }
-                                        }}
-                                        className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white flex items-center gap-1"
-                                        title="Rediger Link URL"
-                                      >
-                                        <Link className="w-3.5 h-3.5" />
-                                      </button>
-                                      <span className="w-px h-3 bg-slate-800"></span>
-                                    </>
+                                    <div 
+                                      className="absolute -bottom-14 left-1/2 -translate-x-1/2 z-40 bg-slate-900 p-1.5 rounded-lg shadow-xl border border-slate-700 flex items-center gap-2 cursor-auto"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <Link className="w-4 h-4 text-indigo-400 ml-1" />
+                                      <input 
+                                        type="text"
+                                        value={el.link || ""}
+                                        onChange={(e) => onUpdateElement(el.id, {}, undefined, e.target.value)}
+                                        placeholder="Link URL (fx. #shop eller https://...)"
+                                        className="bg-slate-800 text-white text-xs px-2 py-1.5 rounded border border-slate-700 outline-none focus:border-indigo-500 w-56"
+                                        onClick={(e) => e.stopPropagation()}
+                                      />
+                                    </div>
                                   )}
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onCloneElement(el.id);
-                                    }}
-                                    className="p-1 hover:bg-slate-800 rounded transition-colors text-slate-300 hover:text-white"
-                                    title="Duplicate Component"
-                                  >
-                                    <Copy className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onDeleteElement(el.id);
-                                    }}
-                                    className="p-1 hover:bg-rose-950/40 rounded transition-colors text-rose-400"
-                                    title="Delete Component"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
+                                </>
                               )}
 
                               {/* Render Content Specifics */}
@@ -1791,17 +1793,12 @@ export default function Canvas({
                                   )}
                                   
                                   {/* Change Image Hover trigger inside editor */}
-                                  {!isPreviewMode && !el.id.startsWith('locksmith-quick-img') && (
+                                  {!isPreviewMode && !el.id.startsWith('locksmith-quick-img') && !isElementSelected && (
                                     <div 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        onChangeImageClick(el.id);
-                                      }}
-                                      className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-white font-medium text-xs cursor-pointer rounded-lg z-20"
+                                      className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-white font-medium text-xs cursor-pointer rounded-lg z-20 pointer-events-none"
                                     >
                                       <ImageIcon className="w-5 h-5 mb-1 text-slate-100" />
-                                      <span>Configure Image Link</span>
-                                      <p className="text-[9px] text-slate-350 mt-1">Select preset or upload from device</p>
+                                      <span>Klik for at redigere</span>
                                     </div>
                                   )}
                                 </div>
