@@ -7,11 +7,20 @@ import SaveExportControls from './components/SaveExportControls';
 import ImageSelectorModal from './components/ImageSelectorModal';
 import { Lock, Unlock, LogOut, Shield, Globe, Sparkles, Plus, Code } from 'lucide-react';
 
+interface SEOMetadata {
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  metaTags?: string;
+}
+
 interface SinglePageCMS {
   id: string;
   dbId?: number; // Optional Django database layout record ID
   name: string;
   slug: string;
+  title?: string;
+  seoMetadata?: SEOMetadata;
   sections: Section[];
   theme: SiteTheme;
 }
@@ -547,11 +556,50 @@ export default function App() {
     syncFromDjango();
   }, []);
 
-  // Dynamically update the browser tab title based on the active page name/title
+  // Dynamically update the browser tab title and SEO metadata based on the active page name/title/seo
   useEffect(() => {
-    const pageDisplayName = activePage.title || activePage.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
-    document.title = pageDisplayName ? `${pageDisplayName} | MM Låsesmed` : "MM Låsesmed";
-  }, [activePage.id, activePage.name, activePage.title]);
+    // 1. Title
+    const seoTitle = activePage.seoMetadata?.metaTitle || activePage.title || activePage.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+    document.title = seoTitle ? `${seoTitle} | MM Låsesmed` : "MM Låsesmed";
+
+    // Helper to set standard meta tags
+    const setMetaTag = (name: string, content: string | undefined) => {
+      let el = document.querySelector(`meta[name="${name}"]`);
+      if (content) {
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('name', name);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      } else if (el) {
+        el.remove();
+      }
+    };
+
+    // 2. Standard Metadata
+    setMetaTag('description', activePage.seoMetadata?.metaDescription);
+    setMetaTag('keywords', activePage.seoMetadata?.metaKeywords);
+
+    // 3. Custom Meta Tags (HTML)
+    // Remove previously injected custom meta tags
+    document.querySelectorAll('meta[data-custom-seo="true"]').forEach(el => el.remove());
+    
+    if (activePage.seoMetadata?.metaTags) {
+      try {
+        const container = document.createElement('div');
+        container.innerHTML = activePage.seoMetadata.metaTags;
+        Array.from(container.children).forEach(child => {
+          if (child.tagName === 'META') {
+            child.setAttribute('data-custom-seo', 'true');
+            document.head.appendChild(child);
+          }
+        });
+      } catch (e) {
+        console.error("Failed to parse custom meta tags:", e);
+      }
+    }
+  }, [activePage.id, activePage.name, activePage.title, activePage.seoMetadata]);
 
   // Dynamically resolve the sections and theme to render (handling Webshop custom templates)
   const getRenderLayout = () => {
@@ -700,6 +748,7 @@ export default function App() {
   // 6. Page Code Editor Modal States
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [showPageManagerModal, setShowPageManagerModal] = useState(false);
+  const [editingSeoPageId, setEditingSeoPageId] = useState<string | null>(null);
   const [rawJsonCode, setRawJsonCode] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
 
@@ -2642,8 +2691,9 @@ export default function App() {
                       const isHome = p.slug === '';
 
                       return (
-                        <tr key={p.id} className="hover:bg-slate-900/30 transition-colors group">
-                          {/* 1. Icon */}
+                        <React.Fragment key={p.id}>
+                          <tr className="hover:bg-slate-900/30 transition-colors group">
+                            {/* 1. Icon */}
                           <td className="py-3.5 pl-2 text-lg">
                             {pageIcon}
                           </td>
@@ -2726,7 +2776,20 @@ export default function App() {
                           </td>
 
                           {/* 5. Handlinger */}
-                          <td className="py-3.5 text-right pr-2 space-x-1.5">
+                          <td className="py-3.5 text-right pr-2 space-x-1.5 flex justify-end">
+                            <button
+                              onClick={() => {
+                                setEditingSeoPageId(editingSeoPageId === p.id ? null : p.id);
+                              }}
+                              className={`px-2 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all border-none cursor-pointer ${
+                                editingSeoPageId === p.id 
+                                  ? 'bg-indigo-600 text-white' 
+                                  : 'bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300'
+                              }`}
+                              title="Rediger SEO indstillinger for denne side"
+                            >
+                              🔍 SEO
+                            </button>
                             {!isHome && (
                               <button
                                 onClick={() => {
@@ -2779,6 +2842,84 @@ export default function App() {
                             )}
                           </td>
                         </tr>
+
+                        {/* SEO Editor Expanded Row */}
+                        {editingSeoPageId === p.id && (
+                          <tr className="bg-slate-900/60 border-b border-slate-850">
+                            <td colSpan={6} className="p-4 pl-12 border-l-2 border-indigo-500">
+                              <div className="space-y-4">
+                                <div className="flex items-center gap-2 text-indigo-400 mb-2">
+                                  <Globe className="w-4 h-4" />
+                                  <h4 className="text-xs font-bold uppercase tracking-wider">SEO Metadata for {p.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '')}</h4>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-1.5">
+                                    <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Meta Title (Overskriver Sidetitel)</label>
+                                    <input 
+                                      type="text" 
+                                      value={p.seoMetadata?.metaTitle || ''}
+                                      onChange={(e) => {
+                                        setPages(prev => prev.map(page => page.id === p.id ? {
+                                          ...page,
+                                          seoMetadata: { ...page.seoMetadata, metaTitle: e.target.value }
+                                        } : page));
+                                      }}
+                                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-200"
+                                      placeholder="Specificeret SEO titel for søgemaskiner..."
+                                    />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Meta Keywords</label>
+                                    <input 
+                                      type="text" 
+                                      value={p.seoMetadata?.metaKeywords || ''}
+                                      onChange={(e) => {
+                                        setPages(prev => prev.map(page => page.id === p.id ? {
+                                          ...page,
+                                          seoMetadata: { ...page.seoMetadata, metaKeywords: e.target.value }
+                                        } : page));
+                                      }}
+                                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-200"
+                                      placeholder="låsesmed, københavn, billig, døgnvagt..."
+                                    />
+                                  </div>
+                                  <div className="space-y-1.5 col-span-2">
+                                    <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Meta Description</label>
+                                    <textarea 
+                                      rows={2}
+                                      value={p.seoMetadata?.metaDescription || ''}
+                                      onChange={(e) => {
+                                        setPages(prev => prev.map(page => page.id === p.id ? {
+                                          ...page,
+                                          seoMetadata: { ...page.seoMetadata, metaDescription: e.target.value }
+                                        } : page));
+                                      }}
+                                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-200 resize-none"
+                                      placeholder="Beskrivelse af siden som vises i Google søgeresultater (maks 160 tegn anbefales)..."
+                                    />
+                                  </div>
+                                  <div className="space-y-1.5 col-span-2">
+                                    <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Meta Tags (Custom HTML)</label>
+                                    <textarea 
+                                      rows={2}
+                                      value={p.seoMetadata?.metaTags || ''}
+                                      onChange={(e) => {
+                                        setPages(prev => prev.map(page => page.id === p.id ? {
+                                          ...page,
+                                          seoMetadata: { ...page.seoMetadata, metaTags: e.target.value }
+                                        } : page));
+                                      }}
+                                      className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-[10px] font-mono focus:outline-none focus:border-indigo-500 text-slate-300 resize-none"
+                                      placeholder='<meta property="og:image" content="https://..." />'
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                        </React.Fragment>
                       );
                     })}
                   </tbody>
