@@ -71,29 +71,117 @@ type ShopView = 'categories' | 'subcategories' | 'subcategory-detail' | 'brand-p
 
 const EditableText = ({ tag: Tag = 'span', className, style, html, onBlur, onClick, isPreviewMode }: any) => {
   const ref = useRef<HTMLElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [localHtml, setLocalHtml] = useState(html || '');
   
+  // Try to parse existing inline styles if any are wrapped in our span
+  const [lineHeight, setLineHeight] = useState('inherit');
+  const [fontSize, setFontSize] = useState('inherit');
+
   useEffect(() => {
     // Only update innerHTML if it's not the currently focused element (prevents cursor jump)
     if (ref.current && document.activeElement !== ref.current) {
       if (ref.current.innerHTML !== (html || '')) {
         ref.current.innerHTML = html || '';
+        setLocalHtml(html || '');
       }
     }
   }, [html]);
 
+  const handleApplyStyle = (prop: string, val: string) => {
+    if (!ref.current) return;
+    
+    // We wrap the raw text content in a span with the styles
+    // Extract text content only (stripping existing spans if we're re-applying)
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = ref.current.innerHTML;
+    const textContent = tempDiv.textContent || tempDiv.innerText || '';
+    
+    let nextLh = prop === 'line-height' ? val : lineHeight;
+    let nextFs = prop === 'font-size' ? val : fontSize;
+    
+    setLineHeight(nextLh);
+    setFontSize(nextFs);
+    
+    let styleStr = '';
+    if (nextLh !== 'inherit') styleStr += `line-height: ${nextLh} !important; `;
+    if (nextFs !== 'inherit') styleStr += `font-size: ${nextFs} !important; `;
+    
+    const newHtml = styleStr ? `<span style="${styleStr}">${textContent}</span>` : textContent;
+    
+    ref.current.innerHTML = newHtml;
+    setLocalHtml(newHtml);
+    
+    if (onBlur) {
+      onBlur({ currentTarget: { innerHTML: newHtml } });
+    }
+  };
+
+  const isInline = Tag === 'span' || Tag === 'a' || Tag === 'label';
+  const wrapperClass = isInline ? "relative inline-block group/edit" : "relative block w-full group/edit";
+
   return (
-    <Tag
-      ref={ref}
-      className={className}
-      style={style}
-      contentEditable={!isPreviewMode}
-      suppressContentEditableWarning
-      onBlur={onBlur}
-      onClick={(e: any) => {
-        if (!isPreviewMode) e.stopPropagation();
-        if (onClick) onClick(e);
-      }}
-    />
+    <div className={wrapperClass}>
+      {/* Floating Toolbar - only visible when focused and not in preview mode */}
+      {!isPreviewMode && isFocused && (
+        <div 
+          className="absolute -top-12 left-0 bg-slate-900 shadow-xl rounded-lg border border-slate-700 flex items-center p-1.5 gap-2 z-[9999]"
+          onMouseDown={(e) => e.preventDefault()} // prevent focus loss
+        >
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[9px] text-slate-400 font-bold uppercase px-1 leading-none">Line Height</span>
+            <select 
+              className="bg-slate-800 text-white text-[10px] rounded px-1 py-0.5 border-none outline-none cursor-pointer h-5"
+              value={lineHeight}
+              onChange={(e) => handleApplyStyle('line-height', e.target.value)}
+            >
+              <option value="inherit">Default</option>
+              <option value="1.0">1.0 (Tight)</option>
+              <option value="1.2">1.2</option>
+              <option value="1.5">1.5 (Relaxed)</option>
+              <option value="1.8">1.8</option>
+              <option value="2.0">2.0 (Loose)</option>
+              <option value="2.5">2.5</option>
+            </select>
+          </div>
+          <div className="w-px h-6 bg-slate-700"></div>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[9px] text-slate-400 font-bold uppercase px-1 leading-none">Font Size</span>
+            <select 
+              className="bg-slate-800 text-white text-[10px] rounded px-1 py-0.5 border-none outline-none cursor-pointer h-5"
+              value={fontSize}
+              onChange={(e) => handleApplyStyle('font-size', e.target.value)}
+            >
+              <option value="inherit">Default</option>
+              <option value="10px">10px</option>
+              <option value="12px">12px</option>
+              <option value="14px">14px</option>
+              <option value="16px">16px</option>
+              <option value="20px">20px</option>
+              <option value="24px">24px</option>
+              <option value="32px">32px</option>
+              <option value="48px">48px</option>
+            </select>
+          </div>
+        </div>
+      )}
+      <Tag
+        ref={ref}
+        className={className}
+        style={style}
+        contentEditable={!isPreviewMode}
+        suppressContentEditableWarning
+        onFocus={() => setIsFocused(true)}
+        onBlur={(e: any) => {
+          setIsFocused(false);
+          if (onBlur) onBlur(e);
+        }}
+        onClick={(e: any) => {
+          if (!isPreviewMode) e.stopPropagation();
+          if (onClick) onClick(e);
+        }}
+      />
+    </div>
   );
 };
 
