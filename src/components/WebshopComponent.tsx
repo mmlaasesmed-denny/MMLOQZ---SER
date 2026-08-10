@@ -1681,7 +1681,7 @@ export default function WebshopComponent({
   };
 
   return (
-    <div className="@container w-full bg-white text-slate-800 relative overflow-hidden font-sans">
+    <div className="@container w-full relative overflow-hidden font-sans text-slate-800">
       <div className="w-full max-w-7xl mx-auto py-2 px-4 @md:px-8 @lg:px-12 relative">
       {/* Background Gradients */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
