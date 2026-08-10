@@ -69,6 +69,11 @@ type ShopView = 'categories' | 'subcategories' | 'subcategory-detail' | 'brand-p
 
 
 
+const stripHtml = (html: string) => {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '');
+};
+
 const EditableText = ({ tag: Tag = 'span', className, style, html, onBlur, onClick, isPreviewMode }: any) => {
   const ref = useRef<HTMLElement>(null);
   const [isFocused, setIsFocused] = useState(false);
@@ -1739,7 +1744,7 @@ export default function WebshopComponent({
                             color: megaMenuHoverCatId === cat.id ? megaMenuActiveColor : megaMenuTextColor
                           }}
                         >
-                          <span>{cat.name}</span>
+                          <span>{stripHtml(cat.name)}</span>
                           <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>&rsaquo;</span>
                         </button>
 
@@ -1765,7 +1770,7 @@ export default function WebshopComponent({
                             color: megaMenuHoverCatId === cat.id ? megaMenuActiveColor : megaMenuTextColor
                           }}
                         >
-                          <span>{cat.name}</span>
+                          <span>{stripHtml(cat.name)}</span>
                           <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>
                             {megaMenuHoverCatId === cat.id ? '▼' : '▶'}
                           </span>
@@ -2288,7 +2293,7 @@ export default function WebshopComponent({
                             {brand ? brand.name : ''}
                           </div>
                           <div className="text-xs text-slate-700 font-bold truncate mt-0.5">
-                            {p.name}
+                            {stripHtml(p.name)}
                           </div>
                         </div>
                         <div className="text-[10px] font-mono font-bold text-slate-900 whitespace-nowrap">
@@ -2468,7 +2473,7 @@ export default function WebshopComponent({
                             color: megaMenuHoverCatId === cat.id ? megaMenuActiveColor : megaMenuTextColor
                           }}
                         >
-                          <span>{cat.name}</span>
+                          <span>{stripHtml(cat.name)}</span>
                           <span style={{ color: megaMenuTextColor, opacity: 0.5 }}>&rsaquo;</span>
                         </button>
                       </li>
@@ -2634,7 +2639,7 @@ export default function WebshopComponent({
               }}
               className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
             >
-              {activeCategory.name}
+              {stripHtml(activeCategory.name)}
             </button>
           </>
         )}
@@ -2653,7 +2658,7 @@ export default function WebshopComponent({
               }}
               className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
             >
-              {activeSubcategory.name}
+              {stripHtml(activeSubcategory.name)}
             </button>
           </>
         )}
@@ -2680,7 +2685,7 @@ export default function WebshopComponent({
           <>
             <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
             <span className="text-white uppercase tracking-wider text-[10px] font-bold">
-              {activeProduct.name}
+              {stripHtml(activeProduct.name)}
             </span>
           </>
         )}
@@ -2956,7 +2961,7 @@ export default function WebshopComponent({
                           className="cursor-pointer"
                         >
                           <div className="text-[10px] text-amber-450 font-bold uppercase tracking-wider mb-1">{brandName}</div>
-                          <h4 className="text-base font-extrabold text-white leading-snug tracking-tight mb-2 truncate group-hover:text-amber-400 transition-colors">{p.name}</h4>
+                          <h4 className="text-base font-extrabold text-white leading-snug tracking-tight mb-2 truncate group-hover:text-amber-400 transition-colors">{stripHtml(p.name)}</h4>
                           <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-4">{p.description}</p>
                         </div>
                         <div className="pt-4 border-t border-slate-700/80 flex items-center justify-between gap-4 mt-auto">
@@ -3036,7 +3041,7 @@ export default function WebshopComponent({
                         <div className="w-full @md:w-[length:var(--cat-img-w)] h-48 @md:h-auto relative shrink-0">
                           <img 
                             src={imgUrl} 
-                            alt={cat.name} 
+                            alt={stripHtml(cat.name)} 
                             className={`absolute inset-0 w-full h-full object-cover ${!isPreviewMode ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
                             onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
@@ -3111,7 +3116,7 @@ export default function WebshopComponent({
                         <div className="w-full @md:w-[length:var(--cat-img-w)] h-48 @md:h-auto relative shrink-0 order-1 @md:order-2">
                           <img 
                             src={imgUrl} 
-                            alt={cat.name} 
+                            alt={stripHtml(cat.name)} 
                             className={`absolute inset-0 w-full h-full object-cover ${!isPreviewMode ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
                             onClick={() => promptEditImage('category', cat.id, 'image')}
                           />
@@ -3334,7 +3339,7 @@ export default function WebshopComponent({
               <div>
                 <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest block">Kategori</span>
                 <h3 className="text-xl font-extrabold text-slate-900 uppercase">
-                  {activeCategory ? activeCategory.name : 'Adgangskontrol'} &gt; {activeSubcategory.name}
+                  {activeCategory ? stripHtml(activeCategory.name) : 'Adgangskontrol'} &gt; {stripHtml(activeSubcategory.name)}
                 </h3>
               </div>
             </div>
@@ -3350,7 +3355,7 @@ export default function WebshopComponent({
             >
               <img 
                 src={activeSubcategory.image || "https://images.unsplash.com/photo-1558002038-1055907df827?w=1200&auto=format&fit=crop&q=80"} 
-                alt={activeSubcategory.name}
+                alt={stripHtml(activeSubcategory.name)}
                 className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="absolute inset-0 pointer-events-none" />
@@ -3409,7 +3414,7 @@ export default function WebshopComponent({
                   suppressContentEditableWarning
                   onBlur={(e) => updateSetting(`subcatIntroTitle_${activeSubcategory.id}`, e.currentTarget.innerText)}
                 >
-                  {s[`subcatIntroTitle_${activeSubcategory.id}`] || `${activeSubcategory.name}-forbedrede løsninger til sikre og holdbare døre`}
+                  {s[`subcatIntroTitle_${activeSubcategory.id}`] || `${stripHtml(activeSubcategory.name)}-forbedrede løsninger til sikre og holdbare døre`}
                 </h4>
                 <EditableText tag="p" isPreviewMode={isPreviewMode} html={activeSubcategory.detailedDescription || activeSubcategory.description} 
                   className="text-sm text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 px-2 rounded"
@@ -3454,7 +3459,7 @@ export default function WebshopComponent({
                   suppressContentEditableWarning
                   onBlur={(e) => updateSetting(`subcatVideoTitle_${activeSubcategory.id}`, e.currentTarget.innerText)}
                 >
-                  {s[`subcatVideoTitle_${activeSubcategory.id}`] || `Find de rette elektroniske ${activeSubcategory.name.toLowerCase()} hos mmlaasesmed`}
+                  {s[`subcatVideoTitle_${activeSubcategory.id}`] || `Find de rette elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} hos mmlaasesmed`}
                 </h4>
                 <p 
                   className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
@@ -3462,7 +3467,7 @@ export default function WebshopComponent({
                   suppressContentEditableWarning
                   onBlur={(e) => updateSetting(`subcatVideoDesc1_${activeSubcategory.id}`, e.currentTarget.innerText)}
                 >
-                  {s[`subcatVideoDesc1_${activeSubcategory.id}`] || `Her finder du vores nøje udvalgte sortiment af elektroniske ${activeSubcategory.name.toLowerCase()} fra vores leverandører. Vi har elektroniske ${activeSubcategory.name.toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
+                  {s[`subcatVideoDesc1_${activeSubcategory.id}`] || `Her finder du vores nøje udvalgte sortiment af elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} fra vores leverandører. Vi har elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
                 </p>
                 <p 
                   className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
@@ -3470,7 +3475,7 @@ export default function WebshopComponent({
                   suppressContentEditableWarning
                   onBlur={(e) => updateSetting(`subcatVideoDesc2_${activeSubcategory.id}`, e.currentTarget.innerText)}
                 >
-                  {s[`subcatVideoDesc2_${activeSubcategory.id}`] || `Om du skal bruge elektroniske ${activeSubcategory.name.toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
+                  {s[`subcatVideoDesc2_${activeSubcategory.id}`] || `Om du skal bruge elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
                 </p>
               </div>
               {/* Video placeholder */}
@@ -3550,8 +3555,8 @@ export default function WebshopComponent({
               <>
                 <div className="space-y-6 pt-6 border-t border-slate-100">
                   <div className="text-left">
-                    <h4 className="text-lg font-extrabold text-slate-900 uppercase">Produkter i {activeSubcategory.name}</h4>
-                    <p className="text-xs text-slate-400 mt-1">Udforsk vores udvalg af {activeSubcategory.name.toLowerCase()} godkendt til det nordiske marked.</p>
+                    <h4 className="text-lg font-extrabold text-slate-900 uppercase">Produkter i {stripHtml(activeSubcategory.name)}</h4>
+                    <p className="text-xs text-slate-400 mt-1">Udforsk vores udvalg af {stripHtml(activeSubcategory.name).toLowerCase()} godkendt til det nordiske marked.</p>
                   </div>
 
                   {products.filter(p => p.subcategoryId === activeSubcategory.id).length === 0 ? (
@@ -3585,7 +3590,7 @@ export default function WebshopComponent({
                                 }}
                                 className="relative w-full aspect-square bg-slate-50 overflow-hidden cursor-pointer"
                               >
-                                <img src={p.image} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                <img src={p.image} alt={stripHtml(p.name)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                               </div>
                               <div className="p-6 flex-1 flex flex-col justify-between">
                                 <div 
@@ -3599,7 +3604,7 @@ export default function WebshopComponent({
                                   className="cursor-pointer flex-1"
                                 >
                                   <div className="text-[10px] text-amber-500 font-bold uppercase tracking-wider mb-1">{brandName}</div>
-                                  <h4 className="text-base font-extrabold text-slate-900 leading-snug tracking-tight mb-2 truncate group-hover:text-amber-550 transition-colors">{p.name}</h4>
+                                  <h4 className="text-base font-extrabold text-slate-900 leading-snug tracking-tight mb-2 truncate group-hover:text-amber-550 transition-colors">{stripHtml(p.name)}</h4>
                                   <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">{p.description}</p>
                                 </div>
                                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4 mt-auto">
@@ -3763,7 +3768,7 @@ export default function WebshopComponent({
                   {activeBrand.name} Produkter
                 </span>
                 <h3 className="text-xl font-extrabold text-slate-900 uppercase leading-tight">
-                  {activeSubcategory.name}
+                  {stripHtml(activeSubcategory.name)}
                 </h3>
               </div>
             </div>
@@ -3775,7 +3780,7 @@ export default function WebshopComponent({
                 <div className="space-y-2">
                   <h4 className="text-xs font-black uppercase text-slate-905 tracking-wider">Kategorier</h4>
                   <ul className="text-xs font-bold text-slate-600 space-y-2 list-none p-0">
-                    <li className="text-amber-500 font-black cursor-pointer uppercase">▶ {activeSubcategory.name}</li>
+                    <li className="text-amber-500 font-black cursor-pointer uppercase">▶ {stripHtml(activeSubcategory.name)}</li>
                     <li className="hover:text-slate-900 cursor-pointer pl-4">Cylindre</li>
                     <li className="hover:text-slate-900 cursor-pointer pl-4">Software & Tilbehør</li>
                     <li className="hover:text-slate-900 cursor-pointer pl-4">Væglæsere & Styreenheder</li>
@@ -3867,7 +3872,7 @@ export default function WebshopComponent({
               {/* Products Area */}
               <div className="flex-1 space-y-4">
                 <div className="text-left border-b border-slate-150 pb-2 flex justify-between items-center">
-                  <h4 className="text-base font-black text-slate-900 uppercase tracking-tight">{activeSubcategory.name}</h4>
+                  <h4 className="text-base font-black text-slate-900 uppercase tracking-tight">{stripHtml(activeSubcategory.name)}</h4>
                   <span className="text-[10px] font-bold text-slate-405 uppercase tracking-wider">
                     {products.filter(p => p.subcategoryId === selectedSubcatId && p.brandId === selectedBrandId).length} produkter
                   </span>
@@ -4029,7 +4034,7 @@ export default function WebshopComponent({
                   <div className="relative rounded-3xl overflow-hidden bg-slate-50 border border-slate-200 p-4 aspect-square flex items-center justify-center">
                     <img 
                       src={activeProduct.image} 
-                      alt={activeProduct.name}
+                      alt={stripHtml(activeProduct.name)}
                       className={`max-h-full max-w-full object-contain rounded-2xl ${!isPreviewMode ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
                       onClick={() => promptEditImage('product', activeProduct.id, 'image')}
                     />
@@ -4068,7 +4073,7 @@ export default function WebshopComponent({
                       <span>{brandName}</span>
                       <span>VARENR: {activeProduct.id}</span>
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 uppercase leading-snug">{activeProduct.name}</h2>
+                    <h2 className="text-2xl font-black text-slate-900 uppercase leading-snug">{stripHtml(activeProduct.name)}</h2>
                   </div>
 
                   {/* Price Box */}
@@ -5652,9 +5657,9 @@ export default function WebshopComponent({
                               <tr key={p.id} className="hover:bg-slate-100 transition-colors">
                                 {/* Product Details */}
                                 <td className="p-4 flex items-center gap-3">
-                                  <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl bg-white border border-slate-200 shrink-0" />
+                                  <img src={p.image} alt={stripHtml(p.name)} className="w-10 h-10 object-cover rounded-xl bg-white border border-slate-200 shrink-0" />
                                   <div>
-                                    <h5 className="font-bold text-slate-900 leading-tight uppercase text-[11px]">{p.name}</h5>
+                                    <h5 className="font-bold text-slate-900 leading-tight uppercase text-[11px]">{stripHtml(p.name)}</h5>
                                     <span className="text-[9px] font-bold text-slate-500 tracking-wider font-mono">ID: {p.id}</span>
                                   </div>
                                 </td>
@@ -5751,7 +5756,7 @@ export default function WebshopComponent({
                           categories.map(cat => (
                             <tr key={cat.id} className="hover:bg-slate-100 transition-colors">
                               <td className="p-4 text-center text-xl">{cat.icon}</td>
-                              <td className="p-4 font-bold text-slate-900 uppercase">{cat.name}</td>
+                              <td className="p-4 font-bold text-slate-900 uppercase">{stripHtml(cat.name)}</td>
                               <td className="p-4 text-slate-600 font-mono">{cat.id}</td>
                               <td className="p-4 text-slate-700 font-medium max-w-xs truncate">{cat.description}</td>
                               <td className="p-4 text-right">
@@ -5932,9 +5937,9 @@ export default function WebshopComponent({
                             return (
                               <tr key={p.id} className="hover:bg-slate-100 transition-colors">
                                 <td className="p-4 flex items-center gap-3">
-                                  <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl bg-white border border-slate-200 shrink-0" />
+                                  <img src={p.image} alt={stripHtml(p.name)} className="w-10 h-10 object-cover rounded-xl bg-white border border-slate-200 shrink-0" />
                                   <div>
-                                    <h5 className="font-bold text-slate-900 leading-tight uppercase text-[11px]">{p.name}</h5>
+                                    <h5 className="font-bold text-slate-900 leading-tight uppercase text-[11px]">{stripHtml(p.name)}</h5>
                                     <span className="text-[9px] font-bold text-slate-500 tracking-wider font-mono">ID: {p.id}</span>
                                   </div>
                                 </td>
