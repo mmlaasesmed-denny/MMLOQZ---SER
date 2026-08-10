@@ -2197,8 +2197,6 @@ export default function WebshopComponent({
                                           fontSize: `${megaMenuFontSize}px`,
                                           fontWeight: megaMenuFontWeight,
                                           fontStyle: megaMenuFontStyle,
-                                          fontWeight: megaMenuFontWeight,
-                                          fontStyle: megaMenuFontStyle,
                                           color:
                                             megaMenuHoverSubcatId === sub.id
                                               ? megaMenuActiveColor
