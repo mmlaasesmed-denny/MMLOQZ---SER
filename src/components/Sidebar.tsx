@@ -2187,7 +2187,7 @@ export default function Sidebar({
                         </div>
                       </div>
                     ) : (
-                      (selectedElement.type === 'button' || selectedElement.type === 'text' || selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
+                      (selectedElement.type === 'button' || selectedElement.type === 'text' || selectedElement.type === 'image' || selectedElement.type === 'image-banner' || selectedElement.type === 'video') && (
                         <div className="space-y-1">
                           <label className="text-[10px] text-slate-400 block font-semibold">Redirection Link URL</label>
                           <input
@@ -2204,7 +2204,7 @@ export default function Sidebar({
                 )}
 
                 {/* Spacing & Typography Section (Only for Text, Buttons, and Search Box) */}
-                {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box' || selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
+                {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box' || selectedElement.type === 'image' || selectedElement.type === 'image-banner' || selectedElement.type === 'video') && (
                   <div className="space-y-4 border-t border-slate-100 dark:border-slate-800 pt-4" id="inspector-typography-spacing">
                     <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Typography & Spacing</h5>
 
@@ -2444,7 +2444,7 @@ export default function Sidebar({
                   <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Coloring & Borders</h5>
 
                   {/* Text Color Input */}
-                  {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box' || selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
+                  {(selectedElement.type === 'text' || selectedElement.type === 'button' || selectedElement.type === 'search-box' || selectedElement.type === 'image' || selectedElement.type === 'image-banner' || selectedElement.type === 'video') && (
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Text Color (Hex)</span>
@@ -3289,7 +3289,7 @@ export default function Sidebar({
                   )}
 
                   {/* Corner Radius (Rounded Corners) */}
-                  {(selectedElement.type === 'button' || selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (
+                  {(selectedElement.type === 'button' || selectedElement.type === 'image' || selectedElement.type === 'image-banner' || selectedElement.type === 'video') && (
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500">Corner Roundedness</span>
@@ -3503,6 +3503,27 @@ export default function Sidebar({
                       </div>
                     </div>
                   </div>
+
+                  {/* Element Video Settings */}
+                  {selectedElement.type === 'video' && (
+                    <div className="space-y-4 border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                      <div className="space-y-2">
+                        <span className="text-xs font-semibold text-slate-500 block">Video Source URL</span>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={selectedElement.src || ''}
+                            onChange={(e) => onUpdateElement(selectedElement.id, {}, undefined, undefined, e.target.value || undefined)}
+                            className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                            placeholder="YouTube, Vimeo, or MP4 URL..."
+                          />
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1 leading-tight">
+                          Paste a YouTube or Vimeo link to embed automatically. Alternatively, paste a direct link to an MP4 file.
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Element Image Settings */}
                   {(selectedElement.type === 'image' || selectedElement.type === 'image-banner') && (

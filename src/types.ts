@@ -1,4 +1,4 @@
-export type ElementType = 'text' | 'button' | 'image' | 'divider' | 'spacer' | 'image-banner' | 'search-box' | 'webshop';
+export type ElementType = 'text' | 'button' | 'image' | 'divider' | 'spacer' | 'image-banner' | 'search-box' | 'webshop' | 'video';
 
 export interface ElementStyles {
   fontFamily?: string;

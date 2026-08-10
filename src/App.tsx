@@ -1330,6 +1330,15 @@ export default function App() {
         marginTop: '8px',
         marginBottom: '8px'
       };
+    } else if (type === 'video') {
+      defaultContent = '';
+      defaultStyles = {
+        borderRadius: '8px',
+        marginTop: '16px',
+        marginBottom: '16px',
+        width: '100%',
+        height: '400px'
+      };
     }
 
     const newElement: PageElement = {

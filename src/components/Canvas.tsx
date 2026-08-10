@@ -3,7 +3,7 @@ import {
   Plus, Trash2, ArrowUp, ArrowDown, Copy, Edit3, Image as ImageIcon, 
   HelpCircle, AlignCenter, Columns, Heading, Type, FileImage, Layers,
   Home, Building2, Landmark, ShieldCheck, Menu, X, ShoppingCart, Phone, Key,
-  ChevronDown, ChevronUp, Link
+  ChevronDown, ChevronUp, Link, PlayCircle
 } from 'lucide-react';
 import { Section, PageElement, SiteTheme, ElementStyles, ElementType, OverlayItem, DropdownLink } from '../types';
 import WebshopComponent from './WebshopComponent';
@@ -135,6 +135,22 @@ export const getDefaultDropdownLinks = (): DropdownLink[] => [
     link: '#postkasser'
   }
 ];
+
+const getEmbedUrl = (url: string) => {
+  if (!url) return null;
+  // YouTube
+  const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+  if (ytMatch && ytMatch[1]) {
+    return { type: 'youtube', url: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0` };
+  }
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/i);
+  if (vimeoMatch && vimeoMatch[1]) {
+    return { type: 'vimeo', url: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
+  }
+  // Fallback to HTML5 video (mp4, webm, etc.)
+  return { type: 'html5', url };
+};
 
 interface CanvasProps {
   sections: Section[];
@@ -2888,6 +2904,58 @@ export default function Canvas({
                                 </div>
                               )}
 
+                              {el.type === 'video' && (
+                                <div 
+                                  className="w-full h-full relative" 
+                                  style={{ 
+                                    marginTop: formatStyleVal(el.styles.marginTop) || '8px', 
+                                    marginBottom: formatStyleVal(el.styles.marginBottom) || '8px',
+                                    marginLeft: formatStyleVal(el.styles.marginLeft) || 'auto',
+                                    marginRight: formatStyleVal(el.styles.marginRight) || 'auto',
+                                    paddingTop: formatStyleVal(el.styles.paddingTop) || undefined,
+                                    paddingBottom: formatStyleVal(el.styles.paddingBottom) || undefined,
+                                    paddingLeft: formatStyleVal(el.styles.paddingLeft) || undefined,
+                                    paddingRight: formatStyleVal(el.styles.paddingRight) || undefined,
+                                    width: formatStyleVal(el.styles.width) || '100%',
+                                    height: formatStyleVal(el.styles.height) || '400px',
+                                    borderRadius: formatStyleVal(el.styles.borderRadius) || '8px',
+                                    overflow: 'hidden',
+                                    backgroundColor: el.styles.backgroundColor || (el.src ? '#000' : '#f1f5f9'),
+                                  }}
+                                >
+                                  {el.src ? (() => {
+                                    const videoData = getEmbedUrl(el.src);
+                                    if (videoData?.type === 'youtube' || videoData?.type === 'vimeo') {
+                                      return (
+                                        <iframe 
+                                          src={videoData.url} 
+                                          className="w-full h-full absolute inset-0"
+                                          frameBorder="0" 
+                                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                          allowFullScreen
+                                          style={{ pointerEvents: isPreviewMode ? 'auto' : 'none' }}
+                                        />
+                                      );
+                                    } else {
+                                      return (
+                                        <video 
+                                          src={el.src} 
+                                          controls 
+                                          className="w-full h-full absolute inset-0"
+                                          style={{ objectFit: el.styles.objectFit || 'cover', pointerEvents: isPreviewMode ? 'auto' : 'none' }}
+                                        />
+                                      );
+                                    }
+                                  })() : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-300 rounded-lg absolute inset-0">
+                                      <PlayCircle className="w-12 h-12 mb-2 text-slate-300" />
+                                      <p className="text-sm font-semibold">Empty Video Block</p>
+                                      <p className="text-xs">Add URL in sidebar</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
                               {el.type === 'webshop' && (
                                 <div 
                                   className="w-full transition-all"
@@ -2949,6 +3017,16 @@ export default function Canvas({
                               title="Append Photo block"
                             >
                               + Image
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                  e.stopPropagation();
+                                  onAddElement(section.id, col.id, 'video');
+                              }}
+                              className="px-1.5 py-0.5 text-[9px] font-semibold bg-slate-50 border border-slate-150 hover:bg-white rounded text-slate-500 hover:text-indigo-600"
+                              title="Append Video block"
+                            >
+                              + Video
                             </button>
                             <button
                               onClick={(e) => {
