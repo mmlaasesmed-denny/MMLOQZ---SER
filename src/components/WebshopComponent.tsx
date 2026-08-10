@@ -3044,9 +3044,13 @@ export default function WebshopComponent({
                         <div className="w-full @md:w-[length:var(--cat-txt-w)] p-6 @md:p-12 @lg:p-16 flex flex-col items-center justify-center text-center space-y-6">
                           <div className="text-xl @md:text-2xl @lg:text-3xl text-slate-900 leading-snug max-w-2xl">
                             <EditableText tag="span" isPreviewMode={isPreviewMode} html={cat.name} 
-                              className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                                                                                          onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerHTML)}
-                                                           />
+                              className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block transition-colors"
+                              style={{
+                                color: s.bannerTextColor || '#0f172a',
+                                fontFamily: s.bannerFontFamily || 'inherit'
+                              }}
+                              onBlur={(e) => updateCategoryField(cat.id, 'name', e.currentTarget.innerHTML)}
+                             />
                             {cat.description && (
                               <>
                                 <span className="font-medium mx-1.5">-</span>
@@ -3387,7 +3391,11 @@ export default function WebshopComponent({
                 </div>
               )}
               <EditableText tag="h2" isPreviewMode={isPreviewMode} html={activeSubcategory.name} 
-                className="relative z-10 text-4xl @md:text-5xl font-black text-slate-900 uppercase tracking-wider font-sans outline-none focus:bg-white/50 px-2 rounded drop-shadow-sm text-center"
+                className="relative z-10 text-4xl @md:text-5xl font-black uppercase tracking-wider outline-none focus:bg-white/50 px-2 rounded drop-shadow-sm text-center transition-colors"
+                style={{
+                  color: s.bannerTextColor || '#0f172a',
+                  fontFamily: s.bannerFontFamily || 'inherit'
+                }}
                 onBlur={(e) => updateSubcategoryField(activeSubcategory.id, 'name', e.currentTarget.innerHTML)}
                />
             </div>

@@ -1661,6 +1661,48 @@ export default function Sidebar({
                         </div>
 
                         <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Banner Font Family (Kategorier)</label>
+                          <select
+                            value={selectedElement.settings?.bannerFontFamily || ''}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  bannerFontFamily: e.target.value
+                                }
+                              });
+                            }}
+                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none"
+                          >
+                            <option value="">Standard (System Sans)</option>
+                            <option value="'Poppins', sans-serif">Poppins</option>
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Outfit', sans-serif">Outfit</option>
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Cormorant Garamond', serif">Cormorant Garamond</option>
+                            <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+                            <option value="'Fira Code', monospace">Fira Code</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Banner Tekst Farve</label>
+                          <input
+                            type="color"
+                            value={selectedElement.settings?.bannerTextColor || '#0f172a'}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  bannerTextColor: e.target.value
+                                }
+                              });
+                            }}
+                            className="w-full h-8 cursor-pointer rounded-lg border-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
                           <label className="text-[11px] font-bold text-slate-550 uppercase tracking-wider block">Dropdown Tekst Farve</label>
                           <input
                             type="color"
