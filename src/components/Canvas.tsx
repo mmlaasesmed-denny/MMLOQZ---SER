@@ -1328,6 +1328,20 @@ export default function Canvas({
                                           <Link className="w-3 h-3 text-indigo-400" /> Link
                                         </button>
                                         <span className="w-[1px] h-4 bg-slate-700 mx-1"></span>
+                                        <div className="flex items-center gap-1 relative group/color" title="Tekstfarve">
+                                          <input 
+                                            type="color"
+                                            className="w-4 h-4 p-0 border-none rounded cursor-pointer bg-transparent"
+                                            onChange={(e) => {
+                                              e.preventDefault();
+                                              e.stopPropagation();
+                                              if (e.target.value) {
+                                                document.execCommand('foreColor', false, e.target.value);
+                                              }
+                                            }}
+                                          />
+                                        </div>
+                                        <span className="w-[1px] h-4 bg-slate-700 mx-1"></span>
                                         <select 
                                           className="bg-slate-800 text-white text-[10px] font-bold border border-slate-700 rounded px-1.5 py-1 cursor-pointer focus:outline-none hover:bg-slate-750"
                                           onChange={(e) => {
@@ -3524,6 +3538,27 @@ export default function Canvas({
           >
             <Link className="w-3 h-3" /> Link
           </button>
+          <span className="w-[1px] h-3.5 bg-slate-850 mx-1"></span>
+          <div className="flex items-center gap-1 relative group/color" title="Tekstfarve">
+            <input 
+              type="color"
+              className="w-4 h-4 p-0 border-none rounded cursor-pointer bg-transparent"
+              onChange={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.target.value) {
+                  const sel = window.getSelection();
+                  if (sel && selectionRange) {
+                    sel.removeAllRanges();
+                    sel.addRange(selectionRange);
+                  }
+                  document.execCommand('foreColor', false, e.target.value);
+                }
+                setSelectionRange(null);
+                setSelectionRect(null);
+              }}
+            />
+          </div>
           <span className="w-[1px] h-3.5 bg-slate-850 mx-1"></span>
           <select 
             className="bg-slate-900 text-white text-[10px] font-bold border border-slate-750 rounded px-1.5 py-1 cursor-pointer focus:outline-none hover:bg-slate-800"
