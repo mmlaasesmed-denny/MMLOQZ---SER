@@ -2095,15 +2095,21 @@ export default function SaveExportControls({
     let selectedCarrierOption = null;
     let selectedShipmondoDelivery = null;
 
-    function initUserSession() {
-      const sessionStr = localStorage.getItem('mm_lase_session');
-      if (sessionStr) {
-        try {
-          loggedInUser = JSON.parse(sessionStr);
-        } catch (e) {
-          console.error('Failed to parse session', e);
+    async function initUserSession() {
+      try {
+        const response = await fetch(window.location.origin + '/api/auth/me/');
+        if (response.ok) {
+          loggedInUser = await response.json();
+        } else {
+          loggedInUser = null;
         }
+      } catch (e) {
+        loggedInUser = null;
       }
+      
+      // Cleanup legacy local storage to prevent confusion
+      localStorage.removeItem('mm_lase_session');
+
       updateUserStatusUI();
       prefillCheckoutForm();
     }
@@ -3160,7 +3166,7 @@ export default function SaveExportControls({
           resetEmailField.value = emailParam || '';
         }
       } else if (hash === '#shop/admin') {
-        const isAdmin = loggedInUser && loggedInUser.email === 'admin@mmlaseshop.dk';
+        const isAdmin = loggedInUser && (loggedInUser.is_staff || loggedInUser.is_superuser);
         if (!isAdmin) {
           navigateToHash('shop');
           return;
@@ -3816,10 +3822,11 @@ export default function SaveExportControls({
       }
 
       if (document.querySelector('.webshop-store-root')) {
-        initUserSession();
-        renderShop();
-        renderCart();
-        initSearchHandlers();
+        initUserSession().then(() => {
+          renderShop();
+          renderCart();
+          initSearchHandlers();
+        });
       }
     });
   </script>
