@@ -1490,26 +1490,68 @@ export default function SaveExportControls({
                   const menuLinks = menuItems.map(item => {
                     const hasDropdown = ['Erhverv', 'Privat', 'Boligforeninger'].includes(item);
                     if (hasDropdown) {
+                      const allLinks = menuOverlay.dropdownLinks || [];
+                      const filteredLinks = allLinks.filter(l => l.parentItem.toLowerCase() === item.toLowerCase());
+                      
+                      const groups: Record<string, any[]> = {};
+                      filteredLinks.forEach(link => {
+                        const g = link.group || 'General';
+                        if (!groups[g]) groups[g] = [];
+                        groups[g].push(link);
+                      });
+                      
+                      let submenuHTML = '';
+                      const groupNames = Object.keys(groups);
+                      if (groupNames.length === 0) {
+                        submenuHTML = `<div class="text-slate-400 text-xs py-1 italic">No sub-pages added yet.</div>`;
+                      } else {
+                        groupNames.forEach(gName => {
+                          let linksHTML = '';
+                          groups[gName].forEach((link, lIdx) => {
+                            const linkId = `link-${item.toLowerCase()}-${gName.replace(/\s+/g, '')}-${lIdx}`;
+                            linksHTML += `
+                              <style>
+                                .${linkId} { color: ${menuOverlay.settings?.dropdownTextColor || '#1e293b'} !important; }
+                                .${linkId}:hover { color: ${menuOverlay.settings?.dropdownActiveColor || '#4f46e5'} !important; }
+                              </style>
+                              <a href="${link.link || '#'}" class="${linkId} block py-1 no-underline transition-colors" style="font-size: ${formatStyleVal(menuOverlay.settings?.dropdownFontSize) || '12px'}; font-weight: ${menuOverlay.settings?.dropdownFontWeight || 'bold'}; font-style: ${menuOverlay.settings?.dropdownFontStyle || 'normal'};">
+                                ${link.title}
+                                ${link.description ? `<div class="text-slate-400 block mt-0.5" style="font-size: ${formatStyleVal(menuOverlay.settings?.dropdownDescFontSize) || '10px'}">${link.description}</div>` : ''}
+                              </a>`;
+                          });
+                          submenuHTML += `
+                            <div class="mb-4 last:mb-0">
+                              <div class="font-extrabold text-indigo-600 uppercase tracking-widest mb-3" style="font-size: ${formatStyleVal(menuOverlay.settings?.dropdownGroupFontSize) || '10px'}">${gName}</div>
+                              <div class="space-y-3">
+                                ${linksHTML}
+                              </div>
+                            </div>`;
+                        });
+                      }
+
                       return `
                         <div class="relative group/menu-dropdown">
                           <button class="flex items-center gap-1 text-white hover:text-amber-400 transition-colors uppercase tracking-wider bg-transparent border-none cursor-pointer py-2" style="font-size: ${formatStyleVal(ms.fontSize) || '11px'}; font-weight: ${ms.fontWeight || 'bold'}; font-style: ${ms.fontStyle || 'normal'};">
                             <span>${item}</span>
                             <span class="text-[8px] transition-transform duration-200 group-hover/menu-dropdown:rotate-180">▼</span>
                           </button>
-                          <div class="absolute top-full right-0 mt-1 w-64 bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-100 p-4 opacity-0 pointer-events-none group-hover/menu-dropdown:opacity-100 group-hover/menu-dropdown:pointer-events-auto transition-all duration-200 z-50 text-left">
-                            <div class="text-[10px] font-extrabold text-amber-500 uppercase tracking-widest border-b border-slate-100 pb-1.5 mb-2">${item} Løsninger</div>
-                            <div class="space-y-1">
-                              ${item === 'Erhverv' ? `
-                                <a href="#adgangskontrol" class="block py-1 hover:bg-slate-50 px-2 rounded-lg transition-colors no-underline"><div class="font-bold text-[11px] text-slate-900">Adgangskontrol</div><div class="text-[9px] text-slate-400 leading-normal">Fleksible adgangsløsninger til erhverv.</div></a>
-                                <a href="#laasesystemer" class="block py-1 hover:bg-slate-50 px-2 rounded-lg transition-colors no-underline"><div class="font-bold text-[11px] text-slate-900">Låsesystemer</div><div class="text-[9px] text-slate-400 leading-normal">Sikre patenterede systemer.</div></a>
-                              ` : item === 'Privat' ? `
-                                <a href="#laaseservice" class="block py-1 hover:bg-slate-50 px-2 rounded-lg transition-colors no-underline"><div class="font-bold text-[11px] text-slate-900">Låseservice</div><div class="text-[9px] text-slate-400 leading-normal">Akut oplukning døgnet rundt.</div></a>
-                                <a href="#sikkerhedstjek" class="block py-1 hover:bg-slate-50 px-2 rounded-lg transition-colors no-underline"><div class="font-bold text-[11px] text-slate-900">Sikkerhedstjek</div><div class="text-[9px] text-slate-400 leading-normal">Gennemgang af dine låse.</div></a>
-                              ` : `
-                                <a href="#systemlaase" class="block py-1 hover:bg-slate-50 px-2 rounded-lg transition-colors no-underline"><div class="font-bold text-[11px] text-slate-900">Systemlåse</div><div class="text-[9px] text-slate-400 leading-normal">Komplette låsesystemer til hele ejendommen.</div></a>
-                                <a href="#doertelefoner" class="block py-1 hover:bg-slate-50 px-2 rounded-lg transition-colors no-underline"><div class="font-bold text-[11px] text-slate-900">Dørtelefoner</div><div class="text-[9px] text-slate-400 leading-normal">Moderne porttelefoner med video.</div></a>
-                              `}
+                          <div class="absolute top-full right-0 mt-1 w-[480px] bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-100 p-6 opacity-0 pointer-events-none group-hover/menu-dropdown:opacity-100 group-hover/menu-dropdown:pointer-events-auto transition-all duration-200 z-50 text-left flex gap-6">
+                            <div class="flex-1 flex gap-6">
+                              ${submenuHTML}
                             </div>
+                            ${menuOverlay.settings?.contactEmail ? `
+                            <div class="w-48 bg-amber-50 rounded-xl p-4 border border-amber-100/50">
+                              <h5 class="font-extrabold text-amber-600 uppercase tracking-widest mb-3" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTitleFontSize) || '14px'}">${menuOverlay.settings?.contactTitle || 'Kontakt'}</h5>
+                              <div class="space-y-3">
+                                <p class="leading-relaxed font-semibold text-slate-800" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}">${(menuOverlay.settings?.contactText || '').replace(/\\n/g, '<br/>')}</p>
+                                <div>
+                                  <a href="mailto:${menuOverlay.settings?.contactEmail}" class="font-semibold mt-2 hover:underline text-amber-600 block no-underline" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}">${menuOverlay.settings?.contactEmail}</a>
+                                  <a href="tel:${menuOverlay.settings?.contactPhone?.replace(/\\s/g, '')}" class="font-semibold hover:underline text-amber-600 block no-underline" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}">${menuOverlay.settings?.contactPhone}</a>
+                                </div>
+                                <a href="#" class="inline-block mt-3 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg transition-colors no-underline text-center w-full" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactBtnFontSize) || '10px'}">${menuOverlay.settings?.contactBtnText || 'Book Nu'}</a>
+                              </div>
+                            </div>
+                            ` : ''}
                           </div>
                         </div>`;
                     }
