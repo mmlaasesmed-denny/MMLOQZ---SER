@@ -2076,9 +2076,10 @@ export default function WebshopComponent({
 
   return (
     <div className="@container w-full relative overflow-hidden font-sans text-slate-800">
+      {/* Background Gradients */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
+
       <div className="w-full max-w-7xl mx-auto py-2 px-4 @md:px-8 @lg:px-12 relative">
-        {/* Background Gradients */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
 
         {/* Webshop Header Bar */}
         <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4 @md:flex-row @md:items-center @md:justify-between @md:gap-4 border-b border-slate-150">
@@ -3012,14 +3013,16 @@ export default function WebshopComponent({
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Nav Link Bar */}
-        <div
-          className={`hidden @md:flex bg-[#333333] items-center justify-between py-1 px-4 @md:px-8 @lg:px-12 -mx-4 @md:-mx-8 @lg:-mx-12 mb-6 relative z-50 select-none ${!isPreviewMode ? "cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all" : ""}`}
-          onClick={() =>
-            !isPreviewMode && promptEditImage("setting", "", "navMenuSettings")
-          }
-        >
+      {/* Nav Link Bar */}
+      <div
+        className={`hidden @md:flex bg-[#333333] items-center justify-between py-1 px-4 @md:px-8 @lg:px-12 mb-6 relative z-50 select-none ${!isPreviewMode ? "cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all" : ""}`}
+        onClick={() =>
+          !isPreviewMode && promptEditImage("setting", "", "navMenuSettings")
+        }
+      >
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4 @md:relative">
             <div
               className="@md:relative"
@@ -3285,7 +3288,9 @@ export default function WebshopComponent({
             </div>
           </div>
         </div>
+      </div>
 
+      <div className="w-full max-w-7xl mx-auto px-4 @md:px-8 @lg:px-12 relative">
         {/* Dynamic Breadcrumbs Navigation */}
         <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mb-6 flex-wrap relative z-10">
           <button
