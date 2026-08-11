@@ -2835,12 +2835,114 @@ export default function Sidebar({
 
                                   {/* Dropdown Options Manager */}
                                   {item.type === 'dropdown-menu' && (
-                                    <DropdownOptionsEditor 
-                                      item={item} 
-                                      selectedElement={selectedElement} 
-                                      onUpdateElement={onUpdateElement} 
-                                      pages={pages}
-                                    />
+                                    <>
+                                      <DropdownOptionsEditor 
+                                        item={item} 
+                                        selectedElement={selectedElement} 
+                                        onUpdateElement={onUpdateElement} 
+                                        pages={pages}
+                                      />
+                                      
+                                      <div className="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded border border-slate-100 dark:border-slate-800 mt-3">
+                                        <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                                          <span>Dropdown Styling</span>
+                                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.dropdownFontSize || 12)}px</span>
+                                        </div>
+                                        
+                                        {/* Font Size */}
+                                        <div className="flex gap-2 items-center">
+                                          <input
+                                            type="range"
+                                            min="8"
+                                            max="32"
+                                            value={selectedElement.settings?.dropdownFontSize || 12}
+                                            onChange={(e) => {
+                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                                settings: {
+                                                  ...(selectedElement.settings || {}),
+                                                  dropdownFontSize: parseInt(e.target.value)
+                                                }
+                                              });
+                                            }}
+                                            className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                                          />
+                                        </div>
+
+                                        {/* Font Style & Weight */}
+                                        <div className="flex gap-2">
+                                          <button
+                                            onClick={() => {
+                                              const currentWeight = selectedElement.settings?.dropdownFontWeight || 'bold';
+                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                                settings: {
+                                                  ...(selectedElement.settings || {}),
+                                                  dropdownFontWeight: currentWeight === 'bold' ? 'normal' : 'bold'
+                                                }
+                                              });
+                                            }}
+                                            className={`flex-1 py-1 text-[10px] font-bold uppercase rounded border ${selectedElement.settings?.dropdownFontWeight === 'bold' || !selectedElement.settings?.dropdownFontWeight ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                                          >
+                                            Bold
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              const currentStyle = selectedElement.settings?.dropdownFontStyle || 'normal';
+                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                                settings: {
+                                                  ...(selectedElement.settings || {}),
+                                                  dropdownFontStyle: currentStyle === 'italic' ? 'normal' : 'italic'
+                                                }
+                                              });
+                                            }}
+                                            className={`flex-1 py-1 text-[10px] italic font-bold uppercase rounded border ${selectedElement.settings?.dropdownFontStyle === 'italic' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                                          >
+                                            Italic
+                                          </button>
+                                        </div>
+
+                                        {/* Colors */}
+                                        <div className="flex gap-2">
+                                          <div className="flex-1 space-y-1">
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase">Text Color</span>
+                                            <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded px-1.5 py-1">
+                                              <input
+                                                type="color"
+                                                value={selectedElement.settings?.dropdownTextColor || '#1e293b'}
+                                                onChange={(e) => {
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                                    settings: {
+                                                      ...(selectedElement.settings || {}),
+                                                      dropdownTextColor: e.target.value
+                                                    }
+                                                  });
+                                                }}
+                                                className="w-4 h-4 rounded-sm cursor-pointer border-0 p-0"
+                                              />
+                                              <span className="text-[10px] font-mono text-slate-500">{selectedElement.settings?.dropdownTextColor || '#1e293b'}</span>
+                                            </div>
+                                          </div>
+                                          <div className="flex-1 space-y-1">
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase">Active Color</span>
+                                            <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded px-1.5 py-1">
+                                              <input
+                                                type="color"
+                                                value={selectedElement.settings?.dropdownActiveColor || '#4f46e5'}
+                                                onChange={(e) => {
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                                    settings: {
+                                                      ...(selectedElement.settings || {}),
+                                                      dropdownActiveColor: e.target.value
+                                                    }
+                                                  });
+                                                }}
+                                                className="w-4 h-4 rounded-sm cursor-pointer border-0 p-0"
+                                              />
+                                              <span className="text-[10px] font-mono text-slate-500">{selectedElement.settings?.dropdownActiveColor || '#4f46e5'}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </>
                                   )}
 
                                  {/* Logo Image Settings */}

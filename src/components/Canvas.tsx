@@ -2267,11 +2267,24 @@ export default function Canvas({
                                                                 <div className="space-y-3">
                                                                   {groups[gName].map((link, lIdx) => (
                                                                     <div key={link.id || lIdx}>
+                                                                      <style>{`
+                                                                        .dropdown-link-${link.id || lIdx} {
+                                                                          color: ${menuOverlay.settings?.dropdownTextColor || '#1e293b'} !important;
+                                                                        }
+                                                                        .dropdown-link-${link.id || lIdx}:hover {
+                                                                          color: ${menuOverlay.settings?.dropdownActiveColor || '#4f46e5'} !important;
+                                                                        }
+                                                                      `}</style>
                                                                       <a 
                                                                         href={link.link || '#'} 
                                                                         onClick={(e) => handleLinkClick(e, link.link, link.pageSlug)}
-                                                                        className="font-bold text-slate-800 hover:text-indigo-600 transition-colors block no-underline"
-                                                                        style={{ fontFamily: menuOverlay.styles?.fontFamily, fontSize: safeFontSize(menuOverlay.settings?.dropdownFontSize, '12px') }}
+                                                                        className={`dropdown-link-${link.id || lIdx} transition-colors block no-underline`}
+                                                                        style={{ 
+                                                                          fontFamily: menuOverlay.styles?.fontFamily, 
+                                                                          fontSize: safeFontSize(menuOverlay.settings?.dropdownFontSize, '12px'),
+                                                                          fontStyle: menuOverlay.settings?.dropdownFontStyle || 'normal',
+                                                                          fontWeight: menuOverlay.settings?.dropdownFontWeight || 'bold'
+                                                                        }}
                                                                       >
                                                                         {link.title}
                                                                       </a>
