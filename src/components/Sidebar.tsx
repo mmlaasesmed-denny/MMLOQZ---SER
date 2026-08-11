@@ -2922,6 +2922,126 @@ export default function Sidebar({
                                           </div>
                                         </div>
                                       </div>
+
+                                      {/* Dropdown Contact Settings */}
+                                      <div className="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded border border-slate-100 dark:border-slate-800 mt-3">
+                                        <div className="text-[11px] font-bold text-slate-550 uppercase tracking-wider mb-2">
+                                          Dropdown Contact Section
+                                        </div>
+
+                                        <div className="space-y-2">
+                                          <div>
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Title</label>
+                                            <input
+                                              type="text"
+                                              value={item.settings?.contactTitle ?? 'Kontakt'}
+                                              onChange={(e) => {
+                                                const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactTitle: e.target.value } } : o);
+                                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                              }}
+                                              className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+                                            />
+                                          </div>
+                                          <div>
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Text / Address</label>
+                                            <textarea
+                                              value={item.settings?.contactText ?? 'Kulvej 10, 2 TV\n2450 København SV\nDenmark'}
+                                              onChange={(e) => {
+                                                const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactText: e.target.value } } : o);
+                                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                              }}
+                                              rows={3}
+                                              className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-sans"
+                                            />
+                                          </div>
+                                          <div className="flex gap-2">
+                                            <div className="flex-1">
+                                              <label className="text-[9px] font-bold text-slate-400 uppercase">Email</label>
+                                              <input
+                                                type="text"
+                                                value={item.settings?.contactEmail ?? 'info@mmlaasesmed.dk'}
+                                                onChange={(e) => {
+                                                  const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactEmail: e.target.value } } : o);
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                                }}
+                                                className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+                                              />
+                                            </div>
+                                            <div className="flex-1">
+                                              <label className="text-[9px] font-bold text-slate-400 uppercase">Phone</label>
+                                              <input
+                                                type="text"
+                                                value={item.settings?.contactPhone ?? '+45 31 11 11 15'}
+                                                onChange={(e) => {
+                                                  const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactPhone: e.target.value } } : o);
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                                }}
+                                                className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+                                              />
+                                            </div>
+                                          </div>
+                                          <div>
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Button Text</label>
+                                            <input
+                                              type="text"
+                                              value={item.settings?.contactBtnText ?? 'Book Nu'}
+                                              onChange={(e) => {
+                                                const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactBtnText: e.target.value } } : o);
+                                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                              }}
+                                              className="w-full text-xs px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+                                            />
+                                          </div>
+                                          
+                                          {/* Contact Styling */}
+                                          <div className="pt-2 border-t border-slate-200 dark:border-slate-800 mt-2">
+                                            <label className="text-[9px] font-bold text-slate-400 uppercase mb-1 block">Text Color</label>
+                                            <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded px-1.5 py-1 w-1/2">
+                                              <input
+                                                type="color"
+                                                value={item.settings?.contactTextColor || '#0f172a'}
+                                                onChange={(e) => {
+                                                  const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactTextColor: e.target.value } } : o);
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                                }}
+                                                className="w-4 h-4 rounded-sm cursor-pointer border-0 p-0"
+                                              />
+                                              <span className="text-[10px] font-mono text-slate-500">{item.settings?.contactTextColor || '#0f172a'}</span>
+                                            </div>
+                                          </div>
+                                          
+                                          <div className="flex gap-2">
+                                            <div className="flex-1">
+                                              <label className="text-[9px] font-bold text-slate-400 uppercase mb-1 block">Title Size ({(item.settings?.contactTitleFontSize || 14)}px)</label>
+                                              <input
+                                                type="range"
+                                                min="10"
+                                                max="32"
+                                                value={item.settings?.contactTitleFontSize || 14}
+                                                onChange={(e) => {
+                                                  const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactTitleFontSize: parseInt(e.target.value) } } : o);
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                                }}
+                                                className="w-full accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200"
+                                              />
+                                            </div>
+                                            <div className="flex-1">
+                                              <label className="text-[9px] font-bold text-slate-400 uppercase mb-1 block">Text Size ({(item.settings?.contactTextFontSize || 10)}px)</label>
+                                              <input
+                                                type="range"
+                                                min="8"
+                                                max="24"
+                                                value={item.settings?.contactTextFontSize || 10}
+                                                onChange={(e) => {
+                                                  const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), contactTextFontSize: parseInt(e.target.value) } } : o);
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
+                                                }}
+                                                className="w-full accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200"
+                                              />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </>
                                   )}
 
