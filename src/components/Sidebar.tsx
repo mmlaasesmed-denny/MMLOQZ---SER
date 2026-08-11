@@ -2846,7 +2846,7 @@ export default function Sidebar({
                                       <div className="space-y-3 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded border border-slate-100 dark:border-slate-800 mt-3">
                                         <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
                                           <span>Dropdown Styling</span>
-                                          <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.dropdownFontSize || 12)}px</span>
+                                          <span className="font-mono text-indigo-500 font-bold">{(item.settings?.dropdownFontSize || 12)}px</span>
                                         </div>
                                         
                                         {/* Font Size */}
@@ -2855,14 +2855,10 @@ export default function Sidebar({
                                             type="range"
                                             min="8"
                                             max="32"
-                                            value={selectedElement.settings?.dropdownFontSize || 12}
+                                            value={item.settings?.dropdownFontSize || 12}
                                             onChange={(e) => {
-                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                                settings: {
-                                                  ...(selectedElement.settings || {}),
-                                                  dropdownFontSize: parseInt(e.target.value)
-                                                }
-                                              });
+                                              const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), dropdownFontSize: parseInt(e.target.value) } } : o);
+                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
                                             }}
                                             className="flex-1 accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
                                           />
@@ -2872,29 +2868,21 @@ export default function Sidebar({
                                         <div className="flex gap-2">
                                           <button
                                             onClick={() => {
-                                              const currentWeight = selectedElement.settings?.dropdownFontWeight || 'bold';
-                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                                settings: {
-                                                  ...(selectedElement.settings || {}),
-                                                  dropdownFontWeight: currentWeight === 'bold' ? 'normal' : 'bold'
-                                                }
-                                              });
+                                              const currentWeight = item.settings?.dropdownFontWeight || 'bold';
+                                              const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), dropdownFontWeight: currentWeight === 'bold' ? 'normal' : 'bold' } } : o);
+                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
                                             }}
-                                            className={`flex-1 py-1 text-[10px] font-bold uppercase rounded border ${selectedElement.settings?.dropdownFontWeight === 'bold' || !selectedElement.settings?.dropdownFontWeight ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                                            className={`flex-1 py-1 text-[10px] font-bold uppercase rounded border ${item.settings?.dropdownFontWeight === 'bold' || !item.settings?.dropdownFontWeight ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
                                           >
                                             Bold
                                           </button>
                                           <button
                                             onClick={() => {
-                                              const currentStyle = selectedElement.settings?.dropdownFontStyle || 'normal';
-                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                                settings: {
-                                                  ...(selectedElement.settings || {}),
-                                                  dropdownFontStyle: currentStyle === 'italic' ? 'normal' : 'italic'
-                                                }
-                                              });
+                                              const currentStyle = item.settings?.dropdownFontStyle || 'normal';
+                                              const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), dropdownFontStyle: currentStyle === 'italic' ? 'normal' : 'italic' } } : o);
+                                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
                                             }}
-                                            className={`flex-1 py-1 text-[10px] italic font-bold uppercase rounded border ${selectedElement.settings?.dropdownFontStyle === 'italic' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                                            className={`flex-1 py-1 text-[10px] italic font-bold uppercase rounded border ${item.settings?.dropdownFontStyle === 'italic' ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
                                           >
                                             Italic
                                           </button>
@@ -2907,18 +2895,14 @@ export default function Sidebar({
                                             <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded px-1.5 py-1">
                                               <input
                                                 type="color"
-                                                value={selectedElement.settings?.dropdownTextColor || '#1e293b'}
+                                                value={item.settings?.dropdownTextColor || '#1e293b'}
                                                 onChange={(e) => {
-                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                                    settings: {
-                                                      ...(selectedElement.settings || {}),
-                                                      dropdownTextColor: e.target.value
-                                                    }
-                                                  });
+                                                  const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), dropdownTextColor: e.target.value } } : o);
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
                                                 }}
                                                 className="w-4 h-4 rounded-sm cursor-pointer border-0 p-0"
                                               />
-                                              <span className="text-[10px] font-mono text-slate-500">{selectedElement.settings?.dropdownTextColor || '#1e293b'}</span>
+                                              <span className="text-[10px] font-mono text-slate-500">{item.settings?.dropdownTextColor || '#1e293b'}</span>
                                             </div>
                                           </div>
                                           <div className="flex-1 space-y-1">
@@ -2926,18 +2910,14 @@ export default function Sidebar({
                                             <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded px-1.5 py-1">
                                               <input
                                                 type="color"
-                                                value={selectedElement.settings?.dropdownActiveColor || '#4f46e5'}
+                                                value={item.settings?.dropdownActiveColor || '#4f46e5'}
                                                 onChange={(e) => {
-                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
-                                                    settings: {
-                                                      ...(selectedElement.settings || {}),
-                                                      dropdownActiveColor: e.target.value
-                                                    }
-                                                  });
+                                                  const nextOverlays = (selectedElement.overlays || []).map(o => o.id === item.id ? { ...o, settings: { ...(o.settings || {}), dropdownActiveColor: e.target.value } } : o);
+                                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, { overlays: nextOverlays });
                                                 }}
                                                 className="w-4 h-4 rounded-sm cursor-pointer border-0 p-0"
                                               />
-                                              <span className="text-[10px] font-mono text-slate-500">{selectedElement.settings?.dropdownActiveColor || '#4f46e5'}</span>
+                                              <span className="text-[10px] font-mono text-slate-500">{item.settings?.dropdownActiveColor || '#4f46e5'}</span>
                                             </div>
                                           </div>
                                         </div>
