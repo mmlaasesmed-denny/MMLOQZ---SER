@@ -65,11 +65,14 @@ interface WebshopComponentProps {
 }
 
 interface Account {
+  id?: number;
   email: string;
   name: string;
-  phone: string;
-  address: string;
+  phone?: string;
+  address?: string;
   password?: string;
+  is_staff?: boolean;
+  is_superuser?: boolean;
 }
 
 interface Order {
@@ -742,6 +745,26 @@ export default function WebshopComponent({
 
   // Account & Auth states
   const [loggedInUser, setLoggedInUser] = useState<Account | null>(null);
+
+  // Fetch session on load
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const djangoUrl = typeof window !== "undefined" 
+          ? (localStorage.getItem("visual-builder-django-url") || (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://localhost:8000" : window.location.origin))
+          : "http://localhost:8000";
+        const res = await fetch(`${djangoUrl.replace(/\/$/, "")}/api/auth/me/`);
+        if (res.ok) {
+          const user = await res.json();
+          setLoggedInUser(user);
+        }
+      } catch (err) {
+        console.error("Failed to fetch session", err);
+      }
+    };
+    fetchSession();
+  }, []);
+
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [simulatedEmail, setSimulatedEmail] = useState<{
     to: string;
@@ -1317,110 +1340,120 @@ export default function WebshopComponent({
     }
   }, [postcode, selectedCarrier]);
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!registerName || !registerEmail || !registerPassword) {
-      setRegisterError("Udfyld venligst alle felter.");
-      return;
-    }
-    const accountsStr =
-      typeof window !== "undefined"
-        ? localStorage.getItem("mm_lase_accounts") || "[]"
-        : "[]";
-    let accounts: Account[] = [];
-    try {
-      accounts = JSON.parse(accountsStr);
-    } catch (err) {}
-
-    if (
-      accounts.some(
-        (a) => a.email.toLowerCase() === registerEmail.toLowerCase(),
-      )
-    ) {
-      setRegisterError("En konto med denne e-mail findes allerede.");
-      return;
-    }
-
-    const newUser: Account = {
-      email: registerEmail,
-      password: registerPassword,
-      name: registerName,
-      phone: "",
-      address: "",
-    };
-
-    accounts.push(newUser);
+  const getDjangoUrl = () => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("mm_lase_accounts", JSON.stringify(accounts));
-      localStorage.setItem("mm_lase_session", JSON.stringify(newUser));
+      return localStorage.getItem("visual-builder-django-url") || (window.location.origin.includes("localhost") || window.location.origin.includes("127.0.0.1") ? "http://localhost:8000" : window.location.origin);
     }
-
-    setLoggedInUser(newUser);
-    showToast("Konto oprettet med succes!");
-    setRegisterName("");
-    setRegisterEmail("");
-    setRegisterPassword("");
-    setRegisterError("");
-    if (isPreviewMode) {
-      window.location.hash = "shop";
-    } else {
-      setView("categories");
-    }
+    return "http://localhost:8000";
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const isLocalAdmin =
-      (loginEmail.toLowerCase() === "admin" ||
-        loginEmail.toLowerCase() === "admin@mmlaseshop.dk") &&
-      loginPassword === "admin";
-    if (isLocalAdmin) {
-      const adminUser: Account = {
-        email: "admin@mmlaseshop.dk",
-        name: "Admin",
-        phone: "12345678",
-        address: "Admin Center, DK",
-      };
-      localStorage.setItem("mm_lase_session", JSON.stringify(adminUser));
-      setLoggedInUser(adminUser);
-      showToast(`Velkommen tilbage, ${adminUser.name}!`);
-      setLoginEmail("");
-      setLoginPassword("");
-      setLoginError("");
-      if (isPreviewMode) {
-        window.location.hash = "shop/admin";
-      } else {
-        setView("admin");
-      }
+    if (registerPassword !== registerConfirmPassword) {
+      setRegisterError("Adgangskoderne er ikke ens.");
+      return;
+    }
+    if (registerPassword.length < 6) {
+      setRegisterError("Adgangskoden skal være mindst 6 tegn lang.");
       return;
     }
 
-    const accountsStr = localStorage.getItem("mm_lase_accounts") || "[]";
-    const accounts: Account[] = JSON.parse(accountsStr);
-    const user = accounts.find(
-      (a) =>
-        a.email.toLowerCase() === loginEmail.toLowerCase() &&
-        a.password === loginPassword,
-    );
-    if (user) {
-      localStorage.setItem("mm_lase_session", JSON.stringify(user));
-      setLoggedInUser(user);
-      showToast(`Velkommen tilbage, ${user.name}!`);
-      setLoginEmail("");
-      setLoginPassword("");
-      setLoginError("");
+    try {
+      const response = await fetch(`${getDjangoUrl().replace(/\/$/, "")}/api/auth/register/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: registerName,
+          email: registerEmail,
+          password: registerPassword,
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setRegisterError(data.error || "Der opstod en fejl.");
+        return;
+      }
+
+      setLoggedInUser(data);
+      showToast("Konto oprettet med succes!");
+      setRegisterName("");
+      setRegisterEmail("");
+      setRegisterPassword("");
+      setRegisterConfirmPassword("");
+      setRegisterError("");
+      
       if (isPreviewMode) {
         window.location.hash = "shop";
       } else {
         setView("categories");
       }
-    } else {
-      setLoginError("Ugyldig e-mail eller adgangskode. Prøv venligst igen.");
+    } catch (err) {
+      setRegisterError("Kunne ikke oprette forbindelse til serveren.");
     }
   };
 
-  const handleResetSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${getDjangoUrl().replace(/\/$/, "")}/api/auth/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setLoginError(data.error || "Ugyldig e-mail eller adgangskode.");
+        return;
+      }
+
+      setLoggedInUser(data);
+      showToast(`Velkommen tilbage, ${data.name}!`);
+      setLoginEmail("");
+      setLoginPassword("");
+      setLoginError("");
+
+      if (isPreviewMode) {
+        if (data.is_staff || data.is_superuser) {
+          window.location.hash = "shop/admin";
+        } else {
+          window.location.hash = "shop";
+        }
+      } else {
+        if (data.is_staff || data.is_superuser) {
+          setView("admin");
+        } else {
+          setView("categories");
+        }
+      }
+    } catch (err) {
+      setLoginError("Kunne ikke oprette forbindelse til serveren.");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${getDjangoUrl().replace(/\/$/, "")}/api/auth/logout/`, {
+        method: "POST"
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    setLoggedInUser(null);
+    showToast("Du er nu logget ud.");
+    if (isPreviewMode) {
+      window.location.hash = "shop/login";
+    } else {
+      setView("login");
+    }
+  };
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setResetError("Adgangskoderne er ikke ens.");
@@ -1431,33 +1464,29 @@ export default function WebshopComponent({
       return;
     }
 
-    const accountsStr = localStorage.getItem("mm_lase_accounts") || "[]";
-    const accounts: Account[] = JSON.parse(accountsStr);
-    const userIdx = accounts.findIndex(
-      (a) => a.email.toLowerCase() === resetEmail.toLowerCase(),
-    );
-
-    if (userIdx !== -1) {
-      accounts[userIdx].password = newPassword;
-      localStorage.setItem("mm_lase_accounts", JSON.stringify(accounts));
-
-      setResetSuccess(true);
-      setResetError("");
+    try {
+      const response = await fetch(`${getDjangoUrl().replace(/\/$/, "")}/api/auth/password_reset_confirm/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: resetEmail,
+          password: newPassword,
+        })
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setResetError(data.error || "Der opstod en fejl.");
+        return;
+      }
+      
+      setView("login");
+      showToast("Din adgangskode er nu ændret. Log ind for at fortsætte.");
+      setResetEmail("");
       setNewPassword("");
       setConfirmPassword("");
-
-      // Update session if they reset password while logged in
-      const sessionStr = localStorage.getItem("mm_lase_session");
-      if (sessionStr) {
-        const sessionUser = JSON.parse(sessionStr);
-        if (sessionUser.email.toLowerCase() === resetEmail.toLowerCase()) {
-          sessionUser.password = newPassword;
-          localStorage.setItem("mm_lase_session", JSON.stringify(sessionUser));
-          setLoggedInUser(sessionUser);
-        }
-      }
-    } else {
-      setResetError("Kontoen blev ikke fundet.");
+    } catch (err) {
+      setResetError("Kunne ikke oprette forbindelse til serveren.");
     }
   };
 
@@ -7121,7 +7150,7 @@ export default function WebshopComponent({
           {/* VIEW: ADMIN CONTROL PANEL */}
           {view === "admin" &&
             !(
-              loggedInUser?.email === "admin@mmlaseshop.dk" || isPreviewMode
+              loggedInUser?.is_staff || loggedInUser?.is_superuser || isPreviewMode
             ) && (
               <div className="max-w-sm mx-auto mt-24 mb-32 p-8 bg-slate-900 rounded-3xl shadow-2xl text-left border border-slate-800 animate-in fade-in slide-in-from-bottom-4">
                 <div className="flex items-center gap-3 mb-6">
@@ -7172,7 +7201,7 @@ export default function WebshopComponent({
             )}
 
           {view === "admin" &&
-            (loggedInUser?.email === "admin@mmlaseshop.dk" ||
+            (loggedInUser?.is_staff || loggedInUser?.is_superuser ||
               isPreviewMode) && (
               <div className="space-y-6 animate-in fade-in duration-300 text-left">
                 <div className="flex flex-col @sm:flex-row @sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
