@@ -2304,9 +2304,11 @@ export default function Canvas({
                                                             const contactText = menuOverlay.settings?.contactText || "Kulvej 10, 2 TV\n2450 København SV\nDenmark";
                                                             const contactEmail = menuOverlay.settings?.contactEmail || "info@mmlaasesmed.dk";
                                                             const contactPhone = menuOverlay.settings?.contactPhone || "+45 31 11 11 15";
+                                                            const contactBtnText = menuOverlay.settings?.contactBtnText || "Book Nu";
+                                                            const textColor = menuOverlay.settings?.contactTextColor || '#0f172a';
                                                             
                                                             return (
-                                                              <div className="w-[220px] bg-amber-400 text-slate-900 rounded-xl p-4 flex flex-col justify-between shrink-0 shadow-inner">
+                                                              <div className="w-[220px] bg-amber-400 rounded-xl p-4 flex flex-col justify-between shrink-0 shadow-inner" style={{ color: textColor }}>
                                                                 <div>
                                                                   <h6 
                                                                     className="font-extrabold uppercase tracking-wide border-b border-slate-900/15 pb-1.5 mb-2"
@@ -2323,18 +2325,22 @@ export default function Canvas({
                                                                     ))}
                                                                   </p>
                                                                   {contactEmail && (
-                                                                    <p className="font-semibold mt-2 hover:underline" style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTextFontSize, '10px') }}>
+                                                                    <p className="font-semibold mt-2 hover:underline cursor-pointer" style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTextFontSize, '10px') }}>
                                                                       {contactEmail}
                                                                     </p>
                                                                   )}
+                                                                  {contactPhone && (
+                                                                    <p className="font-semibold hover:underline cursor-pointer" style={{ fontSize: safeFontSize(menuOverlay.settings?.contactTextFontSize, '10px') }}>
+                                                                      {contactPhone}
+                                                                    </p>
+                                                                  )}
                                                                 </div>
-                                                                <a 
-                                                                  href={`tel:${contactPhone.replace(/\s+/g, '')}`} 
-                                                                  className="block text-center bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2 px-3 rounded-lg mt-4 transition-colors uppercase tracking-wider no-underline"
+                                                                <button 
+                                                                  className="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg transition-colors cursor-pointer"
                                                                   style={{ fontSize: safeFontSize(menuOverlay.settings?.contactBtnFontSize, '10px') }}
                                                                 >
-                                                                  📞 {contactPhone}
-                                                                </a>
+                                                                  {contactBtnText}
+                                                                </button>
                                                               </div>
                                                             );
                                                           })()}

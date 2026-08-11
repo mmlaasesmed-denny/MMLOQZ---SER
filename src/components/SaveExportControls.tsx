@@ -1540,13 +1540,13 @@ export default function SaveExportControls({
                               ${submenuHTML}
                             </div>
                             ${menuOverlay.settings?.contactEmail ? `
-                            <div class="w-48 bg-amber-50 rounded-xl p-4 border border-amber-100/50">
-                              <h5 class="font-extrabold text-amber-600 uppercase tracking-widest mb-3" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTitleFontSize) || '14px'}">${menuOverlay.settings?.contactTitle || 'Kontakt'}</h5>
+                            <div class="w-48 bg-amber-50 rounded-xl p-4 border border-amber-100/50" style="color: ${menuOverlay.settings?.contactTextColor || '#0f172a'}">
+                              <h5 class="font-extrabold uppercase tracking-widest mb-3" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTitleFontSize) || '14px'}">${menuOverlay.settings?.contactTitle || 'Kontakt'}</h5>
                               <div class="space-y-3">
-                                <p class="leading-relaxed font-semibold text-slate-800" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}">${(menuOverlay.settings?.contactText || '').replace(/\\n/g, '<br/>')}</p>
+                                <p class="leading-relaxed font-semibold" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}">${(menuOverlay.settings?.contactText || '').replace(/\\n/g, '<br/>')}</p>
                                 <div>
-                                  <a href="mailto:${menuOverlay.settings?.contactEmail}" class="font-semibold mt-2 hover:underline text-amber-600 block no-underline" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}">${menuOverlay.settings?.contactEmail}</a>
-                                  <a href="tel:${menuOverlay.settings?.contactPhone?.replace(/\\s/g, '')}" class="font-semibold hover:underline text-amber-600 block no-underline" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}">${menuOverlay.settings?.contactPhone}</a>
+                                  <a href="mailto:${menuOverlay.settings?.contactEmail}" class="font-semibold mt-2 hover:underline block no-underline" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}; color: inherit">${menuOverlay.settings?.contactEmail}</a>
+                                  <a href="tel:${menuOverlay.settings?.contactPhone?.replace(/\\s/g, '')}" class="font-semibold hover:underline block no-underline" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactTextFontSize) || '10px'}; color: inherit">${menuOverlay.settings?.contactPhone}</a>
                                 </div>
                                 <a href="#" class="inline-block mt-3 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg transition-colors no-underline text-center w-full" style="font-size: ${formatStyleVal(menuOverlay.settings?.contactBtnFontSize) || '10px'}">${menuOverlay.settings?.contactBtnText || 'Book Nu'}</a>
                               </div>
