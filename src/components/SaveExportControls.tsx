@@ -2410,7 +2410,7 @@ export default function SaveExportControls({
       }
     };
 
-    window.submitLoginForm = function(event) {
+    window.submitLoginForm = async function(event) {
       event.preventDefault();
       const email = document.getElementById('login-page-email').value.trim();
       const password = document.getElementById('login-page-password').value.trim();
@@ -2418,47 +2418,43 @@ export default function SaveExportControls({
 
       if (errorMsg) errorMsg.style.display = 'none';
 
-      const isLocalAdmin = (email.toLowerCase() === 'admin' || email.toLowerCase() === 'admin@mmlaseshop.dk') && password === 'admin';
-      if (isLocalAdmin) {
-        const adminUser = {
-          email: 'admin@mmlaseshop.dk',
-          name: 'Admin',
-          phone: '12345678',
-          address: 'Admin Center, DK'
-        };
-        localStorage.setItem('mm_lase_session', JSON.stringify(adminUser));
-        loggedInUser = adminUser;
+      try {
+        const response = await fetch(window.location.origin + '/api/auth/login/', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          if (errorMsg) {
+            errorMsg.innerText = '⚠️ ' + (data.error || 'Ugyldig e-mail eller adgangskode.');
+            errorMsg.style.display = 'block';
+          }
+          return;
+        }
+
+        loggedInUser = data;
         updateUserStatusUI();
         prefillCheckoutForm();
         
         document.getElementById('login-page-email').value = '';
         document.getElementById('login-page-password').value = '';
-        navigateToHash('shop/admin');
-        return;
-      }
 
-      const accountsStr = localStorage.getItem('mm_lase_accounts') || '[]';
-      const accounts = JSON.parse(accountsStr);
-      const user = accounts.find(a => a.email.toLowerCase() === email.toLowerCase() && a.password === password);
-
-      if (user) {
-        localStorage.setItem('mm_lase_session', JSON.stringify(user));
-        loggedInUser = user;
-        updateUserStatusUI();
-        prefillCheckoutForm();
-        
-        document.getElementById('login-page-email').value = '';
-        document.getElementById('login-page-password').value = '';
-        navigateToHash('shop');
-      } else {
+        if (data.is_staff || data.is_superuser) {
+          navigateToHash('shop/admin');
+        } else {
+          navigateToHash('shop');
+        }
+      } catch (err) {
         if (errorMsg) {
-          errorMsg.innerText = '⚠️ Ugyldig e-mail eller adgangskode. Prøv venligst igen.';
+          errorMsg.innerText = '⚠️ Kunne ikke oprette forbindelse til serveren.';
           errorMsg.style.display = 'block';
         }
       }
     };
 
-    window.submitResetPasswordForm = function(event) {
+    window.submitResetPasswordForm = async function(event) {
       event.preventDefault();
       const email = document.getElementById('reset-page-email').value.trim();
       const password = document.getElementById('reset-page-password').value.trim();
@@ -2486,25 +2482,28 @@ export default function SaveExportControls({
         return;
       }
 
-      const accountsStr = localStorage.getItem('mm_lase_accounts') || '[]';
-      const accounts = JSON.parse(accountsStr);
-      const userIdx = accounts.findIndex(a => a.email.toLowerCase() === email.toLowerCase());
-
-      if (userIdx !== -1) {
-        accounts[userIdx].password = password;
-        localStorage.setItem('mm_lase_accounts', JSON.stringify(accounts));
+      try {
+        const response = await fetch(window.location.origin + '/api/auth/password_reset_confirm/', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        
+        if (!response.ok) {
+          if (errorMsg) {
+            errorMsg.innerText = '⚠️ ' + (data.error || 'Der opstod en fejl.');
+            errorMsg.style.display = 'block';
+          }
+          return;
+        }
 
         if (form) form.style.display = 'none';
         if (successContainer) successContainer.style.display = 'block';
-
-        const sessionStr = localStorage.getItem('mm_lase_session');
-        if (sessionStr) {
-          const sessionUser = JSON.parse(sessionStr);
-          if (sessionUser.email.toLowerCase() === email.toLowerCase()) {
-            sessionUser.password = password;
-            localStorage.setItem('mm_lase_session', JSON.stringify(sessionUser));
-            loggedInUser = sessionUser;
-          }
+      } catch (err) {
+        if (errorMsg) {
+          errorMsg.innerText = '⚠️ Kunne ikke oprette forbindelse til serveren.';
+          errorMsg.style.display = 'block';
         }
       }
     };
