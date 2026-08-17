@@ -28,9 +28,11 @@ import {
   DollarSign,
   MapPin,
   Truck,
-  ChevronLeft,
   Search,
   Heart,
+  Edit3,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import { SiteTheme } from "../types";
 import {
