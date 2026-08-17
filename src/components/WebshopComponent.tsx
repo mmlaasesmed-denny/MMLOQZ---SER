@@ -1954,6 +1954,25 @@ export default function WebshopComponent({
     }
   };
 
+  const promptAddProduct = (subcatId?: string) => {
+    const targetSubcatId = subcatId || (subcategories[0]?.id || "evolo-exivo");
+    const subcatObj = subcategories.find((s) => s.id === targetSubcatId);
+    setEditingItem({
+      type: "product",
+      isNew: true,
+      data: {
+        id: `prod_${Date.now()}`,
+        name: "",
+        price: 999,
+        subcategoryId: targetSubcatId,
+        brandId: subcatObj?.brandIds?.[0] || "mmloqz",
+        image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&auto=format&fit=crop&q=80",
+        description: "",
+        stock: 10,
+      },
+    });
+  };
+
   const handleSaveItem = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
