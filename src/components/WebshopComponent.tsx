@@ -762,7 +762,17 @@ export default function WebshopComponent({
   const [selectedDelivery, setSelectedDelivery] = useState<any | null>(null);
 
   // Account & Auth states
-  const [loggedInUser, setLoggedInUser] = useState<Account | null>(null);
+  const [loggedInUser, setLoggedInUser] = useState<Account | null>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("mm_lase_session");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {}
+      }
+    }
+    return null;
+  });
 
   // Fetch session on load
   useEffect(() => {
@@ -3250,207 +3260,194 @@ export default function WebshopComponent({
           {view === "profile" && loggedInUser && (
             <div className="space-y-6 animate-in fade-in duration-300 text-left">
               {/* Back button & Breadcrumb */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => {
-                    setView("categories");
-                    if (isPreviewMode) {
-                      window.location.hash = "shop";
-                    }
-                  }}
-                  className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200 cursor-pointer flex items-center justify-center shrink-0"
-                >
-                  <ArrowLeft className="w-4 h-4 text-slate-700" />
-                </button>
-                <div>
-                  <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest block">
-                    Bruger
-                  </span>
-                  <h3 className="text-xl font-extrabold text-slate-900 uppercase">
-                    Min Profil
-                  </h3>
-                </div>
-              </div>
-
-              <div className="border-b border-slate-200 pb-5">
-                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
-                  <User className="w-6 h-6 text-amber-500" />
-                  Min Profil & Ordrehistorik
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Se dine profiloplysninger og følg dine ordrer her.
-                </p>
-              </div>
-
-              <div className="grid @md:grid-cols-3 gap-6">
-                {/* Left Column: User Profile Info */}
-                <div className="@md:col-span-1 space-y-4">
-                  <div className="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden space-y-4 shadow-xs">
-                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-amber-500" />
-                      Kontooplysninger
-                    </h4>
-                    <div className="space-y-3 text-xs">
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                          Navn
-                        </span>
-                        <span className="text-slate-800 font-semibold text-sm">
-                          {loggedInUser.name}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                          E-mail
-                        </span>
-                        <span className="text-slate-800 font-semibold">
-                          {loggedInUser.email}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                          Telefon
-                        </span>
-                        <span className="text-slate-800 font-semibold">
-                          {loggedInUser.phone || "Ikke angivet"}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                          Standardadresse
-                        </span>
-                        <span className="text-slate-800 font-semibold leading-relaxed block">
-                          {loggedInUser.address || "Ikke angivet"}
-                        </span>
-                      </div>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => {
+                      setView("categories");
+                      if (isPreviewMode) {
+                        window.location.hash = "shop";
+                      }
+                    }}
+                    className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200 cursor-pointer flex items-center justify-center shrink-0"
+                  >
+                    <ArrowLeft className="w-4 h-4 text-slate-700" />
+                  </button>
+                  <div>
+                    <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest block">
+                      Bruger
+                    </span>
+                    <h3 className="text-xl font-extrabold text-slate-900 uppercase">
+                      Min Profil
+                    </h3>
                   </div>
                 </div>
 
-                {/* Right Column: Order History list */}
-                <div className="@md:col-span-2 space-y-4">
-                  <div className="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden space-y-4 shadow-xs">
-                    <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
-                      <Package className="w-3.5 h-3.5 text-amber-500" />
-                      Dine Bestillinger
-                    </h4>
+                <div className="border-b border-slate-200 pb-5">
+                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-wide flex items-center gap-2">
+                    <User className="w-6 h-6 text-amber-500" />
+                    Min Profil & Ordrehistorik
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Se dine profiloplysninger og følg dine ordrer her.
+                  </p>
+                </div>
 
-                    {orders.filter(
-                      (o) =>
-                        o.customer.email.toLowerCase() ===
-                        loggedInUser.email.toLowerCase(),
-                    ).length === 0 ? (
-                      <div className="py-8 text-center text-slate-450 text-xs">
-                        Du har endnu ikke foretaget nogen ordrer hos os.
+                <div className="grid @md:grid-cols-3 gap-6">
+                  {/* Left Column: User Profile Info */}
+                  <div className="@md:col-span-1 space-y-4">
+                    <div className="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden space-y-4 shadow-xs">
+                      <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-amber-500" />
+                        Kontooplysninger
+                      </h4>
+                      <div className="space-y-3 text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                            Navn
+                          </span>
+                          <span className="text-slate-800 font-semibold text-sm">
+                            {loggedInUser.name}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                            E-mail
+                          </span>
+                          <span className="text-slate-800 font-semibold">
+                            {loggedInUser.email}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                            Telefon
+                          </span>
+                          <span className="text-slate-800 font-semibold">
+                            {loggedInUser.phone || "Ikke angivet"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                            Standardadresse
+                          </span>
+                          <span className="text-slate-800 font-semibold leading-relaxed block">
+                            {loggedInUser.address || "Ikke angivet"}
+                          </span>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {orders
-                          .filter(
-                            (o) =>
-                              o.customer.email.toLowerCase() ===
-                              loggedInUser.email.toLowerCase(),
-                          )
-                          .map((order) => {
-                            const isRefunded =
-                              order.status === "annulleret" ||
-                              order.refundRequested;
-                            return (
-                              <div
-                                key={order.id}
-                                className="border border-slate-200 bg-slate-50 rounded-2xl p-4 space-y-3 transition-all hover:border-slate-300"
-                              >
-                                {/* Order summary header */}
-                                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
-                                  <div>
-                                    <span className="font-mono text-xs font-black text-amber-600">
-                                      {order.id}
-                                    </span>
-                                    <span className="text-[10px] text-slate-400 block">
-                                      {order.date}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <span
-                                      className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider ${
-                                        order.status === "modtaget"
-                                          ? "bg-indigo-50 text-indigo-600 border border-indigo-150"
-                                          : order.status === "godkendt"
-                                            ? "bg-amber-50 text-amber-700 border border-amber-150"
+                    </div>
+                  </div>
+
+                  {/* Right Column: Order History list */}
+                  <div className="@md:col-span-2 space-y-4">
+                    <div className="bg-white border border-slate-200 p-5 rounded-3xl relative overflow-hidden space-y-4 shadow-xs">
+                      <h4 className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                        <Package className="w-3.5 h-3.5 text-amber-500" />
+                        Dine Bestillinger
+                      </h4>
+
+                      {orders.filter(
+                        (o) =>
+                          o.customer.email.toLowerCase() ===
+                          loggedInUser.email.toLowerCase(),
+                      ).length === 0 ? (
+                        <div className="py-8 text-center text-slate-450 text-xs">
+                          Du har endnu ikke foretaget nogen ordrer hos os.
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {orders
+                            .filter(
+                              (o) =>
+                                o.customer.email.toLowerCase() ===
+                                loggedInUser.email.toLowerCase(),
+                            )
+                            .map((order) => {
+                              const isRefunded =
+                                order.status === "annulleret" ||
+                                order.refundRequested;
+                              return (
+                                <div
+                                  key={order.id}
+                                  className="border border-slate-200 bg-slate-50 rounded-2xl p-4 space-y-3 transition-all hover:border-slate-300"
+                                >
+                                  {/* Order summary header */}
+                                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-2.5">
+                                    <div>
+                                      <span className="font-mono text-xs font-black text-amber-600">
+                                        {order.id}
+                                      </span>
+                                      <span className="text-[10px] text-slate-400 block">
+                                        {order.date}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span
+                                        className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                                          order.status === "behandles"
+                                            ? "bg-amber-100 text-amber-700 border border-amber-200"
                                             : order.status === "afsendt"
-                                              ? "bg-emerald-50 text-emerald-700 border border-emerald-150"
-                                              : "bg-rose-50 text-rose-700 border border-rose-150"
-                                      }`}
-                                    >
-                                      {order.status === "modtaget"
-                                        ? "Modtaget"
-                                        : order.status === "godkendt"
-                                          ? "Godkendt"
-                                          : order.status === "afsendt"
-                                            ? "Afsendt"
-                                            : "Annulleret"}
-                                    </span>
-
-                                    {order.refundRequested && (
-                                      <span className="px-2 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-150 text-[8px] font-black uppercase tracking-wider">
-                                        Refundering Anmodet
+                                              ? "bg-blue-100 text-blue-700 border border-blue-200"
+                                              : order.status === "leveret"
+                                                ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                                                : "bg-rose-100 text-rose-700 border border-rose-200"
+                                        }`}
+                                      >
+                                        {order.status}
                                       </span>
-                                    )}
+                                    </div>
                                   </div>
-                                </div>
 
-                                {/* Order items list */}
-                                <div className="space-y-1.5">
-                                  {order.items.map((item, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="flex justify-between items-center text-xs"
-                                    >
-                                      <span className="text-slate-600">
-                                        {item.quantity}x {item.product.name}
+                                  {/* Items list */}
+                                  <div className="space-y-1 text-xs">
+                                    {order.items.map((item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex items-center justify-between text-slate-700"
+                                      >
+                                        <span className="font-medium truncate max-w-[200px]">
+                                          {item.quantity}x {item.product.name}
+                                        </span>
+                                        <span className="font-mono text-slate-500">
+                                          {(
+                                            item.product.price * item.quantity
+                                          ).toLocaleString("da-DK", {
+                                            minimumFractionDigits: 2,
+                                          })}{" "}
+                                          DKK
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  {/* Total and Refund action */}
+                                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-slate-200">
+                                    <div>
+                                      <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                                        Total Beløb
                                       </span>
-                                      <span className="font-mono text-slate-500">
-                                        {(
-                                          item.product.price * item.quantity
-                                        ).toLocaleString("da-DK", {
+                                      <span className="text-sm font-black text-slate-800 font-mono">
+                                        {order.total.toLocaleString("da-DK", {
                                           minimumFractionDigits: 2,
                                         })}{" "}
                                         DKK
                                       </span>
                                     </div>
-                                  ))}
-                                </div>
-
-                                {/* Total and Refund action */}
-                                <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-slate-200">
-                                  <div>
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold block">
-                                      Total Beløb
-                                    </span>
-                                    <span className="text-sm font-black text-slate-800 font-mono">
-                                      {order.subtotal.toLocaleString("da-DK", {
-                                        minimumFractionDigits: 2,
-                                      })}{" "}
-                                      DKK
-                                    </span>
+                                    {!isRefunded && (
+                                      <button
+                                        onClick={() => {
+                                          const reason = prompt(
+                                            "Indtast venligst årsagen til din refunderingsanmodning:",
+                                          );
+                                          if (reason !== null) {
+                                            requestOrderRefund(order.id, reason);
+                                          }
+                                        }}
+                                        className="px-3 py-1.5 bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-500 border border-slate-200 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer"
+                                      >
+                                        Anmod om refundering
+                                      </button>
+                                    )}
                                   </div>
-
-                                  {!isRefunded && (
-                                    <button
-                                      onClick={() => {
-                                        const reason = prompt(
-                                          "Indtast venligst årsagen til din refunderingsanmodning:",
-                                        );
-                                        if (reason !== null) {
-                                          requestOrderRefund(order.id, reason);
-                                        }
-                                      }}
-                                      className="px-3 py-1.5 bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-500 border border-slate-200 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer"
-                                    >
-                                      Anmod om refundering
-                                    </button>
-                                  )}
-                                </div>
 
                                 {order.refundRequested &&
                                   order.refundReason && (
@@ -3469,6 +3466,29 @@ export default function WebshopComponent({
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* VIEW: PROFILE (LOGGED OUT FALLBACK) */}
+          {view === "profile" && !loggedInUser && (
+            <div className="max-w-md mx-auto p-8 bg-white border border-slate-200 shadow-xl rounded-3xl text-center space-y-4 my-8 animate-in fade-in duration-200 text-left">
+              <div className="w-12 h-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-500 mx-auto">
+                <User className="w-6 h-6" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-extrabold text-slate-900 uppercase">Du er ikke logget ind</h3>
+                <p className="text-xs text-slate-500 mt-1">Log ind eller opret en ny konto for at se din profil og ordrehistorik.</p>
+              </div>
+              <button
+                onClick={() => {
+                  setView("login");
+                  setAuthMode("login");
+                  if (isPreviewMode) window.location.hash = "shop/login";
+                }}
+                className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none shadow-sm"
+              >
+                Log Ind / Opret Konto
+              </button>
             </div>
           )}
 
