@@ -1076,7 +1076,7 @@ export default function WebshopComponent({
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
-      if (!hash || hash === "#shop") {
+      if (!hash || hash === "#shop" || hash.endsWith("#shop")) {
         setView("categories");
         setSelectedCatId(null);
         setSelectedSubcatId(null);
@@ -1166,10 +1166,8 @@ export default function WebshopComponent({
     };
 
     window.addEventListener("hashchange", handleHashChange);
-    // Trigger on mount if hash is already present
-    if (window.location.hash.startsWith("#shop")) {
-      handleHashChange();
-    }
+    // Always trigger on mount to set initial view correctly
+    handleHashChange();
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, [subcategories, products, isPreviewMode]);
 
@@ -3651,7 +3649,7 @@ export default function WebshopComponent({
 
               {/* Dynamic Categories Banners */}
               <div className="space-y-6 pb-6">
-                {categories.map((cat, index) => {
+                {(categories && categories.length > 0 ? categories : WEBSHOP_CATEGORIES).map((cat, index) => {
                   const imgUrl =
                     cat.image ||
                     "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&auto=format&fit=crop&q=80";
