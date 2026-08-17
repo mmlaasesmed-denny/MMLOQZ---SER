@@ -451,24 +451,56 @@ export default function WebshopComponent({
     field: string,
   ) => {
     if (isPreviewMode) return;
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = (e: any) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const b64 = reader.result as string;
-          if (type === "category") updateCategoryField(id, field, b64);
-          else if (type === "subcategory")
-            updateSubcategoryField(id, field, b64);
-          else if (type === "product") updateProductField(id, field, b64);
-          else if (type === "setting") updateSetting(field, b64);
-        };
-        reader.readAsDataURL(file);
+    const useFile = window.confirm(
+      "Klik OK for at vælge et billede fra din computer, eller klik Annuller for at indtaste et Billede- eller YouTube-link."
+    );
+
+    if (useFile) {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = (e: any) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const b64 = reader.result as string;
+            if (type === "category") updateCategoryField(id, field, b64);
+            else if (type === "subcategory")
+              updateSubcategoryField(id, field, b64);
+            else if (type === "product") updateProductField(id, field, b64);
+            else if (type === "setting") updateSetting(field, b64);
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+    } else {
+      const currentVal =
+        type === "category"
+          ? categories.find((c) => c.id === id)?.[field as keyof WebshopCategory]
+          : type === "subcategory"
+          ? subcategories.find((sc) => sc.id === id)?.[field as keyof WebshopSubcategory]
+          : type === "product"
+          ? products.find((p) => p.id === id)?.[field as keyof WebshopProduct]
+          : s[field];
+
+      const url = window.prompt(
+        "Indtast Billede eller YouTube URL:",
+        typeof currentVal === "string" && !currentVal.startsWith("data:") ? currentVal : ""
+      );
+
+      if (url !== null && url.trim() !== "") {
+        // If user pasted a YouTube link into cover image, automatically update video URL as well!
+        if (field.startsWith("subcatVideoImg_") && (url.includes("youtube.com") || url.includes("youtu.be"))) {
+          const subcatId = field.replace("subcatVideoImg_", "");
+          updateSetting(`subcatVideoUrl_${subcatId}`, url);
+        } else if (type === "category") updateCategoryField(id, field, url);
+        else if (type === "subcategory") updateSubcategoryField(id, field, url);
+        else if (type === "product") updateProductField(id, field, url);
+        else if (type === "setting") updateSetting(field, url);
       }
-    };
+    }
   };
 
   const promptUploadMp4File = (settingKey: string) => {
