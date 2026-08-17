@@ -3859,19 +3859,17 @@ export default function WebshopComponent({
                               <EditableText
                                 tag="span"
                                 isPreviewMode={isPreviewMode}
-                                html={cat.name}
+                                html={s[`catBannerName_${cat.id}`] || cat.name}
                                 className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block transition-colors"
                                 style={{
                                   color: s.bannerTextColor || "#0f172a",
                                   fontFamily: s.bannerFontFamily || "inherit",
                                 }}
-                                onBlur={(e) =>
-                                  updateCategoryField(
-                                    cat.id,
-                                    "name",
-                                    e.currentTarget.innerHTML,
-                                  )
-                                }
+                                onBlur={(e) => {
+                                  const h = e.currentTarget.innerHTML;
+                                  updateCategoryField(cat.id, "name", stripHtml(h));
+                                  updateSetting(`catBannerName_${cat.id}`, h);
+                                }}
                               />
                               {cat.description && (
                                 <>
@@ -3879,15 +3877,13 @@ export default function WebshopComponent({
                                   <EditableText
                                     tag="span"
                                     isPreviewMode={isPreviewMode}
-                                    html={cat.description}
+                                    html={s[`catBannerDesc_${cat.id}`] || cat.description}
                                     className="font-medium outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                                    onBlur={(e) =>
-                                      updateCategoryField(
-                                        cat.id,
-                                        "description",
-                                        e.currentTarget.innerHTML,
-                                      )
-                                    }
+                                    onBlur={(e) => {
+                                      const h = e.currentTarget.innerHTML;
+                                      updateCategoryField(cat.id, "description", stripHtml(h));
+                                      updateSetting(`catBannerDesc_${cat.id}`, h);
+                                    }}
                                   />
                                 </>
                               )}
@@ -3915,15 +3911,17 @@ export default function WebshopComponent({
                               <EditableText
                                 tag="span"
                                 isPreviewMode={isPreviewMode}
-                                html={cat.name}
+                                html={s[`catBannerName_${cat.id}`] || cat.name}
                                 className="font-black outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                                onBlur={(e) =>
-                                  updateCategoryField(
-                                    cat.id,
-                                    "name",
-                                    e.currentTarget.innerHTML,
-                                  )
-                                }
+                                style={{
+                                  color: s.bannerTextColor || "#0f172a",
+                                  fontFamily: s.bannerFontFamily || "inherit",
+                                }}
+                                onBlur={(e) => {
+                                  const h = e.currentTarget.innerHTML;
+                                  updateCategoryField(cat.id, "name", stripHtml(h));
+                                  updateSetting(`catBannerName_${cat.id}`, h);
+                                }}
                               />
                               {cat.description && (
                                 <>
@@ -3931,15 +3929,13 @@ export default function WebshopComponent({
                                   <EditableText
                                     tag="span"
                                     isPreviewMode={isPreviewMode}
-                                    html={cat.description}
+                                    html={s[`catBannerDesc_${cat.id}`] || cat.description}
                                     className="font-medium outline-none focus:bg-white px-1 py-0.5 rounded inline-block"
-                                    onBlur={(e) =>
-                                      updateCategoryField(
-                                        cat.id,
-                                        "description",
-                                        e.currentTarget.innerHTML,
-                                      )
-                                    }
+                                    onBlur={(e) => {
+                                      const h = e.currentTarget.innerHTML;
+                                      updateCategoryField(cat.id, "description", stripHtml(h));
+                                      updateSetting(`catBannerDesc_${cat.id}`, h);
+                                    }}
                                   />
                                 </>
                               )}
@@ -4431,19 +4427,17 @@ export default function WebshopComponent({
                 <EditableText
                   tag="h2"
                   isPreviewMode={isPreviewMode}
-                  html={activeSubcategory.name}
+                  html={s[`subcatBannerName_${activeSubcategory.id}`] || activeSubcategory.name}
                   className="relative z-10 text-4xl @md:text-5xl font-black uppercase tracking-wider outline-none focus:bg-white/50 px-2 rounded drop-shadow-sm text-center transition-colors"
                   style={{
                     color: s.bannerTextColor || "#0f172a",
                     fontFamily: s.bannerFontFamily || "inherit",
                   }}
-                  onBlur={(e) =>
-                    updateSubcategoryField(
-                      activeSubcategory.id,
-                      "name",
-                      e.currentTarget.innerHTML,
-                    )
-                  }
+                  onBlur={(e) => {
+                    const h = e.currentTarget.innerHTML;
+                    updateSubcategoryField(activeSubcategory.id, "name", stripHtml(h));
+                    updateSetting(`subcatBannerName_${activeSubcategory.id}`, h);
+                  }}
                 />
               </div>
 
@@ -4468,17 +4462,16 @@ export default function WebshopComponent({
                     tag="p"
                     isPreviewMode={isPreviewMode}
                     html={
+                      s[`subcatIntroDesc_${activeSubcategory.id}`] ||
                       activeSubcategory.detailedDescription ||
                       activeSubcategory.description
                     }
                     className="text-sm text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 px-2 rounded"
-                    onBlur={(e) =>
-                      updateSubcategoryField(
-                        activeSubcategory.id,
-                        "detailedDescription",
-                        e.currentTarget.innerHTML,
-                      )
-                    }
+                    onBlur={(e) => {
+                      const h = e.currentTarget.innerHTML;
+                      updateSubcategoryField(activeSubcategory.id, "detailedDescription", stripHtml(h));
+                      updateSetting(`subcatIntroDesc_${activeSubcategory.id}`, h);
+                    }}
                   />
                 </div>
                 <div className="bg-amber-400 text-slate-900 p-8 shadow-sm flex flex-col justify-between">
