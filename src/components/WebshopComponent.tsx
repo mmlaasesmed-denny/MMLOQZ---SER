@@ -6224,35 +6224,9 @@ export default function WebshopComponent({
 
                     {customerType === "private" ? (
                       /* Personlig Form Fields */
-                      <div className="space-y-4">
-                        {/* Name & Surname */}
-                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-slate-500 block">Name *</label>
-                            <input
-                              type="text"
-                              value={name}
-                              onChange={(e) => setName(e.target.value)}
-                              placeholder="Fornavn"
-                              required
-                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-bold text-slate-500 block">Surname *</label>
-                            <input
-                              type="text"
-                              value={surname}
-                              onChange={(e) => setSurname(e.target.value)}
-                              placeholder="Efternavn"
-                              required
-                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
-                            />
-                          </div>
-                        </div>
-
-                        {/* E-mail */}
-                        <div className="space-y-1">
+                      <div className="flex flex-col space-y-4">
+                        {/* E-mail (Mobile first order) */}
+                        <div className="space-y-1 order-1 @md:order-2">
                           <label className="text-[10px] font-bold text-slate-500 block">E-mail *</label>
                           <div className="relative">
                             <input
@@ -6264,24 +6238,27 @@ export default function WebshopComponent({
                               disabled={!!loggedInUser}
                               className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white disabled:opacity-60"
                             />
-                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                           </div>
                         </div>
 
                         {/* Landekode & Telefon */}
-                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4 order-2 @md:order-3">
                           <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-500 block">Landekode *</label>
-                            <select
-                              value={countryCode}
-                              onChange={(e) => setCountryCode(e.target.value)}
-                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white cursor-pointer"
-                            >
-                              <option value="Danmark (+45)">Danmark (+45)</option>
-                              <option value="Sverige (+46)">Sverige (+46)</option>
-                              <option value="Norge (+47)">Norge (+47)</option>
-                              <option value="Tyskland (+49)">Tyskland (+49)</option>
-                            </select>
+                            <div className="relative">
+                              <select
+                                value={countryCode}
+                                onChange={(e) => setCountryCode(e.target.value)}
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white cursor-pointer appearance-none"
+                              >
+                                <option value="Danmark (+45)">Danmark (+45)</option>
+                                <option value="Sverige (+46)">Sverige (+46)</option>
+                                <option value="Norge (+47)">Norge (+47)</option>
+                                <option value="Tyskland (+49)">Tyskland (+49)</option>
+                              </select>
+                              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
                           </div>
                           <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-500 block">Telefon *</label>
@@ -6294,13 +6271,45 @@ export default function WebshopComponent({
                                 required
                                 className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                               />
-                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Name & Surname (or Fornavn og efternavn) */}
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4 order-3 @md:order-1">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Fornavn / Name *</label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Fornavn"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Efternavn / Surname *</label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={surname}
+                                onChange={(e) => setSurname(e.target.value)}
+                                placeholder="Efternavn"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                             </div>
                           </div>
                         </div>
 
                         {/* Street / road, house number */}
-                        <div className="space-y-1">
+                        <div className="space-y-1 order-4">
                           <label className="text-[10px] font-bold text-slate-500 block">Street / road, house number *</label>
                           <div className="relative">
                             <input
@@ -6311,12 +6320,12 @@ export default function WebshopComponent({
                               required
                               className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                             />
-                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                           </div>
                         </div>
 
                         {/* Address line 2 */}
-                        <div className="space-y-1">
+                        <div className="space-y-1 order-5">
                           <label className="text-[10px] font-bold text-slate-500 block">Address line 2</label>
                           <div className="relative">
                             <input
@@ -6326,22 +6335,25 @@ export default function WebshopComponent({
                               placeholder="Etage, side osv."
                               className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                             />
-                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                           </div>
                         </div>
 
                         {/* Postnr & By */}
-                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4 order-6">
                           <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-500 block">Postnr. *</label>
-                            <input
-                              type="text"
-                              value={postcode}
-                              onChange={(e) => setPostcode(e.target.value)}
-                              placeholder="2450"
-                              required
-                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
-                            />
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={postcode}
+                                onChange={(e) => setPostcode(e.target.value)}
+                                placeholder="2450"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
                           </div>
                           <div className="space-y-1">
                             <label className="text-[10px] font-bold text-slate-500 block">By *</label>
@@ -6354,7 +6366,7 @@ export default function WebshopComponent({
                                 required
                                 className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                               />
-                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                             </div>
                           </div>
                         </div>
