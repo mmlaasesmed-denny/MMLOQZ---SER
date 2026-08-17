@@ -33,6 +33,7 @@ import {
   Edit3,
   ChevronUp,
   ChevronDown,
+  X,
 } from "lucide-react";
 import { SiteTheme } from "../types";
 import {
@@ -715,8 +716,12 @@ export default function WebshopComponent({
     });
   };
 
-  // Mega Menu State
+  // Mega Menu & Mobile Drawer State
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [mobileDrawerTab, setMobileDrawerTab] = useState<"categories" | "menu">("menu");
+  const [mobileOpenCatId, setMobileOpenCatId] = useState<string | null>(null);
+
   const [megaMenuHoverCatId, setMegaMenuHoverCatId] = useState<string | null>(
     null,
   );
@@ -2097,32 +2102,201 @@ export default function WebshopComponent({
       {/* Background Gradients */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/5 rounded-full filter blur-3xl pointer-events-none" />
 
-      <div className="w-full max-w-7xl mx-auto py-2 px-4 @md:px-8 @lg:px-12 relative">
+      {/* MOBILE LEFT SLIDE-OVER NAVIGATION DRAWER */}
+      {isMobileDrawerOpen && (
+        <div className="fixed inset-0 z-[99999] flex">
+          {/* Dark Backdrop Overlay */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+            onClick={() => setIsMobileDrawerOpen(false)}
+          />
+
+          {/* Left Slide-Over Content Drawer */}
+          <div className="relative w-80 max-w-[85vw] bg-white h-full shadow-2xl z-10 flex flex-col animate-in slide-in-from-left duration-300 text-left">
+            {/* Top Bar with X Close Button */}
+            <div className="flex justify-end p-4 border-b border-slate-100">
+              <button
+                type="button"
+                onClick={() => setIsMobileDrawerOpen(false)}
+                className="p-1 text-slate-400 hover:text-slate-800 transition-colors bg-transparent border-none cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Tabs Header: KATEGORIER | MENU */}
+            <div className="flex border-b border-slate-200">
+              <button
+                type="button"
+                onClick={() => setMobileDrawerTab("categories")}
+                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider cursor-pointer border-none bg-transparent transition-all ${
+                  mobileDrawerTab === "categories"
+                    ? "text-slate-900 border-b-2 border-amber-400 font-extrabold"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                Kategorier
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileDrawerTab("menu")}
+                className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider cursor-pointer border-none bg-transparent transition-all ${
+                  mobileDrawerTab === "menu"
+                    ? "text-amber-500 border-b-2 border-amber-400 font-extrabold"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                Menu
+              </button>
+            </div>
+
+            {/* Tab Body Content */}
+            <div className="flex-1 overflow-y-auto">
+              {mobileDrawerTab === "menu" ? (
+                /* MENU TAB ITEMS */
+                <div className="divide-y divide-slate-100 text-left">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("categories");
+                      setIsMobileDrawerOpen(false);
+                      if (isPreviewMode) window.location.hash = "shop";
+                    }}
+                    className="w-full text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-amber-500 hover:bg-slate-50 transition-colors bg-transparent border-none cursor-pointer block"
+                  >
+                    Hjem
+                  </button>
+
+                  {!loggedInUser ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setView("login");
+                          setIsMobileDrawerOpen(false);
+                          if (isPreviewMode) window.location.hash = "shop/login";
+                        }}
+                        className="w-full text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-amber-500 hover:bg-slate-50 transition-colors bg-transparent border-none cursor-pointer block"
+                      >
+                        Register
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setView("login");
+                          setIsMobileDrawerOpen(false);
+                          if (isPreviewMode) window.location.hash = "shop/login";
+                        }}
+                        className="w-full text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-amber-500 hover:bg-slate-50 transition-colors bg-transparent border-none cursor-pointer block"
+                      >
+                        Log Ind
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileDrawerOpen(false);
+                      }}
+                      className="w-full text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-amber-500 hover:bg-slate-50 transition-colors bg-transparent border-none cursor-pointer block"
+                    >
+                      Log Ud
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("categories");
+                      setIsMobileDrawerOpen(false);
+                      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+                    }}
+                    className="w-full text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-amber-500 hover:bg-slate-50 transition-colors bg-transparent border-none cursor-pointer block"
+                  >
+                    Om
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("categories");
+                      setIsMobileDrawerOpen(false);
+                      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+                    }}
+                    className="w-full text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-amber-500 hover:bg-slate-50 transition-colors bg-transparent border-none cursor-pointer block"
+                  >
+                    Kontakte
+                  </button>
+                </div>
+              ) : (
+                /* KATEGORIER TAB ITEMS */
+                <div className="divide-y divide-slate-100 text-left">
+                  {categories.map((cat) => {
+                    const isOpen = mobileOpenCatId === cat.id;
+                    const catSubcategories = subcategories.filter(
+                      (s) => s.categoryId === cat.id
+                    );
+                    return (
+                      <div key={cat.id}>
+                        <button
+                          type="button"
+                          onClick={() => setMobileOpenCatId(isOpen ? null : cat.id)}
+                          className="w-full text-left px-6 py-3.5 text-xs font-bold text-slate-800 hover:text-amber-500 flex items-center justify-between bg-transparent border-none cursor-pointer"
+                        >
+                          <span>{stripHtml(cat.name)}</span>
+                          <span className="text-slate-400 text-xs">
+                            {isOpen ? "▼" : "▶"}
+                          </span>
+                        </button>
+
+                        {isOpen && (
+                          <div className="bg-slate-50 py-1 border-t border-slate-100">
+                            {catSubcategories.map((sub) => (
+                              <button
+                                key={sub.id}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedCatId(cat.id);
+                                  setSelectedSubcatId(sub.id);
+                                  setView("subcategory-detail");
+                                  setIsMobileDrawerOpen(false);
+                                  if (isPreviewMode)
+                                    window.location.hash = `shop/subcat/${sub.id}`;
+                                }}
+                                className="w-full text-left pl-10 pr-6 py-2 text-xs font-bold text-slate-600 hover:text-amber-500 transition-colors bg-transparent border-none cursor-pointer block"
+                              >
+                                {sub.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
         {/* Webshop Header Bar */}
         <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4 @md:flex-row @md:items-center @md:justify-between @md:gap-4">
           {/* Mobile Top Row: Hamburger, Logo, Actions */}
           <div className="flex items-center justify-between w-full @md:hidden relative">
-            {/* Mobile Hamburger Menu */}
-            <div
-              className="flex items-center z-50"
-              onMouseEnter={() => setIsMegaMenuOpen(true)}
-              onMouseLeave={() => {
-                setIsMegaMenuOpen(false);
-                setMegaMenuHoverCatId(null);
-                setMegaMenuHoverSubcatId(null);
+            {/* Mobile Hamburger Menu Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsMobileDrawerOpen(true);
               }}
+              className="text-3xl text-slate-800 hover:text-amber-500 bg-transparent border-none py-2 pr-4 cursor-pointer transition-colors flex items-center justify-center leading-none"
             >
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMegaMenuOpen(!isMegaMenuOpen);
-                }}
-                className="text-3xl text-slate-800 hover:text-amber-500 bg-transparent border-none py-2 pr-4 cursor-pointer transition-colors flex items-center justify-center leading-none"
-              >
-                <span>☰</span>
-              </button>
+              <span>☰</span>
+            </button>
 
               {/* Mega Menu Flyout */}
               {isMegaMenuOpen && (
@@ -3038,8 +3212,6 @@ export default function WebshopComponent({
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
       {/* Nav Link Bar */}
       <div
