@@ -2082,7 +2082,7 @@ export default function WebshopComponent({
       <div className="w-full max-w-7xl mx-auto py-2 px-4 @md:px-8 @lg:px-12 relative">
 
         {/* Webshop Header Bar */}
-        <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4 @md:flex-row @md:items-center @md:justify-between @md:gap-4 border-b border-slate-150">
+        <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4 @md:flex-row @md:items-center @md:justify-between @md:gap-4">
           {/* Mobile Top Row: Hamburger, Logo, Actions */}
           <div className="flex items-center justify-between w-full @md:hidden relative">
             {/* Mobile Hamburger Menu */}
@@ -9224,7 +9224,7 @@ export default function WebshopComponent({
         )}
 
         {/* Footer */}
-        <footer className="border-t border-slate-150 pt-8 mt-12 pb-4 text-left relative z-10 select-none">
+        <footer className="pt-8 mt-12 pb-4 text-left relative z-10 select-none">
           <div className="grid grid-cols-1 @md:grid-cols-4 gap-8">
             {/* Logo Column */}
             <div className="space-y-3">
