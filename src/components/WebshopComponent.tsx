@@ -9225,9 +9225,9 @@ export default function WebshopComponent({
 
         {/* Footer */}
         <footer className="pt-8 mt-12 pb-4 text-left relative z-10 select-none">
-          <div className="grid grid-cols-1 @md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 @md:grid-cols-9 gap-8">
             {/* Logo Column */}
-            <div className="space-y-3">
+            <div className="@md:col-span-3 space-y-3">
               {(() => {
                 const fLogoType = s.footerLogoType || s.logoType || "text";
                 const fLogoFontSize = s.footerLogoFontSize
@@ -9356,7 +9356,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Areas Column */}
-            <div>
+            <div className="@md:col-span-2">
               <EditableText
                 tag="h5"
                 isPreviewMode={isPreviewMode}
@@ -9386,7 +9386,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Address Column */}
-            <div>
+            <div className="@md:col-span-2">
               <EditableText
                 tag="h5"
                 isPreviewMode={isPreviewMode}
@@ -9416,7 +9416,7 @@ export default function WebshopComponent({
             </div>
 
             {/* Info Column */}
-            <div>
+            <div className="@md:col-span-2">
               <EditableText
                 tag="h5"
                 isPreviewMode={isPreviewMode}
