@@ -3786,18 +3786,46 @@ export default function Sidebar({
                   {selectedElement.type === 'video' && (
                     <div className="space-y-4 border-t border-slate-100 dark:border-slate-800/60 pt-4">
                       <div className="space-y-2">
-                        <span className="text-xs font-semibold text-slate-500 block">Video Source URL</span>
+                        <span className="text-xs font-semibold text-slate-500 block">Video Source (YouTube / Vimeo / MP4 File)</span>
                         <div className="flex gap-2">
                           <input
                             type="text"
                             value={selectedElement.src || ''}
                             onChange={(e) => onUpdateElement(selectedElement.id, {}, undefined, undefined, e.target.value || undefined)}
                             className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                            placeholder="YouTube, Vimeo, or MP4 URL..."
+                            placeholder="YouTube, Vimeo URL, or MP4..."
                           />
+                          <button
+                            onClick={() => {
+                              const input = document.createElement("input");
+                              input.type = "file";
+                              input.accept = "video/mp4,video/webm,video/ogg,video/*";
+                              input.onchange = (e) => {
+                                const file = (e.target as HTMLInputElement).files?.[0];
+                                if (file) {
+                                  if (file.size > 100 * 1024 * 1024) {
+                                    alert("Videofilen er for stor (max 100MB). Vælg venligst en mindre fil eller brug et YouTube link.");
+                                    return;
+                                  }
+                                  const reader = new FileReader();
+                                  reader.onload = (evt) => {
+                                    if (evt.target?.result) {
+                                      onUpdateElement(selectedElement.id, {}, undefined, undefined, evt.target.result as string);
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              };
+                              input.click();
+                            }}
+                            className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-700 cursor-pointer flex items-center gap-1 shrink-0"
+                            title="Upload MP4 videofil fra din computer"
+                          >
+                            Upload MP4
+                          </button>
                         </div>
                         <p className="text-[10px] text-slate-400 mt-1 leading-tight">
-                          Paste a YouTube or Vimeo link to embed automatically. Alternatively, paste a direct link to an MP4 file.
+                          Indtast et YouTube eller Vimeo link, eller klik 'Upload MP4' for at vælge en videofil fra din computer.
                         </p>
                       </div>
                     </div>

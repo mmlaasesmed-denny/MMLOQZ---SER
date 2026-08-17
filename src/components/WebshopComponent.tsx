@@ -50,6 +50,7 @@ import {
   WebshopBrand,
   WebshopProduct,
 } from "../webshopData";
+import { getEmbedUrl } from "./Canvas";
 
 interface CartItem {
   product: WebshopProduct;
@@ -468,7 +469,46 @@ export default function WebshopComponent({
         reader.readAsDataURL(file);
       }
     };
-    input.click();
+  };
+
+  const promptEditVideo = (settingKey: string) => {
+    if (isPreviewMode) return;
+    const choice = window.confirm(
+      "Klik OK for at vælge en MP4-videofil fra din computer, eller klik Annuller for at indtaste et YouTube / Vimeo link."
+    );
+
+    if (choice) {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "video/mp4,video/webm,video/ogg,video/*";
+      input.onchange = (e: any) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          if (file.size > 100 * 1024 * 1024) {
+            alert(
+              "Videofilen er for stor (max 100MB). Vælg venligst en mindre fil eller brug et YouTube link."
+            );
+            return;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (reader.result) {
+              updateSetting(settingKey, reader.result as string);
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+    } else {
+      const url = window.prompt(
+        "Indtast YouTube / Vimeo URL (f.eks. https://www.youtube.com/watch?v=... eller https://youtu.be/...):",
+        s[settingKey] || ""
+      );
+      if (url !== null) {
+        updateSetting(settingKey, url);
+      }
+    }
   };
 
   // Helper for responsive grid columns based on preview viewportMode
@@ -4239,13 +4279,10 @@ export default function WebshopComponent({
                       <ImageIcon className="w-3.5 h-3.5" /> Skift Bannerbillede
                     </button>
                     <button
-                      onClick={() => {
-                        const url = prompt("Indtast YouTube/Vimeo video embed URL:", s[`subcatVideoUrl_${activeSubcategory.id}`] || "");
-                        if (url !== null) updateSetting(`subcatVideoUrl_${activeSubcategory.id}`, url);
-                      }}
+                      onClick={() => promptEditVideo(`subcatVideoUrl_${activeSubcategory.id}`)}
                       className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
                     >
-                      <Video className="w-3.5 h-3.5 text-amber-400" /> Skift Video Link
+                      <Video className="w-3.5 h-3.5 text-amber-400" /> Skift Video / Upload MP4
                     </button>
                     <button
                       onClick={() => promptAddProduct(activeSubcategory.id)}
@@ -4517,43 +4554,27 @@ export default function WebshopComponent({
                   {/* Right Column: Video Player Box */}
                   <div>
                     {(() => {
-                      let embedUrl =
-                        s[`subcatVideoUrl_${activeSubcategory.id}`] || "";
-                      if (embedUrl) {
-                        if (embedUrl.includes("youtube.com/watch?v=")) {
-                          embedUrl = embedUrl.replace(
-                            "youtube.com/watch?v=",
-                            "youtube.com/embed/",
-                          );
-                          const ampIdx = embedUrl.indexOf("&");
-                          if (ampIdx !== -1)
-                            embedUrl = embedUrl.substring(0, ampIdx);
-                        } else if (embedUrl.includes("youtu.be/")) {
-                          embedUrl = embedUrl.replace(
-                            "youtu.be/",
-                            "youtube.com/embed/",
-                          );
-                        } else if (
-                          embedUrl.includes("vimeo.com/") &&
-                          !embedUrl.includes("player.vimeo.com")
-                        ) {
-                          const match = embedUrl.match(/vimeo\.com\/(\d+)/);
-                          if (match) {
-                            embedUrl = `https://player.vimeo.com/video/${match[1]}`;
-                          }
-                        }
-                      }
+                      const rawUrl = s[`subcatVideoUrl_${activeSubcategory.id}`] || "";
+                      const videoData = getEmbedUrl(rawUrl);
 
                       return (
                         <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200 rounded-xl">
-                          {embedUrl ? (
-                            <iframe
-                              src={embedUrl}
-                              title="Video"
-                              className="absolute inset-0 w-full h-full border-none"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                            />
+                          {videoData ? (
+                            videoData.type === "mp4" ? (
+                              <video
+                                src={videoData.url}
+                                controls
+                                className="absolute inset-0 w-full h-full object-cover"
+                              />
+                            ) : (
+                              <iframe
+                                src={videoData.url}
+                                title="Video"
+                                className="absolute inset-0 w-full h-full border-none"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              />
+                            )
                           ) : (
                             <>
                               <img
@@ -4586,26 +4607,16 @@ export default function WebshopComponent({
                                 }}
                                 className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
                               >
-                                Skift Billede
+                                Skift Coverbillede
                               </button>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  const url = window.prompt(
-                                    "Indtast video URL (f.eks. YouTube eller Vimeo):",
-                                    s[`subcatVideoUrl_${activeSubcategory.id}`] ||
-                                      "",
-                                  );
-                                  if (url !== null) {
-                                    updateSetting(
-                                      `subcatVideoUrl_${activeSubcategory.id}`,
-                                      url,
-                                    );
-                                  }
+                                  promptEditVideo(`subcatVideoUrl_${activeSubcategory.id}`);
                                 }}
-                                className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
+                                className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer flex items-center gap-1"
                               >
-                                Skift Video URL
+                                <Video className="w-3 h-3 text-indigo-600" /> Skift Video / Upload MP4
                               </button>
                             </div>
                           )}

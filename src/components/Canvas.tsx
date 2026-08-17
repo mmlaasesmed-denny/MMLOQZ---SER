@@ -136,20 +136,38 @@ export const getDefaultDropdownLinks = (): DropdownLink[] => [
   }
 ];
 
-const getEmbedUrl = (url: string) => {
-  if (!url) return null;
-  // YouTube
-  const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+export const getEmbedUrl = (url: string) => {
+  if (!url || !url.trim()) return null;
+  const cleanUrl = url.trim();
+
+  // Check if it's an MP4 / WebM / OGG video or Blob Data URL
+  if (
+    cleanUrl.startsWith("data:video/") ||
+    cleanUrl.endsWith(".mp4") ||
+    cleanUrl.endsWith(".webm") ||
+    cleanUrl.endsWith(".ogg") ||
+    cleanUrl.includes(".mp4?") ||
+    cleanUrl.includes(".webm?")
+  ) {
+    return { type: 'mp4', url: cleanUrl };
+  }
+
+  // YouTube match regex covering: watch?v=, youtu.be/, shorts/, embed/, v/, m.youtube.com
+  const ytMatch = cleanUrl.match(
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i
+  );
   if (ytMatch && ytMatch[1]) {
     return { type: 'youtube', url: `https://www.youtube.com/embed/${ytMatch[1]}?rel=0` };
   }
-  // Vimeo
-  const vimeoMatch = url.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/i);
+
+  // Vimeo match regex covering: vimeo.com/123456789, player.vimeo.com/video/123456789
+  const vimeoMatch = cleanUrl.match(/vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/i);
   if (vimeoMatch && vimeoMatch[1]) {
     return { type: 'vimeo', url: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
   }
-  // Fallback to HTML5 video (mp4, webm, etc.)
-  return { type: 'html5', url };
+
+  // Fallback to html5/mp4 video for direct video links
+  return { type: 'mp4', url: cleanUrl };
 };
 
 interface CanvasProps {
