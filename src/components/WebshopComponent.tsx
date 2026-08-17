@@ -1031,6 +1031,8 @@ export default function WebshopComponent({
         window.location.hash = "shop/checkout";
       } else if (view === "login") {
         window.location.hash = "shop/login";
+      } else if (view === "register") {
+        window.location.hash = "shop/register";
       } else if (view === "reset-password") {
         window.location.hash = `shop/reset-password${resetEmail ? "?email=" + encodeURIComponent(resetEmail) : ""}`;
       } else if (view === "admin") {
@@ -1115,6 +1117,10 @@ export default function WebshopComponent({
         setView("checkout");
       } else if (hash === "#shop/login") {
         setView("login");
+        setAuthMode("login");
+      } else if (hash === "#shop/register") {
+        setView("login");
+        setAuthMode("register");
       } else if (hash.startsWith("#shop/reset-password")) {
         setView("reset-password");
         const emailParam = new URLSearchParams(hash.split("?")[1] || "").get(
@@ -1420,10 +1426,9 @@ export default function WebshopComponent({
       setRegisterConfirmPassword("");
       setRegisterError("");
       
+      setView("profile");
       if (isPreviewMode) {
-        window.location.hash = "shop";
-      } else {
-        setView("categories");
+        window.location.hash = "shop/profile";
       }
     } catch (err) {
       setRegisterError("Kunne ikke oprette forbindelse til serveren.");
@@ -6862,20 +6867,9 @@ export default function WebshopComponent({
 
                     <button
                       type="submit"
-                      className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
+                      className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none shadow-sm"
                     >
-                      <EditableText
-                        tag="span"
-                        isPreviewMode={isPreviewMode}
-                        html={loginButtonText}
-                        className="outline-none focus:bg-amber-500 rounded px-2 block"
-                        onBlur={(e) =>
-                          updateSetting(
-                            "loginButtonText",
-                            e.currentTarget.innerHTML,
-                          )
-                        }
-                      />
+                      {stripHtml(loginButtonText) || "LOG IND"}
                     </button>
                   </form>
 
@@ -7048,20 +7042,9 @@ export default function WebshopComponent({
 
                     <button
                       type="submit"
-                      className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-955 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none"
+                      className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-black text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer border-none shadow-sm"
                     >
-                      <EditableText
-                        tag="span"
-                        isPreviewMode={isPreviewMode}
-                        html={registerButtonText}
-                        className="outline-none focus:bg-amber-500 rounded px-2 block"
-                        onBlur={(e) =>
-                          updateSetting(
-                            "registerButtonText",
-                            e.currentTarget.innerHTML,
-                          )
-                        }
-                      />
+                      {stripHtml(registerButtonText) || "OPRET KONTO"}
                     </button>
                   </form>
 
