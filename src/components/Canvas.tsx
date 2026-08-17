@@ -585,10 +585,15 @@ export default function Canvas({
   pages = [],
   onNavigatePage
 }: CanvasProps) {
-  const isVisitorMode = !window.location.pathname.includes('admin-editor');
   // Local state for mobile menu responsiveness
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMobileDropdown, setActiveMobileDropdown] = useState<string | null>(null);
+
+  // Drag & Drop visual drop shade placement indicator state
+  const [dragOverTarget, setDragOverTarget] = useState<{
+    colId: string;
+    index: number;
+  } | null>(null);
 
   // Local state to dynamically center fixed mobile elements relative to the mockup stage
   const [stageLeft, setStageLeft] = useState<number | null>(null);
@@ -1163,6 +1168,14 @@ export default function Canvas({
                             if (!isPreviewMode) {
                               e.preventDefault();
                               e.dataTransfer.dropEffect = 'copy';
+                              if (col.elements.length === 0) {
+                                setDragOverTarget({ colId: col.id, index: 0 });
+                              }
+                            }
+                          }}
+                          onDragLeave={() => {
+                            if (!isPreviewMode) {
+                              setDragOverTarget(null);
                             }
                           }}
                           onDrop={(e) => {
@@ -1170,17 +1183,25 @@ export default function Canvas({
                               e.preventDefault();
                               const type = e.dataTransfer.getData('text/plain');
                               if (type) {
-                                onAddElement(section.id, col.id, type as any);
+                                const dropIdx = dragOverTarget?.colId === col.id ? dragOverTarget.index : undefined;
+                                onAddElement(section.id, col.id, type as any, dropIdx);
                               }
+                              setDragOverTarget(null);
                             }
                           }}
                         >
                         {/* Column Name label in Editor */}
                         {!isPreviewMode && col.elements.length === 0 && (
-                          <div className="flex flex-col items-center justify-center py-10 bg-slate-50/65 dark:bg-slate-900/65 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-center group cursor-pointer hover:border-indigo-300 hover:bg-indigo-50/10 transition-all">
-                            <Plus className="w-5 h-5 mb-1.5 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                            <p className="text-xs uppercase font-extrabold tracking-widest text-slate-400 group-hover:text-indigo-500 transition-colors">+ Drop Component</p>
-                            <span className="text-[10px] text-slate-400 max-w-[150px] mt-1 leading-relaxed">Select an insertion utility below to add text, images or call-to-actions.</span>
+                          <div className={`flex flex-col items-center justify-center py-10 rounded-xl text-center group cursor-pointer transition-all ${
+                            dragOverTarget?.colId === col.id
+                              ? 'bg-indigo-500/15 border-2 border-dashed border-indigo-500 shadow-lg text-indigo-600'
+                              : 'bg-slate-50/65 dark:bg-slate-900/65 border border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-300 hover:bg-indigo-50/10'
+                          }`}>
+                            <Plus className="w-5 h-5 mb-1.5 text-indigo-500 group-hover:text-indigo-500 transition-colors animate-bounce" />
+                            <p className="text-xs uppercase font-extrabold tracking-widest text-indigo-600 dark:text-indigo-400">
+                              {dragOverTarget?.colId === col.id ? '➕ Slip for at placere element her' : '+ Drop Component Her'}
+                            </p>
+                            <span className="text-[10px] text-slate-400 max-w-[180px] mt-1 leading-relaxed">Træk og slip ethvert element direkte hertil.</span>
                           </div>
                         )}
 
@@ -1214,43 +1235,57 @@ export default function Canvas({
                             el.visibleOnMobile === false ? 'hide-on-mobile' : ''
                           ].filter(Boolean).join(' ');
 
+                          const isDropHereShade = !isPreviewMode && dragOverTarget?.colId === col.id && dragOverTarget?.index === rawElIdx;
+
                           return (
-                            <div
-                              key={el.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (!isPreviewMode) {
-                                  onSelectElement(el.id);
-                                  if (el.type === 'text') handleStartInlineEdit(el);
-                                }
-                              }}
-                              onDragOver={(e) => {
-                                if (!isPreviewMode) {
-                                  e.preventDefault();
+                            <React.Fragment key={el.id}>
+                              {/* Visual Drop Placement Shade Indicator Bar */}
+                              {isDropHereShade && (
+                                <div className="w-full py-3 px-4 bg-indigo-500/20 border-2 border-dashed border-indigo-500 rounded-xl flex items-center justify-center gap-2 text-indigo-700 dark:text-indigo-300 font-extrabold text-xs animate-pulse my-1.5 shadow-lg backdrop-blur-xs select-none pointer-events-none z-30">
+                                  <Plus className="w-4 h-4 text-indigo-600 animate-spin" />
+                                  <span>➕ Slip for at placere element her</span>
+                                </div>
+                              )}
+                              <div
+                                onClick={(e) => {
                                   e.stopPropagation();
-                                  e.dataTransfer.dropEffect = 'copy';
-                                }
-                              }}
-                              onDrop={(e) => {
-                                if (!isPreviewMode) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  const type = e.dataTransfer.getData('text/plain');
-                                  if (type) {
-                                    const rect = e.currentTarget.getBoundingClientRect();
-                                    const midY = rect.top + rect.height / 2;
-                                    const targetIndex = e.clientY < midY ? rawElIdx : rawElIdx + 1;
-                                    onAddElement(section.id, col.id, type as any, targetIndex);
+                                  if (!isPreviewMode) {
+                                    onSelectElement(el.id);
+                                    if (el.type === 'text') handleStartInlineEdit(el);
                                   }
-                                }
-                              }}
-                              className={`group/el relative transition-all rounded ${elementVisibilityClasses} ${
-                                isPreviewMode
-                                  ? ''
-                                  : isElementSelected
-                                    ? 'ring-4 ring-indigo-500/10 border-2 border-indigo-500 p-2 -m-2 z-10'
-                                    : 'hover:border-dashed hover:border hover:border-slate-350 dark:hover:border-slate-700 p-2 -m-2 cursor-pointer'
-                              }`}
+                                }}
+                                onDragOver={(e) => {
+                                  if (!isPreviewMode) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    e.dataTransfer.dropEffect = 'copy';
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const isTopHalf = e.clientY < (rect.top + rect.height / 2);
+                                    setDragOverTarget({
+                                      colId: col.id,
+                                      index: isTopHalf ? rawElIdx : rawElIdx + 1
+                                    });
+                                  }
+                                }}
+                                onDrop={(e) => {
+                                  if (!isPreviewMode) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const type = e.dataTransfer.getData('text/plain');
+                                    if (type) {
+                                      const dropIdx = dragOverTarget?.colId === col.id ? dragOverTarget.index : rawElIdx;
+                                      onAddElement(section.id, col.id, type as any, dropIdx);
+                                    }
+                                    setDragOverTarget(null);
+                                  }
+                                }}
+                                className={`group/el relative transition-all rounded ${elementVisibilityClasses} ${
+                                  isPreviewMode
+                                    ? ''
+                                    : isElementSelected
+                                      ? 'ring-4 ring-indigo-500/10 border-2 border-indigo-500 p-2 -m-2 z-10'
+                                      : 'hover:border-dashed hover:border hover:border-slate-350 dark:hover:border-slate-700 p-2 -m-2 cursor-pointer'
+                                }`}
                               style={(!isPreviewMode && isElementHiddenInViewport) ? { opacity: 0.35 } : undefined}
                               id={`element-${el.id}`}
                             >
@@ -3035,7 +3070,8 @@ export default function Canvas({
                                 </div>
                               )}
                             </div>
-                          );
+                          </React.Fragment>
+                        );
                         })}
 
                         {/* Add Widget link block (Empty State helper) */}
