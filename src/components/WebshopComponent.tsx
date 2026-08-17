@@ -3136,134 +3136,136 @@ export default function WebshopComponent({
 
       <div className="w-full max-w-7xl mx-auto px-4 @md:px-8 @lg:px-12 relative">
         {/* Dynamic Breadcrumbs Navigation */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mb-6 flex-wrap relative z-10">
-          <button
-            onClick={() => {
-              setView("categories");
-              setSelectedCatId(null);
-              setSelectedSubcatId(null);
-              setSelectedBrandId(null);
-              setSelectedProductId(null);
-              if (isPreviewMode) {
-                window.location.hash = "shop";
-              }
-            }}
-            className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
-          >
-            Shop Hjem
-          </button>
+        {view !== "login" && view !== "register" && (
+          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mb-6 flex-wrap relative z-10">
+            <button
+              onClick={() => {
+                setView("categories");
+                setSelectedCatId(null);
+                setSelectedSubcatId(null);
+                setSelectedBrandId(null);
+                setSelectedProductId(null);
+                if (isPreviewMode) {
+                  window.location.hash = "shop";
+                }
+              }}
+              className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
+            >
+              Shop Hjem
+            </button>
 
-          {selectedCatId && activeCategory && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <button
-                onClick={() => {
-                  setView("subcategories");
-                  setSelectedSubcatId(null);
-                  setSelectedBrandId(null);
-                  setSelectedProductId(null);
-                  if (isPreviewMode) {
-                    window.location.hash = `shop/cat/${selectedCatId}`;
-                  }
-                }}
-                className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
-              >
-                {stripHtml(activeCategory.name)}
-              </button>
-            </>
-          )}
+            {selectedCatId && activeCategory && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <button
+                  onClick={() => {
+                    setView("subcategories");
+                    setSelectedSubcatId(null);
+                    setSelectedBrandId(null);
+                    setSelectedProductId(null);
+                    if (isPreviewMode) {
+                      window.location.hash = `shop/cat/${selectedCatId}`;
+                    }
+                  }}
+                  className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
+                >
+                  {stripHtml(activeCategory.name)}
+                </button>
+              </>
+            )}
 
-          {selectedSubcatId && activeSubcategory && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <button
-                onClick={() => {
-                  setView("subcategory-detail");
-                  setSelectedBrandId(null);
-                  setSelectedProductId(null);
-                  if (isPreviewMode) {
-                    window.location.hash = `shop/subcat/${selectedSubcatId}`;
-                  }
-                }}
-                className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
-              >
-                {stripHtml(activeSubcategory.name)}
-              </button>
-            </>
-          )}
+            {selectedSubcatId && activeSubcategory && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <button
+                  onClick={() => {
+                    setView("subcategory-detail");
+                    setSelectedBrandId(null);
+                    setSelectedProductId(null);
+                    if (isPreviewMode) {
+                      window.location.hash = `shop/subcat/${selectedSubcatId}`;
+                    }
+                  }}
+                  className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
+                >
+                  {stripHtml(activeSubcategory.name)}
+                </button>
+              </>
+            )}
 
-          {selectedBrandId && activeBrand && selectedCatId !== "pengeskabe" && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <button
-                onClick={() => {
-                  setView("brand-products");
-                  setSelectedProductId(null);
-                  if (isPreviewMode) {
-                    window.location.hash = `shop/brand/${selectedSubcatId}/${selectedBrandId}`;
-                  }
-                }}
-                className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
-              >
-                {activeBrand.name} Produkter
-              </button>
-            </>
-          )}
+            {selectedBrandId && activeBrand && selectedCatId !== "pengeskabe" && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <button
+                  onClick={() => {
+                    setView("brand-products");
+                    setSelectedProductId(null);
+                    if (isPreviewMode) {
+                      window.location.hash = `shop/brand/${selectedSubcatId}/${selectedBrandId}`;
+                    }
+                  }}
+                  className="hover:text-amber-400 transition-colors uppercase tracking-wider text-[10px]"
+                >
+                  {activeBrand.name} Produkter
+                </button>
+              </>
+            )}
 
-          {view === "product-detail" && activeProduct && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-white uppercase tracking-wider text-[10px] font-bold">
-                {stripHtml(activeProduct.name)}
-              </span>
-            </>
-          )}
+            {view === "product-detail" && activeProduct && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <span className="text-white uppercase tracking-wider text-[10px] font-bold">
+                  {stripHtml(activeProduct.name)}
+                </span>
+              </>
+            )}
 
-          {view === "search-results" && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-white uppercase tracking-wider text-[10px] font-bold">
-                Søgning: {searchQuery}
-              </span>
-            </>
-          )}
+            {view === "search-results" && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <span className="text-white uppercase tracking-wider text-[10px] font-bold">
+                  Søgning: {searchQuery}
+                </span>
+              </>
+            )}
 
-          {view === "cart" && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-white uppercase tracking-wider text-[10px] font-bold">
-                Indkøbskurv
-              </span>
-            </>
-          )}
+            {view === "cart" && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <span className="text-white uppercase tracking-wider text-[10px] font-bold">
+                  Indkøbskurv
+                </span>
+              </>
+            )}
 
-          {view === "checkout" && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-white uppercase tracking-wider text-[10px] font-bold">
-                Kasse
-              </span>
-            </>
-          )}
+            {view === "checkout" && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <span className="text-white uppercase tracking-wider text-[10px] font-bold">
+                  Kasse
+                </span>
+              </>
+            )}
 
-          {view === "admin" && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-white uppercase tracking-wider text-[10px] font-bold">
-                🔑 Admin Kontrolpanel
-              </span>
-            </>
-          )}
+            {view === "admin" && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <span className="text-white uppercase tracking-wider text-[10px] font-bold">
+                  🔑 Admin Kontrolpanel
+                </span>
+              </>
+            )}
 
-          {view === "profile" && (
-            <>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-white uppercase tracking-wider text-[10px] font-bold">
-                👤 Min Profil
-              </span>
-            </>
-          )}
-        </div>
+            {view === "profile" && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+                <span className="text-white uppercase tracking-wider text-[10px] font-bold">
+                  👤 Min Profil
+                </span>
+              </>
+            )}
+          </div>
+        )}
 
         <div className="relative z-10">
           {/* VIEW: PROFILE */}
