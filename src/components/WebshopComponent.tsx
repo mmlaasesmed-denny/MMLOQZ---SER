@@ -9507,24 +9507,24 @@ export default function WebshopComponent({
 
         {/* Toast Notification */}
         {toast && (
-          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] animate-in slide-in-from-top-5 fade-in duration-300">
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] pointer-events-none animate-in zoom-in-95 fade-in duration-200">
             <div
-              className={`px-5 py-3.5 rounded-2xl shadow-xl border flex items-center gap-3 min-w-[280px] backdrop-blur-md
-            ${toast.type === "success" ? "bg-emerald-50/95 border-emerald-200 text-emerald-900 shadow-emerald-900/10" : ""}
-            ${toast.type === "error" ? "bg-rose-50/95 border-rose-200 text-rose-900 shadow-rose-900/10" : ""}
-            ${toast.type === "info" ? "bg-blue-50/95 border-blue-200 text-blue-900 shadow-blue-900/10" : ""}
+              className={`px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-3.5 min-w-[280px] max-w-[90vw] backdrop-blur-xl text-center justify-center
+            ${toast.type === "success" ? "bg-slate-900/95 border-emerald-500/50 text-white shadow-emerald-500/20" : ""}
+            ${toast.type === "error" ? "bg-slate-900/95 border-rose-500/50 text-white shadow-rose-500/20" : ""}
+            ${toast.type === "info" ? "bg-slate-900/95 border-amber-400/50 text-white shadow-amber-400/20" : ""}
           `}
             >
               {toast.type === "success" && (
-                <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+                <CheckCircle className="w-6 h-6 text-emerald-400 shrink-0" />
               )}
               {toast.type === "error" && (
-                <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                <AlertCircle className="w-6 h-6 text-rose-400 shrink-0" />
               )}
               {toast.type === "info" && (
-                <Info className="w-5 h-5 text-blue-600 shrink-0" />
+                <Info className="w-6 h-6 text-amber-400 shrink-0" />
               )}
-              <span className="text-xs font-extrabold tracking-wide">{toast.message}</span>
+              <span className="text-sm font-extrabold tracking-wide">{toast.message}</span>
             </div>
           </div>
         )}
