@@ -3057,11 +3057,11 @@ export default function WebshopComponent({
               {/* Mega Menu Flyout */}
               {isMegaMenuOpen && (
                 <div
-                  className="absolute top-full left-4 right-4 @md:left-0 @md:right-auto mt-2 w-auto @md:w-[800px] min-h-[400px] max-h-[80vh] overflow-y-auto @md:overflow-hidden bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col @md:flex-row z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                  className="absolute top-full left-4 right-4 @md:left-0 @md:right-auto mt-2 w-auto @md:w-max min-h-[400px] max-h-[80vh] overflow-y-auto @md:overflow-hidden bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col @md:flex-row z-50 animate-in fade-in slide-in-from-top-2 duration-200"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Column 1: Categories */}
-                  <div className="w-full @md:w-1/3 bg-slate-50 border-b @md:border-b-0 @md:border-r border-slate-200 py-4 shrink-0">
+                  <div className="w-full @md:w-[250px] bg-slate-50 border-b @md:border-b-0 @md:border-r border-slate-200 py-4 shrink-0">
                     <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                       Kategorier
                     </h4>
@@ -3109,7 +3109,7 @@ export default function WebshopComponent({
 
                   {/* Column 2: Subcategories (if category hovered) */}
                   {megaMenuHoverCatId && (
-                    <div className="w-full @md:w-1/3 bg-white border-b @md:border-b-0 @md:border-r border-slate-100 py-4 shrink-0">
+                    <div className="w-full @md:w-[250px] bg-white border-b @md:border-b-0 @md:border-r border-slate-100 py-4 shrink-0">
                       <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                         Underkategorier
                       </h4>
@@ -3165,7 +3165,7 @@ export default function WebshopComponent({
 
                   {/* Column 3: Products (if subcategory hovered) */}
                   {megaMenuHoverSubcatId && (
-                    <div className="w-full @md:w-1/3 bg-white py-4 overflow-y-auto max-h-[400px] shrink-0">
+                    <div className="w-full @md:w-[300px] bg-white py-4 overflow-y-auto max-h-[400px] shrink-0">
                       <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                         Udvalgte Produkter
                       </h4>
