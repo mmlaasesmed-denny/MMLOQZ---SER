@@ -5454,13 +5454,35 @@ export default function WebshopComponent({
 
                       {/* Delivery Info Box */}
                       <div className="bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-3xl p-5 space-y-2">
-                        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider">
-                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                          På lager - Afsendes inden for 24 timer
+                        <div
+                          className="flex items-center gap-2 text-xs font-black uppercase tracking-wider outline-none focus:bg-emerald-100 px-1 rounded cursor-text"
+                          contentEditable={!isPreviewMode}
+                          suppressContentEditableWarning
+                          onBlur={(e) =>
+                            updateSetting(
+                              "productStockBadgeText",
+                              e.currentTarget.innerText
+                            )
+                          }
+                        >
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                          <span>
+                            {s.productStockBadgeText || "På lager - Afsendes inden for 24 timer"}
+                          </span>
                         </div>
-                        <p className="text-[10px] text-emerald-600 font-medium">
-                          Fragt fra kun 39,00 DKK • Gratis levering på ordrer
-                          over 555 DKK
+                        <p
+                          className="text-[10px] text-emerald-600 font-medium outline-none focus:bg-emerald-100 px-1 rounded cursor-text"
+                          contentEditable={!isPreviewMode}
+                          suppressContentEditableWarning
+                          onBlur={(e) =>
+                            updateSetting(
+                              "productShippingBadgeText",
+                              e.currentTarget.innerText
+                            )
+                          }
+                        >
+                          {s.productShippingBadgeText ||
+                            "Fragt fra kun 39,00 DKK • Gratis levering på ordrer over 555 DKK"}
                         </p>
                       </div>
 
