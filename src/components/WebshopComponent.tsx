@@ -9507,24 +9507,24 @@ export default function WebshopComponent({
 
         {/* Toast Notification */}
         {toast && (
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] animate-in slide-in-from-top-5 fade-in duration-300">
             <div
-              className={`px-4 py-3 rounded-xl shadow-lg border flex items-center gap-3 min-w-[250px]
-            ${toast.type === "success" ? "bg-emerald-50 border-emerald-100 text-emerald-800" : ""}
-            ${toast.type === "error" ? "bg-rose-50 border-rose-100 text-rose-800" : ""}
-            ${toast.type === "info" ? "bg-blue-50 border-blue-100 text-blue-800" : ""}
+              className={`px-5 py-3.5 rounded-2xl shadow-xl border flex items-center gap-3 min-w-[280px] backdrop-blur-md
+            ${toast.type === "success" ? "bg-emerald-50/95 border-emerald-200 text-emerald-900 shadow-emerald-900/10" : ""}
+            ${toast.type === "error" ? "bg-rose-50/95 border-rose-200 text-rose-900 shadow-rose-900/10" : ""}
+            ${toast.type === "info" ? "bg-blue-50/95 border-blue-200 text-blue-900 shadow-blue-900/10" : ""}
           `}
             >
               {toast.type === "success" && (
-                <CheckCircle className="w-5 h-5 text-emerald-500" />
+                <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
               )}
               {toast.type === "error" && (
-                <AlertCircle className="w-5 h-5 text-rose-500" />
+                <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
               )}
               {toast.type === "info" && (
-                <Info className="w-5 h-5 text-blue-500" />
+                <Info className="w-5 h-5 text-blue-600 shrink-0" />
               )}
-              <span className="text-sm font-bold">{toast.message}</span>
+              <span className="text-xs font-extrabold tracking-wide">{toast.message}</span>
             </div>
           </div>
         )}
