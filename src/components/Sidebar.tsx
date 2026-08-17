@@ -4544,69 +4544,77 @@ export default function Sidebar({
         {activeTab === 'elements' && (
           <div className="space-y-6 animate-in fade-in duration-150" id="tab-elements">
             <div className="space-y-1">
-              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider">Components Library</h4>
-              <p className="text-xs text-slate-400">Select components to add to your section columns.</p>
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-wider">Komponenter & Elementer</h4>
+              <p className="text-xs text-slate-400">Træk og slip elementer direkte over på skærmen, eller klik for at tilføje.</p>
             </div>
 
-            {selectedSection ? (
-              <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+              {selectedSection && (
                 <div className="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-250 dark:border-slate-800/80">
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Target Section</span>
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Valgt Sektion</span>
                   <p className="text-xs font-semibold text-slate-850 dark:text-slate-100">{selectedSection.name}</p>
                 </div>
+              )}
 
-                {/* Target Column Selector */}
+              {/* Target Column Selector */}
+              {selectedSection && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500">Target Column</label>
+                  <label className="text-xs font-semibold text-slate-500">Valgt Kolonne</label>
                   <select
                     id="element-target-column"
                     className="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-sans"
                   >
                     {selectedSection.columns.map((col, index) => (
                       <option key={col.id} value={col.id}>
-                        Column {index + 1} ({col.elements.length} items)
+                        Kolonne {index + 1} ({col.elements.length} elementer)
                       </option>
                     ))}
                   </select>
                 </div>
+              )}
 
-                {/* Components Grid */}
-                <div className="space-y-2 pt-2">
-                  <span className="text-xs font-semibold text-slate-500 block">Available Elements</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: 'text', lbl: 'Text Box', desc: 'Heading or paragraph' },
-                      { id: 'button', lbl: 'CTA Button', desc: 'Action redirection' },
-                      { id: 'image', lbl: 'Image Block', desc: 'Photo / banner overlays' },
-                      { id: 'search-box', lbl: 'Search Bar', desc: 'Inline search input' },
-                      { id: 'divider', lbl: 'Line Divider', desc: 'Horizontal line' },
-                      { id: 'spacer', lbl: 'Gap Spacer', desc: 'Vertical empty gap' },
-                    ].map(widget => (
-                      <button
-                        key={widget.id}
-                        onClick={() => {
+              {/* Components Grid */}
+              <div className="space-y-2 pt-2">
+                <span className="text-xs font-semibold text-slate-500 block">Tilgængelige Elementer (Træk & Slip)</span>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { id: 'text', lbl: '📝 Tekstboks', desc: 'Overskrift eller afsnit' },
+                    { id: 'image', lbl: '🖼️ Billedblok', desc: 'Foto, logo eller overlay' },
+                    { id: 'button', lbl: '🔘 Knap (CTA)', desc: 'Handling eller link' },
+                    { id: 'video', lbl: '📹 Videospiller', desc: 'YouTube / Vimeo embed' },
+                    { id: 'search-box', lbl: '🔍 Søgefelt', desc: 'Søgefelt til produkter' },
+                    { id: 'webshop', lbl: '🛍️ Webshop Butik', desc: 'Den fulde webshop' },
+                    { id: 'divider', lbl: '➖ Linjedeler', desc: 'Vandret adskiller' },
+                    { id: 'spacer', lbl: '↕️ Afstandsstykke', desc: 'Lodret tomrum' },
+                  ].map(widget => (
+                    <button
+                      key={widget.id}
+                      draggable={true}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', widget.id);
+                      }}
+                      onClick={() => {
+                        const targetSec = selectedSection || sections[0];
+                        if (targetSec) {
                           const selectEl = document.getElementById('element-target-column') as HTMLSelectElement;
-                          const targetColId = selectEl ? selectEl.value : selectedSection.columns[0]?.id;
+                          const targetColId = selectEl ? selectEl.value : targetSec.columns[0]?.id;
                           if (targetColId) {
-                            onAddElement(selectedSection.id, targetColId, widget.id as any);
+                            onAddElement(targetSec.id, targetColId, widget.id as any);
                           }
-                        }}
-                        className="flex flex-col items-start p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 rounded-lg hover:border-indigo-500 dark:hover:border-indigo-500 text-left transition-all group cursor-pointer"
-                      >
-                        <span className="text-xs font-bold text-slate-700 dark:text-slate-350 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                          {widget.lbl}
-                        </span>
-                        <span className="text-[10px] text-slate-400 mt-0.5 leading-tight">{widget.desc}</span>
-                      </button>
-                    ))}
-                  </div>
+                        }
+                      }}
+                      className="flex flex-col items-start p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 rounded-lg hover:border-indigo-500 dark:hover:border-indigo-500 text-left transition-all group cursor-grab active:cursor-grabbing hover:bg-white dark:hover:bg-slate-900 shadow-2xs"
+                      title="Træk og slip direkte over på kanvasset eller klik for at tilføje"
+                    >
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-350 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                        {widget.lbl}
+                      </span>
+                      <span className="text-[10px] text-slate-400 mt-0.5 leading-tight">{widget.desc}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center text-center p-6 bg-slate-50 dark:bg-slate-955 rounded-xl border border-slate-200 dark:border-slate-800/80">
-                <p className="text-xs text-slate-400 leading-relaxed">Please select a section or element on the canvas first to choose where to add components.</p>
-              </div>
-            )}
+            </div>
           </div>
         )}
 

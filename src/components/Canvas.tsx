@@ -1155,10 +1155,25 @@ export default function Canvas({
                         <div 
                           key={col.id} 
                           className={`w-full ${colWidthClass} flex flex-col space-y-4 relative ${
-                            !isPreviewMode ? 'p-2 border border-dashed border-slate-100 dark:border-slate-800/60 rounded-lg min-h-[140px]' : ''
+                            !isPreviewMode ? 'p-2 border border-dashed border-slate-200 dark:border-slate-800/60 rounded-lg min-h-[140px] hover:border-indigo-400 transition-colors' : ''
                           }`}
                           style={colStyle}
                           id={`column-${col.id}`}
+                          onDragOver={(e) => {
+                            if (!isPreviewMode) {
+                              e.preventDefault();
+                              e.dataTransfer.dropEffect = 'copy';
+                            }
+                          }}
+                          onDrop={(e) => {
+                            if (!isPreviewMode) {
+                              e.preventDefault();
+                              const type = e.dataTransfer.getData('text/plain');
+                              if (type) {
+                                onAddElement(section.id, col.id, type as any);
+                              }
+                            }
+                          }}
                         >
                         {/* Column Name label in Editor */}
                         {!isPreviewMode && col.elements.length === 0 && (
