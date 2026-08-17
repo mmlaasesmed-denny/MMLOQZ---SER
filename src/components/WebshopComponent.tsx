@@ -1026,40 +1026,38 @@ export default function WebshopComponent({
     return false;
   });
 
-  // Update hash dynamically for browser address bar if in preview/visitor mode
+  // Update hash dynamically for browser address bar
   useEffect(() => {
-    if (isPreviewMode) {
-      if (view === "categories") {
-        window.location.hash = "shop";
-      } else if (view === "subcategories" && selectedCatId) {
-        window.location.hash = `shop/cat/${selectedCatId}`;
-      } else if (view === "subcategory-detail" && selectedSubcatId) {
-        window.location.hash = `shop/subcat/${selectedSubcatId}`;
-      } else if (
-        view === "brand-products" &&
-        selectedSubcatId &&
-        selectedBrandId
-      ) {
-        window.location.hash = `shop/brand/${selectedSubcatId}/${selectedBrandId}`;
-      } else if (view === "product-detail" && selectedProductId) {
-        window.location.hash = `shop/product/${selectedProductId}`;
-      } else if (view === "cart") {
-        window.location.hash = "shop/cart";
-      } else if (view === "checkout") {
-        window.location.hash = "shop/checkout";
-      } else if (view === "login") {
-        window.location.hash = "shop/login";
-      } else if (view === "register") {
-        window.location.hash = "shop/register";
-      } else if (view === "reset-password") {
-        window.location.hash = `shop/reset-password${resetEmail ? "?email=" + encodeURIComponent(resetEmail) : ""}`;
-      } else if (view === "admin") {
-        window.location.hash = "shop/admin";
-      } else if (view === "search-results") {
-        window.location.hash = `shop/search/${encodeURIComponent(searchQuery)}`;
-      } else if (view === "profile") {
-        window.location.hash = "shop/profile";
-      }
+    if (view === "categories") {
+      window.location.hash = "shop";
+    } else if (view === "subcategories" && selectedCatId) {
+      window.location.hash = `shop/cat/${selectedCatId}`;
+    } else if (view === "subcategory-detail" && selectedSubcatId) {
+      window.location.hash = `shop/subcat/${selectedSubcatId}`;
+    } else if (
+      view === "brand-products" &&
+      selectedSubcatId &&
+      selectedBrandId
+    ) {
+      window.location.hash = `shop/brand/${selectedSubcatId}/${selectedBrandId}`;
+    } else if (view === "product-detail" && selectedProductId) {
+      window.location.hash = `shop/product/${selectedProductId}`;
+    } else if (view === "cart") {
+      window.location.hash = "shop/cart";
+    } else if (view === "checkout") {
+      window.location.hash = "shop/checkout";
+    } else if (view === "login") {
+      window.location.hash = "shop/login";
+    } else if (view === "register") {
+      window.location.hash = "shop/register";
+    } else if (view === "reset-password") {
+      window.location.hash = `shop/reset-password${resetEmail ? "?email=" + encodeURIComponent(resetEmail) : ""}`;
+    } else if (view === "admin") {
+      window.location.hash = "shop/admin";
+    } else if (view === "search-results") {
+      window.location.hash = `shop/search/${encodeURIComponent(searchQuery)}`;
+    } else if (view === "profile") {
+      window.location.hash = "shop/profile";
     }
   }, [
     view,
@@ -1154,14 +1152,14 @@ export default function WebshopComponent({
         setSearchQuery(query);
         setSearchInputValue(query);
         setView("search-results");
-      } else if (hash === "#shop/profile") {
+      } else if (hash === "#shop/profile" || hash.endsWith("#shop/profile")) {
         const sessionStr = localStorage.getItem("mm_lase_session");
         if (sessionStr) {
-          setView("profile");
-        } else {
-          setView("login");
-          window.location.hash = "shop/login";
+          try {
+            setLoggedInUser(JSON.parse(sessionStr));
+          } catch (e) {}
         }
+        setView("profile");
       }
     };
 
