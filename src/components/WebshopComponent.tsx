@@ -2429,7 +2429,7 @@ export default function WebshopComponent({
           </div>
 
           {/* DESKTOP HEADER ROW (hidden on mobile, flex on desktop): Logo Left, Search Center, Actions Right */}
-          <div className="hidden @md:flex items-center justify-between w-full relative gap-6">
+          <div className="hidden @md:flex items-center justify-between w-full relative gap-8 px-4 @md:px-6 @lg:px-8 py-1">
             
             {/* Desktop Logo */}
             <div
