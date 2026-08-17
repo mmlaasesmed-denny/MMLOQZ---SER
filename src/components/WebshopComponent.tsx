@@ -1378,8 +1378,8 @@ export default function WebshopComponent({
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (registerConfirmPassword && registerPassword !== registerConfirmPassword) {
-      setRegisterError("Adgangskoderne er ikke ens.");
+    if (!registerName || !registerEmail || !registerPassword) {
+      setRegisterError("Udfyld venligst alle felter.");
       return;
     }
     if (registerPassword.length < 6) {
@@ -1423,7 +1423,6 @@ export default function WebshopComponent({
       setRegisterName("");
       setRegisterEmail("");
       setRegisterPassword("");
-      setRegisterConfirmPassword("");
       setRegisterError("");
       
       setView("profile");
