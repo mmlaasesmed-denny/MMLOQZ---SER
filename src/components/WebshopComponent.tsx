@@ -4441,227 +4441,235 @@ export default function WebshopComponent({
                 />
               </div>
 
-              {/* Section 1: Intro + Vigtige Fordele */}
-              <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left mt-8">
-                <div className="@md:col-span-2 space-y-4">
-                  <h4
-                    className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) =>
-                      updateSetting(
-                        `subcatIntroTitle_${activeSubcategory.id}`,
-                        e.currentTarget.innerText,
-                      )
-                    }
-                  >
-                    {s[`subcatIntroTitle_${activeSubcategory.id}`] ||
-                      `${stripHtml(activeSubcategory.name)}-forbedrede løsninger til sikre og holdbare døre`}
-                  </h4>
-                  <EditableText
-                    tag="p"
-                    isPreviewMode={isPreviewMode}
-                    html={
-                      s[`subcatIntroDesc_${activeSubcategory.id}`] ||
-                      activeSubcategory.detailedDescription ||
-                      activeSubcategory.description
-                    }
-                    className="text-sm text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 px-2 rounded"
-                    onBlur={(e) => {
-                      const h = e.currentTarget.innerHTML;
-                      updateSubcategoryField(activeSubcategory.id, "detailedDescription", stripHtml(h));
-                      updateSetting(`subcatIntroDesc_${activeSubcategory.id}`, h);
-                    }}
-                  />
-                </div>
-                <div className="bg-amber-400 text-slate-900 p-8 shadow-sm flex flex-col justify-between">
-                  <div>
-                    <h5
-                      className="text-lg font-black tracking-wider mb-5 outline-none focus:bg-amber-300 px-1 rounded"
+              {/* Combined Info & Video Section */}
+              <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left mt-8 items-start">
+                {/* Left Column: All Text Content */}
+                <div className="@md:col-span-2 space-y-6">
+                  {/* Part 1: Intro Title & Desc */}
+                  <div className="space-y-4">
+                    <h4
+                      className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onBlur={(e) =>
                         updateSetting(
-                          `subcatBenefitsTitle_${activeSubcategory.id}`,
+                          `subcatIntroTitle_${activeSubcategory.id}`,
                           e.currentTarget.innerText,
                         )
                       }
                     >
-                      {s[`subcatBenefitsTitle_${activeSubcategory.id}`] ||
-                        "Vigtige fordele"}
-                    </h5>
-                    <ul
-                      className="text-xs space-y-4 list-disc pl-4 font-extrabold outline-none focus:bg-amber-300 px-1 rounded"
+                      {s[`subcatIntroTitle_${activeSubcategory.id}`] ||
+                        `${stripHtml(activeSubcategory.name)}-forbedrede løsninger til sikre og holdbare døre`}
+                    </h4>
+                    <EditableText
+                      tag="p"
+                      isPreviewMode={isPreviewMode}
+                      html={
+                        s[`subcatIntroDesc_${activeSubcategory.id}`] ||
+                        activeSubcategory.detailedDescription ||
+                        activeSubcategory.description
+                      }
+                      className="text-sm text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 px-2 rounded"
+                      onBlur={(e) => {
+                        const h = e.currentTarget.innerHTML;
+                        updateSubcategoryField(activeSubcategory.id, "detailedDescription", stripHtml(h));
+                        updateSetting(`subcatIntroDesc_${activeSubcategory.id}`, h);
+                      }}
+                    />
+                  </div>
+
+                  {/* Part 2: Secondary Section Title & Paragraphs */}
+                  <div className="space-y-4 pt-2">
+                    <h4
+                      className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onBlur={(e) =>
                         updateSetting(
-                          `subcatBenefitsList_${activeSubcategory.id}`,
+                          `subcatVideoTitle_${activeSubcategory.id}`,
                           e.currentTarget.innerText,
                         )
                       }
                     >
-                      {(
-                        s[`subcatBenefitsList_${activeSubcategory.id}`] ||
-                        "Kan bruges til nødudgang og flugtveje\nKan opsætte med passagetid (låses kun uden for åbningstid)\nKan montere med rigtig lås selvom bruger blot åbner døren med håndtaget.\nKan låses remote eller via tidsindstilling."
-                      )
-                        .split("\n")
-                        .map((line: string, i: number) => {
-                          const cleanLine = line.replace(/^[•\-\*]\s*/, "");
-                          return (
-                            <li key={i} className="pl-1 leading-relaxed">
-                              <span>{cleanLine}</span>
-                            </li>
-                          );
-                        })}
-                    </ul>
+                      {s[`subcatVideoTitle_${activeSubcategory.id}`] ||
+                        `Find de rette elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} hos mmlaasesmed`}
+                    </h4>
+                    <p
+                      className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) =>
+                        updateSetting(
+                          `subcatVideoDesc1_${activeSubcategory.id}`,
+                          e.currentTarget.innerText,
+                        )
+                      }
+                    >
+                      {s[`subcatVideoDesc1_${activeSubcategory.id}`] ||
+                        `Her finder du vores nøje udvalgte sortiment af elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} fra vores leverandører. Vi har elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
+                    </p>
+                    <p
+                      className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) =>
+                        updateSetting(
+                          `subcatVideoDesc2_${activeSubcategory.id}`,
+                          e.currentTarget.innerText,
+                        )
+                      }
+                    >
+                      {s[`subcatVideoDesc2_${activeSubcategory.id}`] ||
+                        `Om du skal bruge elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
+                    </p>
                   </div>
                 </div>
-              </div>
 
-              {/* Section 2: Video + Finding Right Locks */}
-              <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left items-center">
-                <div className="@md:col-span-2 space-y-4">
-                  <h4
-                    className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) =>
-                      updateSetting(
-                        `subcatVideoTitle_${activeSubcategory.id}`,
-                        e.currentTarget.innerText,
-                      )
-                    }
-                  >
-                    {s[`subcatVideoTitle_${activeSubcategory.id}`] ||
-                      `Find de rette elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} hos mmlaasesmed`}
-                  </h4>
-                  <p
-                    className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) =>
-                      updateSetting(
-                        `subcatVideoDesc1_${activeSubcategory.id}`,
-                        e.currentTarget.innerText,
-                      )
-                    }
-                  >
-                    {s[`subcatVideoDesc1_${activeSubcategory.id}`] ||
-                      `Her finder du vores nøje udvalgte sortiment af elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} fra vores leverandører. Vi har elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
-                  </p>
-                  <p
-                    className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
-                    contentEditable={!isPreviewMode}
-                    suppressContentEditableWarning
-                    onBlur={(e) =>
-                      updateSetting(
-                        `subcatVideoDesc2_${activeSubcategory.id}`,
-                        e.currentTarget.innerText,
-                      )
-                    }
-                  >
-                    {s[`subcatVideoDesc2_${activeSubcategory.id}`] ||
-                      `Om du skal bruge elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
-                  </p>
-                </div>
-                {/* Video placeholder */}
-                {(() => {
-                  let embedUrl =
-                    s[`subcatVideoUrl_${activeSubcategory.id}`] || "";
-                  if (embedUrl) {
-                    if (embedUrl.includes("youtube.com/watch?v=")) {
-                      embedUrl = embedUrl.replace(
-                        "youtube.com/watch?v=",
-                        "youtube.com/embed/",
-                      );
-                      const ampIdx = embedUrl.indexOf("&");
-                      if (ampIdx !== -1)
-                        embedUrl = embedUrl.substring(0, ampIdx);
-                    } else if (embedUrl.includes("youtu.be/")) {
-                      embedUrl = embedUrl.replace(
-                        "youtu.be/",
-                        "youtube.com/embed/",
-                      );
-                    } else if (
-                      embedUrl.includes("vimeo.com/") &&
-                      !embedUrl.includes("player.vimeo.com")
-                    ) {
-                      const match = embedUrl.match(/vimeo\.com\/(\d+)/);
-                      if (match) {
-                        embedUrl = `https://player.vimeo.com/video/${match[1]}`;
+                {/* Right Column: Stacked Yellow Block & Video Block */}
+                <div className="space-y-6">
+                  {/* Yellow Block: Vigtige Fordele */}
+                  <div className="bg-amber-400 text-slate-900 p-8 shadow-sm flex flex-col justify-between">
+                    <div>
+                      <h5
+                        className="text-lg font-black tracking-wider mb-5 outline-none focus:bg-amber-300 px-1 rounded"
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateSetting(
+                            `subcatBenefitsTitle_${activeSubcategory.id}`,
+                            e.currentTarget.innerText,
+                          )
+                        }
+                      >
+                        {s[`subcatBenefitsTitle_${activeSubcategory.id}`] ||
+                          "Vigtige fordele"}
+                      </h5>
+                      <ul
+                        className="text-xs space-y-4 list-disc pl-4 font-extrabold outline-none focus:bg-amber-300 px-1 rounded"
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateSetting(
+                            `subcatBenefitsList_${activeSubcategory.id}`,
+                            e.currentTarget.innerText,
+                          )
+                        }
+                      >
+                        {(
+                          s[`subcatBenefitsList_${activeSubcategory.id}`] ||
+                          "Kan bruges til nødudgang og flugtveje\nKan opsætte med passagetid (låses kun uden for åbningstid)\nKan montere med rigtig lås selvom bruger blot åbner døren med håndtaget.\nKan låses remote eller via tidsindstilling."
+                        )
+                          .split("\n")
+                          .map((line: string, i: number) => {
+                            const cleanLine = line.replace(/^[•\-\*]\s*/, "");
+                            return (
+                              <li key={i} className="pl-1 leading-relaxed">
+                                <span>{cleanLine}</span>
+                              </li>
+                            );
+                          })}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Video Block */}
+                  {(() => {
+                    let embedUrl =
+                      s[`subcatVideoUrl_${activeSubcategory.id}`] || "";
+                    if (embedUrl) {
+                      if (embedUrl.includes("youtube.com/watch?v=")) {
+                        embedUrl = embedUrl.replace(
+                          "youtube.com/watch?v=",
+                          "youtube.com/embed/",
+                        );
+                        const ampIdx = embedUrl.indexOf("&");
+                        if (ampIdx !== -1)
+                          embedUrl = embedUrl.substring(0, ampIdx);
+                      } else if (embedUrl.includes("youtu.be/")) {
+                        embedUrl = embedUrl.replace(
+                          "youtu.be/",
+                          "youtube.com/embed/",
+                        );
+                      } else if (
+                        embedUrl.includes("vimeo.com/") &&
+                        !embedUrl.includes("player.vimeo.com")
+                      ) {
+                        const match = embedUrl.match(/vimeo\.com\/(\d+)/);
+                        if (match) {
+                          embedUrl = `https://player.vimeo.com/video/${match[1]}`;
+                        }
                       }
                     }
-                  }
 
-                  return (
-                    <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
-                      {embedUrl ? (
-                        <iframe
-                          src={embedUrl}
-                          title="Video"
-                          className="absolute inset-0 w-full h-full border-none"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      ) : (
-                        <>
-                          <img
-                            src={
-                              s[`subcatVideoImg_${activeSubcategory.id}`] ||
-                              "https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80"
-                            }
-                            alt="Video explanation"
-                            className={`absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-500 ${!isPreviewMode ? "group-hover:opacity-100" : "group-hover:scale-102"}`}
+                    return (
+                      <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
+                        {embedUrl ? (
+                          <iframe
+                            src={embedUrl}
+                            title="Video"
+                            className="absolute inset-0 w-full h-full border-none"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
                           />
-                          <div className="absolute inset-0 bg-black/15 pointer-events-none" />
-                          <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 pointer-events-none">
-                            <span className="text-slate-900 text-xl font-extrabold ml-1">
-                              ▶
-                            </span>
-                          </div>
-                        </>
-                      )}
-
-                      {!isPreviewMode && (
-                        <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              promptEditImage(
-                                "setting",
-                                "",
-                                `subcatVideoImg_${activeSubcategory.id}`,
-                              );
-                            }}
-                            className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
-                          >
-                            Skift Billede
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const url = window.prompt(
-                                "Indtast video URL (f.eks. YouTube eller Vimeo):",
-                                s[`subcatVideoUrl_${activeSubcategory.id}`] ||
-                                  "",
-                              );
-                              if (url !== null) {
-                                updateSetting(
-                                  `subcatVideoUrl_${activeSubcategory.id}`,
-                                  url,
-                                );
+                        ) : (
+                          <>
+                            <img
+                              src={
+                                s[`subcatVideoImg_${activeSubcategory.id}`] ||
+                                "https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80"
                               }
-                            }}
-                            className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
-                          >
-                            Skift Video URL
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
+                              alt="Video explanation"
+                              className={`absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-500 ${!isPreviewMode ? "group-hover:opacity-100" : "group-hover:scale-102"}`}
+                            />
+                            <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+                            <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 pointer-events-none">
+                              <span className="text-slate-900 text-xl font-extrabold ml-1">
+                                ▶
+                              </span>
+                            </div>
+                          </>
+                        )}
+
+                        {!isPreviewMode && (
+                          <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                promptEditImage(
+                                  "setting",
+                                  "",
+                                  `subcatVideoImg_${activeSubcategory.id}`,
+                                );
+                              }}
+                              className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
+                            >
+                              Skift Billede
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const url = window.prompt(
+                                  "Indtast video URL (f.eks. YouTube eller Vimeo):",
+                                  s[`subcatVideoUrl_${activeSubcategory.id}`] ||
+                                    "",
+                                );
+                                if (url !== null) {
+                                  updateSetting(
+                                    `subcatVideoUrl_${activeSubcategory.id}`,
+                                    url,
+                                  );
+                                }
+                              }}
+                              className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
+                            >
+                              Skift Video URL
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
 
               {/* Brands Promotional Cards Grid or Direct Products Grid if no brands associated */}
