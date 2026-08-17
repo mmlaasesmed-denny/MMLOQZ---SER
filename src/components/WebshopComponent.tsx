@@ -2282,9 +2282,10 @@ export default function WebshopComponent({
       )}
 
         {/* Webshop Header Bar */}
-        <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4">
-          
-          {/* MOBILE TOP ROW (@md:hidden): Hamburger, Logo, Actions */}
+        <div className="w-full max-w-7xl mx-auto py-2 px-4 @md:px-8 @lg:px-12 relative">
+          <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4">
+            
+            {/* MOBILE TOP ROW (@md:hidden): Hamburger, Logo, Actions */}
           <div className="flex items-center justify-between w-full @md:hidden relative">
             {/* Mobile Hamburger Menu Button */}
             <button
@@ -2777,8 +2778,8 @@ export default function WebshopComponent({
               </button>
             </div>
           </div>
-
         </div>
+      </div>
 
       {/* Nav Link Bar */}
       <div
