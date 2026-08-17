@@ -3349,21 +3349,25 @@ export default function WebshopComponent({
                         Dine Bestillinger
                       </h4>
 
-                      {orders.filter(
+                      {(orders || []).filter(
                         (o) =>
+                          o?.customer?.email &&
+                          loggedInUser?.email &&
                           o.customer.email.toLowerCase() ===
-                          loggedInUser.email.toLowerCase(),
+                            loggedInUser.email.toLowerCase(),
                       ).length === 0 ? (
                         <div className="py-8 text-center text-slate-450 text-xs">
                           Du har endnu ikke foretaget nogen ordrer hos os.
                         </div>
                       ) : (
                         <div className="space-y-4">
-                          {orders
+                          {(orders || [])
                             .filter(
                               (o) =>
+                                o?.customer?.email &&
+                                loggedInUser?.email &&
                                 o.customer.email.toLowerCase() ===
-                                loggedInUser.email.toLowerCase(),
+                                  loggedInUser.email.toLowerCase(),
                             )
                             .map((order) => {
                               const isRefunded =
