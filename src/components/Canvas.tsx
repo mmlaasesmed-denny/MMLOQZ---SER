@@ -140,14 +140,11 @@ export const getEmbedUrl = (url: string) => {
   if (!url || !url.trim()) return null;
   const cleanUrl = url.trim();
 
-  // Check if it's an MP4 / WebM / OGG video or Blob Data URL
+  // Check if it's a data URL, blob URL, or direct video file (.mp4, .webm, .ogg, .mov)
   if (
     cleanUrl.startsWith("data:video/") ||
-    cleanUrl.endsWith(".mp4") ||
-    cleanUrl.endsWith(".webm") ||
-    cleanUrl.endsWith(".ogg") ||
-    cleanUrl.includes(".mp4?") ||
-    cleanUrl.includes(".webm?")
+    cleanUrl.startsWith("blob:") ||
+    /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(cleanUrl)
   ) {
     return { type: 'mp4', url: cleanUrl };
   }
@@ -166,8 +163,13 @@ export const getEmbedUrl = (url: string) => {
     return { type: 'vimeo', url: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
   }
 
-  // Fallback to html5/mp4 video for direct video links
-  return { type: 'mp4', url: cleanUrl };
+  // If it's a direct video link containing video keywords
+  if (cleanUrl.toLowerCase().includes('.mp4') || cleanUrl.toLowerCase().includes('.webm')) {
+    return { type: 'mp4', url: cleanUrl };
+  }
+
+  // Invalid / non-video URL (e.g. general webpage link)
+  return { type: 'invalid', url: cleanUrl };
 };
 
 interface CanvasProps {
@@ -3043,14 +3045,24 @@ export default function Canvas({
                                           style={{ pointerEvents: isPreviewMode ? 'auto' : 'none' }}
                                         />
                                       );
-                                    } else {
+                                    } else if (videoData?.type === 'mp4') {
                                       return (
                                         <video 
-                                          src={el.src} 
+                                          src={videoData.url} 
                                           controls 
                                           className="w-full h-full absolute inset-0"
                                           style={{ objectFit: el.styles.objectFit || 'cover', pointerEvents: isPreviewMode ? 'auto' : 'none' }}
                                         />
+                                      );
+                                    } else {
+                                      return (
+                                        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-amber-600 bg-amber-50 dark:bg-slate-900 border-2 border-dashed border-amber-300 rounded-lg absolute inset-0 text-center">
+                                          <PlayCircle className="w-10 h-10 mb-2 text-amber-500" />
+                                          <p className="text-xs font-extrabold uppercase tracking-wider">Ugyldig Video URL</p>
+                                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-xs">
+                                            Indtast venligst et YouTube link (f.eks. https://www.youtube.com/watch?v=...) eller upload en MP4-videofil.
+                                          </p>
+                                        </div>
                                       );
                                     }
                                   })() : (

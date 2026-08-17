@@ -471,43 +471,53 @@ export default function WebshopComponent({
     };
   };
 
-  const promptEditVideo = (settingKey: string) => {
+  const promptUploadMp4File = (settingKey: string) => {
     if (isPreviewMode) return;
-    const choice = window.confirm(
-      "Klik OK for at vælge en MP4-videofil fra din computer, eller klik Annuller for at indtaste et YouTube / Vimeo link."
-    );
-
-    if (choice) {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "video/mp4,video/webm,video/ogg,video/*";
-      input.onchange = (e: any) => {
-        const file = e.target.files?.[0];
-        if (file) {
-          if (file.size > 100 * 1024 * 1024) {
-            alert(
-              "Videofilen er for stor (max 100MB). Vælg venligst en mindre fil eller brug et YouTube link."
-            );
-            return;
-          }
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            if (reader.result) {
-              updateSetting(settingKey, reader.result as string);
-            }
-          };
-          reader.readAsDataURL(file);
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "video/mp4,video/webm,video/ogg,video/quicktime,video/*";
+    input.onchange = (e: any) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        if (file.size > 200 * 1024 * 1024) {
+          alert(
+            "Videofilen er for stor (max 200MB). Vælg venligst en mindre MP4-fil eller et YouTube link."
+          );
+          return;
         }
-      };
-      input.click();
-    } else {
-      const url = window.prompt(
-        "Indtast YouTube / Vimeo URL (f.eks. https://www.youtube.com/watch?v=... eller https://youtu.be/...):",
-        s[settingKey] || ""
-      );
-      if (url !== null) {
-        updateSetting(settingKey, url);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (reader.result) {
+            updateSetting(settingKey, reader.result as string);
+            alert("MP4 videofil blev uploadet succesfuldt!");
+          }
+        };
+        reader.onerror = () => {
+          alert("Fejl under indlæsning af videofil. Prøv venligst en anden MP4-fil.");
+        };
+        reader.readAsDataURL(file);
       }
+    };
+    input.click();
+  };
+
+  const promptEnterYoutubeUrl = (settingKey: string) => {
+    if (isPreviewMode) return;
+    const currentVal = s[settingKey] || "";
+    const url = window.prompt(
+      "Indtast YouTube / Vimeo URL (f.eks. https://www.youtube.com/watch?v=... eller https://youtu.be/...):",
+      currentVal.startsWith("data:video") ? "" : currentVal
+    );
+    if (url !== null) {
+      if (url.trim() === "") {
+        updateSetting(settingKey, "");
+        return;
+      }
+      const parsed = getEmbedUrl(url);
+      if (parsed?.type === "invalid") {
+        alert("Advarsel: Det indtastede link kunne ikke genkendes som en YouTube eller Vimeo video. Sørg for at kopiere hele linket fra YouTube.");
+      }
+      updateSetting(settingKey, url);
     }
   };
 
@@ -4279,10 +4289,16 @@ export default function WebshopComponent({
                       <ImageIcon className="w-3.5 h-3.5" /> Skift Bannerbillede
                     </button>
                     <button
-                      onClick={() => promptEditVideo(`subcatVideoUrl_${activeSubcategory.id}`)}
+                      onClick={() => promptUploadMp4File(`subcatVideoUrl_${activeSubcategory.id}`)}
                       className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
                     >
-                      <Video className="w-3.5 h-3.5 text-amber-400" /> Skift Video / Upload MP4
+                      <Video className="w-3.5 h-3.5 text-amber-400" /> Upload MP4 Fil
+                    </button>
+                    <button
+                      onClick={() => promptEnterYoutubeUrl(`subcatVideoUrl_${activeSubcategory.id}`)}
+                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
+                    >
+                      <Video className="w-3.5 h-3.5 text-white" /> YouTube / Vimeo Link
                     </button>
                     <button
                       onClick={() => promptAddProduct(activeSubcategory.id)}
@@ -4566,7 +4582,7 @@ export default function WebshopComponent({
                                 controls
                                 className="absolute inset-0 w-full h-full object-cover"
                               />
-                            ) : (
+                            ) : videoData.type === "youtube" || videoData.type === "vimeo" ? (
                               <iframe
                                 src={videoData.url}
                                 title="Video"
@@ -4574,6 +4590,14 @@ export default function WebshopComponent({
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                               />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center p-6 text-amber-400 bg-slate-900 border-2 border-dashed border-amber-500/50 rounded-xl text-center absolute inset-0">
+                                <Video className="w-10 h-10 mb-2 text-amber-400 animate-pulse" />
+                                <p className="text-xs font-extrabold uppercase tracking-wider text-white">Ugyldig Video URL</p>
+                                <p className="text-[11px] text-slate-350 mt-1 max-w-xs leading-relaxed">
+                                  Det angivne link er ikke en gyldig video. Indtast et direkte YouTube link eller upload en MP4-fil.
+                                </p>
+                              </div>
                             )
                           ) : (
                             <>
@@ -4595,7 +4619,7 @@ export default function WebshopComponent({
                           )}
 
                           {!isPreviewMode && (
-                            <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                            <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex flex-wrap gap-2 justify-end max-w-xs">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -4607,16 +4631,25 @@ export default function WebshopComponent({
                                 }}
                                 className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
                               >
-                                Skift Coverbillede
+                                Coverbillede
                               </button>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  promptEditVideo(`subcatVideoUrl_${activeSubcategory.id}`);
+                                  promptUploadMp4File(`subcatVideoUrl_${activeSubcategory.id}`);
                                 }}
-                                className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer flex items-center gap-1"
+                                className="bg-emerald-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-emerald-700 transition-colors border-none cursor-pointer flex items-center gap-1"
                               >
-                                <Video className="w-3 h-3 text-indigo-600" /> Skift Video / Upload MP4
+                                <Video className="w-3 h-3 text-white" /> Upload MP4
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  promptEnterYoutubeUrl(`subcatVideoUrl_${activeSubcategory.id}`);
+                                }}
+                                className="bg-indigo-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-indigo-700 transition-colors border-none cursor-pointer flex items-center gap-1"
+                              >
+                                <Video className="w-3 h-3 text-white" /> YouTube Link
                               </button>
                             </div>
                           )}
