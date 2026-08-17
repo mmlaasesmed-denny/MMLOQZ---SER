@@ -783,8 +783,13 @@ export default function WebshopComponent({
           : "http://localhost:8000";
         const res = await fetch(`${djangoUrl.replace(/\/$/, "")}/api/auth/me/`);
         if (res.ok) {
-          const user = await res.json();
-          setLoggedInUser(user);
+          const contentType = res.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const user = await res.json();
+            if (user && user.id) {
+              setLoggedInUser(user);
+            }
+          }
         }
       } catch (err) {
         console.error("Failed to fetch session", err);
@@ -1209,13 +1214,14 @@ export default function WebshopComponent({
   // Prefill/clear checkout form based on session status
   useEffect(() => {
     if (loggedInUser) {
-      setName(loggedInUser.name);
-      setEmail(loggedInUser.email);
-      setPhone(loggedInUser.phone);
-      setAddress(loggedInUser.address);
+      setName(loggedInUser.name || "");
+      setEmail(loggedInUser.email || "");
+      setPhone(loggedInUser.phone || "");
+      setAddress(loggedInUser.address || "");
 
       // Auto-extract postcode for logged-in users if possible (Danish postcodes are 4 digits)
-      const match = loggedInUser.address.match(/\b\d{4}\b/);
+      const userAddr = loggedInUser.address || "";
+      const match = userAddr.match(/\b\d{4}\b/);
       if (match) {
         setPostcode(match[0]);
       } else {
