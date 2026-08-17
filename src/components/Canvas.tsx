@@ -1185,7 +1185,7 @@ export default function Canvas({
                         )}
 
                         {/* Components Lists */}
-                        {col.elements.map((rawEl) => {
+                        {col.elements.map((rawEl, rawElIdx) => {
                           const el = { ...rawEl, styles: getResolvedStyles(rawEl) };
                           const isElementSelected = selectedElementId === el.id;
                           const elCSS = buildInlineCSS(el.styles);
@@ -1222,6 +1222,26 @@ export default function Canvas({
                                 if (!isPreviewMode) {
                                   onSelectElement(el.id);
                                   if (el.type === 'text') handleStartInlineEdit(el);
+                                }
+                              }}
+                              onDragOver={(e) => {
+                                if (!isPreviewMode) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  e.dataTransfer.dropEffect = 'copy';
+                                }
+                              }}
+                              onDrop={(e) => {
+                                if (!isPreviewMode) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const type = e.dataTransfer.getData('text/plain');
+                                  if (type) {
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const midY = rect.top + rect.height / 2;
+                                    const targetIndex = e.clientY < midY ? rawElIdx : rawElIdx + 1;
+                                    onAddElement(section.id, col.id, type as any, targetIndex);
+                                  }
                                 }
                               }}
                               className={`group/el relative transition-all rounded ${elementVisibilityClasses} ${

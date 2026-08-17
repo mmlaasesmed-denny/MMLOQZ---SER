@@ -1266,11 +1266,12 @@ export default function App() {
     setSelectedSectionId(null);
   };
 
-  // Add Component Element directly into a specific Column
+  // Add Component Element directly into a specific Column at targetIndex position
   const handleAddElement = (
     sectionId: string, 
     colId: string, 
-    type: ElementType
+    type: ElementType,
+    targetIndex?: number
   ) => {
     const targetPageId = findPageIdBySectionId(sectionId) || activePageId;
     const newElId = `el-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
@@ -1378,9 +1379,15 @@ export default function App() {
               ...section,
               columns: section.columns.map(col => {
                 if (col.id !== colId) return col;
+                const newElements = [...col.elements];
+                if (typeof targetIndex === 'number' && targetIndex >= 0 && targetIndex <= newElements.length) {
+                  newElements.splice(targetIndex, 0, ensureElementOverrides(newElement));
+                } else {
+                  newElements.push(ensureElementOverrides(newElement));
+                }
                 return {
                   ...col,
-                  elements: [...col.elements, ensureElementOverrides(newElement)]
+                  elements: newElements
                 };
               })
             };
