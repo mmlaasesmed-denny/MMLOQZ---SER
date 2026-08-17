@@ -6869,12 +6869,6 @@ export default function WebshopComponent({
                         isPreviewMode={isPreviewMode}
                         html={loginButtonText}
                         className="outline-none focus:bg-amber-500 rounded px-2 block"
-                        onClick={(e) => {
-                          if (!isPreviewMode) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }
-                        }}
                         onBlur={(e) =>
                           updateSetting(
                             "loginButtonText",
@@ -7061,12 +7055,6 @@ export default function WebshopComponent({
                         isPreviewMode={isPreviewMode}
                         html={registerButtonText}
                         className="outline-none focus:bg-amber-500 rounded px-2 block"
-                        onClick={(e) => {
-                          if (!isPreviewMode) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }
-                        }}
                         onBlur={(e) =>
                           updateSetting(
                             "registerButtonText",
