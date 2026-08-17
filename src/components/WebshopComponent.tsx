@@ -727,11 +727,22 @@ export default function WebshopComponent({
 
   // Checkout form states
   const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("Danmark (+45)");
+  const [address, setAddress] = useState("");
+  const [addressLine2, setAddressLine2] = useState("");
   const [postcode, setPostcode] = useState("");
   const [city, setCity] = useState("");
+
+  const [deliverToSame, setDeliverToSame] = useState(true);
+  const [shipAddress, setShipAddress] = useState("");
+  const [shipAddressLine2, setShipAddressLine2] = useState("");
+  const [shipPostcode, setShipPostcode] = useState("");
+  const [shipCity, setShipCity] = useState("");
+
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   // Shipmondo Carrier & Delivery states
   const [selectedCarrier, setSelectedCarrier] = useState<
@@ -6149,514 +6160,784 @@ export default function WebshopComponent({
 
           {/* VIEW 7: CHECKOUT PAGE */}
           {view === "checkout" && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
-              {/* Header / Breadcrumb */}
-              <div className="flex items-center gap-3 text-left">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-300 max-w-6xl mx-auto text-left">
+              {/* Header Title Row */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl @md:text-3xl font-black text-slate-900 tracking-tight">
+                  Fakturering
+                </h2>
                 <button
+                  type="button"
                   onClick={() => {
-                    setView("cart");
-                    if (isPreviewMode) {
-                      window.location.hash = "shop/cart";
-                    }
+                    setView("login");
+                    if (isPreviewMode) window.location.hash = "shop/login";
                   }}
-                  className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200 cursor-pointer flex items-center justify-center shrink-0"
+                  className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-amber-500 transition-colors bg-transparent border-none cursor-pointer"
                 >
-                  <ArrowLeft className="w-4 h-4 text-slate-700" />
+                  <span className="underline">Kontokunde? Login her</span>
+                  <User className="w-4 h-4 text-slate-800" />
                 </button>
-                <div>
-                  <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest block">
-                    Kasse
-                  </span>
-                  <h3 className="text-xl font-extrabold text-slate-900 uppercase">
-                    Gennemfør Bestilling
-                  </h3>
+              </div>
+
+              {/* Shop for Customer Type Toggle */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-slate-500 block">Shop for</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCustomerType("private")}
+                    className={`px-5 py-2 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
+                      customerType === "private"
+                        ? "bg-amber-400 text-slate-950 border-amber-400 shadow-sm font-black"
+                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    Personlig
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerType("company")}
+                    className={`px-5 py-2 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
+                      customerType === "company"
+                        ? "bg-amber-400 text-slate-950 border-amber-400 shadow-sm font-black"
+                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    }`}
+                  >
+                    Selskab
+                  </button>
                 </div>
               </div>
 
-              <div
-                className={`grid gap-8 text-left grid-cols-1 @lg:grid-cols-3`}
-              >
-                {/* Form container */}
-                <div className="border border-slate-200 rounded-3xl @lg:col-span-2 bg-white p-6 shadow-sm">
-                  <form onSubmit={handleCheckoutSubmit} className="space-y-6">
-                    {/* Customer Type Toggle */}
-                    <div className="space-y-2 pb-4 border-b border-slate-100">
-                      <label className="text-[10px] font-black text-slate-900 uppercase tracking-wide block">
-                        Kunde type
-                      </label>
-                      <div className="flex gap-2 p-1 bg-slate-50 border border-slate-200 rounded-2xl w-fit">
-                        <button
-                          type="button"
-                          onClick={() => setCustomerType("private")}
-                          className={`px-4 py-1.5 rounded-xl text-xs font-extrabold uppercase transition-all border-none cursor-pointer ${customerType === "private" ? "bg-amber-400 text-slate-950 shadow-sm" : "text-slate-500 hover:text-slate-800 bg-transparent"}`}
-                        >
-                          Personlig
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCustomerType("company")}
-                          className={`px-4 py-1.5 rounded-xl text-xs font-extrabold uppercase transition-all border-none cursor-pointer ${customerType === "company" ? "bg-amber-400 text-slate-950 shadow-sm" : "text-slate-500 hover:text-slate-800 bg-transparent"}`}
-                        >
-                          Selskab
-                        </button>
-                      </div>
-                    </div>
+              {/* Main 2-Column Grid layout (1 column on mobile, 3 columns on @lg desktop) */}
+              <form onSubmit={handleCheckoutSubmit} className="grid grid-cols-1 @lg:grid-cols-3 gap-8 items-start">
+                
+                {/* Left Column: Form Cards (Spans 2 columns on desktop) */}
+                <div className="@lg:col-span-2 space-y-6">
+                  
+                  {/* Container 1: Personal / Billing Information */}
+                  <div className="border border-slate-200 rounded-2xl bg-white p-5 @md:p-7 shadow-sm space-y-4">
+                    <h3 className="text-sm font-black text-slate-900">
+                      Personal Information
+                    </h3>
 
-                    <h4 className="text-xs font-black uppercase text-slate-900 tracking-wider pb-2 border-b border-slate-100">
-                      Leverings- & Faktureringsoplysninger
-                    </h4>
-
-                    {/* Company Fields (if Company customer type selected) */}
-                    {customerType === "company" && (
-                      <div className="grid grid-cols-1 @md:grid-cols-2 gap-4 animate-in fade-in duration-200">
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">
-                            Firma Navn
-                          </label>
-                          <input
-                            type="text"
-                            value={companyName}
-                            onChange={(e) => setCompanyName(e.target.value)}
-                            placeholder="F.eks. MMLåsesmed ApS"
-                            required
-                            className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">
-                            CVR Nummer
-                          </label>
-                          <input
-                            type="text"
-                            value={cvrNumber}
-                            onChange={(e) => setCvrNumber(e.target.value)}
-                            placeholder="F.eks. 12345678"
-                            required
-                            className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Name and Email */}
-                    <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">
-                          Fulde Navn
-                        </label>
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="F.eks. Anders Jensen"
-                          required
-                          className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">
-                          E-mail Adresse
-                        </label>
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="F.eks. anders@jensen.dk"
-                          required
-                          disabled={!!loggedInUser}
-                          className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400 disabled:opacity-50"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Phone and Address fields */}
-                    {loggedInUser ? (
-                      <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">
-                            Telefonnummer
-                          </label>
-                          <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="F.eks. +45 12 34 56 78"
-                            required
-                            className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                          />
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">
-                            Leveringsadresse
-                          </label>
-                          <textarea
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            placeholder="Gadenavn, husnummer, etage, postnummer og by"
-                            required
-                            rows={2}
-                            className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400 font-sans"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <>
+                    {customerType === "private" ? (
+                      /* Personlig Form Fields */
+                      <div className="space-y-4">
+                        {/* Name & Surname */}
                         <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide">
-                              Telefonnummer
-                            </label>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Name *</label>
                             <input
-                              type="tel"
-                              value={phone}
-                              onChange={(e) => setPhone(e.target.value)}
-                              placeholder="F.eks. +45 12 34 56 78"
+                              type="text"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              placeholder="Fornavn"
                               required
-                              className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                             />
                           </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Surname *</label>
+                            <input
+                              type="text"
+                              value={surname}
+                              onChange={(e) => setSurname(e.target.value)}
+                              placeholder="Efternavn"
+                              required
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                          </div>
+                        </div>
 
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">
-                              Gade & Husnummer
-                            </label>
+                        {/* E-mail */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">E-mail *</label>
+                          <div className="relative">
+                            <input
+                              type="email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="din@email.dk"
+                              required
+                              disabled={!!loggedInUser}
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white disabled:opacity-60"
+                            />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          </div>
+                        </div>
+
+                        {/* Landekode & Telefon */}
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Landekode *</label>
+                            <select
+                              value={countryCode}
+                              onChange={(e) => setCountryCode(e.target.value)}
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white cursor-pointer"
+                            >
+                              <option value="Danmark (+45)">Danmark (+45)</option>
+                              <option value="Sverige (+46)">Sverige (+46)</option>
+                              <option value="Norge (+47)">Norge (+47)</option>
+                              <option value="Tyskland (+49)">Tyskland (+49)</option>
+                            </select>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Telefon *</label>
+                            <div className="relative">
+                              <input
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="+45 12345678"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Street / road, house number */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Street / road, house number *</label>
+                          <div className="relative">
                             <input
                               type="text"
                               value={address}
                               onChange={(e) => setAddress(e.target.value)}
-                              placeholder="F.eks. Hovedgade 12, 1. th"
+                              placeholder="Vejnavn og husnummer"
                               required
-                              className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                             />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
                           </div>
                         </div>
 
+                        {/* Address line 2 */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Address line 2</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={addressLine2}
+                              onChange={(e) => setAddressLine2(e.target.value)}
+                              placeholder="Etage, side osv."
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          </div>
+                        </div>
+
+                        {/* Postnr & By */}
                         <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">
-                              Postnummer
-                            </label>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Postnr. *</label>
                             <input
                               type="text"
                               value={postcode}
                               onChange={(e) => setPostcode(e.target.value)}
-                              placeholder="F.eks. 2100"
+                              placeholder="2450"
                               required
-                              className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                             />
                           </div>
-
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-extrabold text-slate-505 uppercase tracking-wide">
-                              By
-                            </label>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">By *</label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                placeholder="København SV"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Selskab (Company) Form Fields */
+                      <div className="space-y-4">
+                        {/* Company Name & VAT Number */}
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Company Name *</label>
                             <input
                               type="text"
-                              value={city}
-                              onChange={(e) => setCity(e.target.value)}
-                              placeholder="F.eks. København Ø"
+                              value={companyName}
+                              onChange={(e) => setCompanyName(e.target.value)}
+                              placeholder="Virksomhedens navn"
                               required
-                              className="w-full text-xs px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">VAT Number *</label>
+                            <input
+                              type="text"
+                              value={cvrNumber}
+                              onChange={(e) => setCvrNumber(e.target.value)}
+                              placeholder="DK12345678"
+                              required
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                             />
                           </div>
                         </div>
-                      </>
-                    )}
 
-                    {/* Shipmondo Carrier Selection */}
-                    <div className="space-y-2.5 pt-2">
-                      <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide block font-sans">
-                        Vælg Transportør (Forsendelse)
-                      </label>
-                      <div className="grid grid-cols-2 gap-4">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCarrier("gls")}
-                          className={`flex flex-col items-center justify-center py-3.5 px-4 rounded-xl border text-xs font-bold transition-all duration-300 cursor-pointer ${selectedCarrier === "gls" ? "bg-amber-400 text-slate-955 border-amber-400 shadow-md shadow-amber-400/10" : "bg-slate-55 text-slate-600 border-slate-200 hover:border-slate-350 hover:text-slate-800"}`}
-                        >
-                          <span className="text-xl mb-1">📦</span>
-                          <span>GLS Pakkeshop/Privat</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCarrier("postnord")}
-                          className={`flex flex-col items-center justify-center py-3.5 px-4 rounded-xl border text-xs font-bold transition-all duration-305 cursor-pointer ${selectedCarrier === "postnord" ? "bg-amber-400 text-slate-955 border-amber-400 shadow-md shadow-amber-400/10" : "bg-slate-55 text-slate-600 border-slate-200 hover:border-slate-350 hover:text-slate-800"}`}
-                        >
-                          <span className="text-xl mb-1">✉️</span>
-                          <span>PostNord Pakkeshop/Hjem</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Shipmondo Delivery Options */}
-                    {selectedCarrier && (
-                      <div className="space-y-4 pt-2 border-t border-slate-100">
-                        <div className="flex items-center justify-between">
-                          <h5 className="text-[10.5px] font-extrabold uppercase text-slate-900 tracking-wide">
-                            Leveringsmuligheder ({selectedCarrier.toUpperCase()}
-                            )
-                          </h5>
-                          {shippingLoading && (
-                            <span className="text-[10px] text-amber-500 font-bold animate-pulse">
-                              Henter fra Shipmondo...
-                            </span>
-                          )}
+                        {/* Company e-mail */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Company e-mail *</label>
+                          <div className="relative">
+                            <input
+                              type="email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="info@firma.dk"
+                              required
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          </div>
                         </div>
 
-                        {shippingError && (
-                          <div className="p-3 bg-rose-50 border border-rose-150 rounded-xl text-rose-500 text-xs font-medium">
-                            {shippingError}
+                        {/* Landekode & Telefon */}
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Landekode *</label>
+                            <select
+                              value={countryCode}
+                              onChange={(e) => setCountryCode(e.target.value)}
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white cursor-pointer"
+                            >
+                              <option value="Danmark (+45)">Danmark (+45)</option>
+                              <option value="Sverige (+46)">Sverige (+46)</option>
+                              <option value="Norge (+47)">Norge (+47)</option>
+                              <option value="Tyskland (+49)">Tyskland (+49)</option>
+                            </select>
                           </div>
-                        )}
-
-                        {!shippingLoading && !shippingError && (
-                          <div className="space-y-4">
-                            {/* 1. PICKUP POINTS LIST */}
-                            {pickupPoints.length > 0 && (
-                              <div className="space-y-2">
-                                <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-wide block">
-                                  Pakkeshops & Udleveringssteder
-                                </span>
-                                <div className="grid gap-2">
-                                  {pickupPoints.map((point) => {
-                                    const isSelected =
-                                      selectedDelivery?.type === "pickup" &&
-                                      selectedDelivery?.id === point.id;
-                                    return (
-                                      <div
-                                        key={point.id}
-                                        onClick={() =>
-                                          setSelectedDelivery({
-                                            type: "pickup",
-                                            id: point.id,
-                                            name: point.company_name,
-                                            address: `${point.address}, ${point.zipcode} ${point.city}`,
-                                            carrier: selectedCarrier,
-                                          })
-                                        }
-                                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer text-left transition-all ${isSelected ? "bg-amber-55 border-[#FFC502] text-slate-900 shadow-sm" : "bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-600"}`}
-                                      >
-                                        <input
-                                          type="radio"
-                                          name="delivery_point"
-                                          checked={isSelected}
-                                          onChange={() => {}}
-                                          className="mt-0.5 accent-amber-400 cursor-pointer"
-                                        />
-                                        <div>
-                                          <p className="text-xs font-bold text-slate-800 leading-tight">
-                                            {point.company_name}
-                                          </p>
-                                          <p className="text-[10px] text-slate-400 mt-1">
-                                            {point.address}, {point.zipcode}{" "}
-                                            {point.city}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* 2. HOME DELIVERY LIST */}
-                            {homeDeliveryOptions.length > 0 && (
-                              <div className="space-y-2">
-                                <span className="text-[9.5px] font-extrabold text-slate-400 uppercase tracking-wide block">
-                                  Hjemmelevering
-                                </span>
-                                <div className="grid gap-2">
-                                  {homeDeliveryOptions.map((option) => {
-                                    const isSelected =
-                                      selectedDelivery?.type === "home" &&
-                                      selectedDelivery?.id === option.code;
-                                    return (
-                                      <div
-                                        key={option.code}
-                                        onClick={() =>
-                                          setSelectedDelivery({
-                                            type: "home",
-                                            id: option.code,
-                                            name: option.name,
-                                            address:
-                                              "Levering til privat adresse",
-                                            carrier: selectedCarrier,
-                                          })
-                                        }
-                                        className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer text-left transition-all ${isSelected ? "bg-amber-55 border-[#FFC502] text-slate-900 shadow-sm" : "bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-600"}`}
-                                      >
-                                        <input
-                                          type="radio"
-                                          name="delivery_point"
-                                          checked={isSelected}
-                                          onChange={() => {}}
-                                          className="mt-0.5 accent-amber-400 cursor-pointer"
-                                        />
-                                        <div>
-                                          <p className="text-xs font-bold text-slate-800 leading-tight">
-                                            {option.name}
-                                          </p>
-                                          <p className="text-[10px] text-slate-400 mt-1">
-                                            {option.description}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            )}
-
-                            {pickupPoints.length === 0 &&
-                              homeDeliveryOptions.length === 0 && (
-                                <p className="text-xs text-slate-400 italic">
-                                  Ingen leveringsmetoder tilgængelige for dette
-                                  postnummer.
-                                </p>
-                              )}
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Telefon *</label>
+                            <div className="relative">
+                              <input
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="+45 12345678"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                            </div>
                           </div>
-                        )}
+                        </div>
+
+                        {/* Street / road, house number */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Street / road, house number *</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
+                              placeholder="Firmaadresse"
+                              required
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          </div>
+                        </div>
+
+                        {/* Address line 2 */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Address line 2</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={addressLine2}
+                              onChange={(e) => setAddressLine2(e.target.value)}
+                              placeholder="Bygning, etage osv."
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          </div>
+                        </div>
+
+                        {/* Postnr & By */}
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Postnr. *</label>
+                            <input
+                              type="text"
+                              value={postcode}
+                              onChange={(e) => setPostcode(e.target.value)}
+                              placeholder="2450"
+                              required
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">By *</label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                placeholder="København SV"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     )}
 
-                    <div className="pt-4">
+                    {/* Deliver to same as billing address Checkbox + Save button */}
+                    <div className="pt-2 flex flex-col @md:flex-row @md:items-center justify-between gap-3 border-t border-slate-100">
+                      <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-slate-800">
+                        <input
+                          type="checkbox"
+                          checked={deliverToSame}
+                          onChange={(e) => setDeliverToSame(e.target.checked)}
+                          className="w-4 h-4 accent-amber-400 rounded cursor-pointer"
+                        />
+                        <span>Deliver to same as my billing address</span>
+                      </label>
                       <button
-                        type="submit"
-                        className="w-full py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-amber-400/10 cursor-pointer border-none"
+                        type="button"
+                        onClick={() => showToast("Oplysninger gemt!", "success")}
+                        className="px-6 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-bold rounded-lg cursor-pointer transition-colors"
                       >
-                        Placer Ordre (Gennemfør)
+                        Save
                       </button>
                     </div>
-                  </form>
-                </div>
 
-                {/* Order Summary side-card */}
-                <div className="border border-slate-200 rounded-3xl h-fit space-y-4 bg-white p-6 shadow-sm">
-                  <h4 className="text-xs font-black uppercase text-slate-900 tracking-widest pb-3 border-b border-slate-100">
-                    Din Bestilling
-                  </h4>
-
-                  <div className="max-h-[60vh] overflow-y-auto space-y-3 pr-1">
-                    {cart.map((item) => {
-                      const brand =
-                        WEBSHOP_BRANDS.find(
-                          (b) => b.id === item.product.brandId,
-                        )?.name || "FASTCAP";
-                      return (
-                        <div
-                          key={item.product.id}
-                          className="flex flex-row items-stretch border border-slate-200 rounded-sm bg-white overflow-hidden shadow-sm hover:shadow transition-shadow text-left"
-                        >
-                          {/* Left Image */}
-                          <div className="w-20 bg-[#f4f4f4] p-3 flex items-center justify-center shrink-0">
-                            <img
-                              src={item.product.image}
-                              className="max-h-full max-w-full mix-blend-multiply drop-shadow-sm"
-                              alt={item.product.name}
+                    {/* Separate Delivery Address fields if deliverToSame is unchecked */}
+                    {!deliverToSame && (
+                      <div className="pt-4 space-y-4 border-t border-slate-200 animate-in fade-in duration-200">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                          Leveringsadresse
+                        </h4>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Street / road, house number *</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={shipAddress}
+                              onChange={(e) => setShipAddress(e.target.value)}
+                              placeholder="Leveringsadresse"
+                              required
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 block">Address line 2</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={shipAddressLine2}
+                              onChange={(e) => setShipAddressLine2(e.target.value)}
+                              placeholder="Etage, side"
+                              className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                            />
+                            <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">Postnr. *</label>
+                            <input
+                              type="text"
+                              value={shipPostcode}
+                              onChange={(e) => setShipPostcode(e.target.value)}
+                              placeholder="2450"
+                              required
+                              className="w-full text-xs p-3 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
                             />
                           </div>
-
-                          {/* Middle Info */}
-                          <div className="flex-1 p-3 border-r border-slate-200 flex flex-col justify-center">
-                            <div className="flex justify-between items-center mb-1">
-                              <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider leading-none">
-                                {brand}
-                              </span>
-                              <span className="text-[8px] text-slate-400">
-                                Variant {item.product.id.substring(0, 4)}
-                              </span>
-                            </div>
-                            <h5 className="text-[11px] font-bold text-slate-900 leading-tight mb-3">
-                              {item.product.name}
-                            </h5>
-
-                            <div className="space-y-1.5 mt-auto">
-                              <div className="flex justify-between items-end border-b border-slate-100 pb-1">
-                                <span className="text-[9px] text-slate-600">
-                                  Pris pr. stk
-                                </span>
-                                <span className="text-[9px] font-mono text-slate-700">
-                                  {item.product.price.toLocaleString("da-DK", {
-                                    minimumFractionDigits: 2,
-                                  })}{" "}
-                                  DKK
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-end border-b border-slate-100 pb-1">
-                                <span className="text-[9px] text-slate-600">
-                                  Antal i kurv
-                                </span>
-                                <span className="text-[9px] font-bold text-slate-900">
-                                  {item.quantity}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Right Price */}
-                          <div className="w-[90px] p-3 flex flex-col items-center justify-center bg-white shrink-0">
-                            <div className="text-center w-full">
-                              <span className="text-[8px] text-slate-400 block leading-none mb-1">
-                                inkl. moms, fra
-                              </span>
-                              <span className="text-[12px] font-black text-slate-900 block leading-none">
-                                {(
-                                  item.product.price * item.quantity
-                                ).toLocaleString("da-DK", {
-                                  minimumFractionDigits: 2,
-                                })}{" "}
-                                DKK
-                              </span>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-500 block">By *</label>
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={shipCity}
+                                onChange={(e) => setShipCity(e.target.value)}
+                                placeholder="København SV"
+                                required
+                                className="w-full text-xs p-3 pr-9 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-400 bg-white"
+                              />
+                              <Info className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
                             </div>
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="border-t border-slate-100 pt-4 space-y-2.5">
-                    <div className="flex items-center justify-between text-xs text-slate-505 font-semibold">
-                      <span>Subtotal (excl. moms):</span>
-                      <span className="text-slate-850 font-bold font-mono">
-                        {(getCartTotal() / 1.25).toLocaleString("da-DK", {
-                          minimumFractionDigits: 2,
-                        })}{" "}
-                        DKK
-                      </span>
+                  {/* Container 2: Delivery Pickup point & Home Delivery */}
+                  <div className="border border-slate-200 rounded-2xl bg-white p-5 @md:p-7 shadow-sm space-y-6">
+                    {/* Pickup Point Section */}
+                    <div className="space-y-3">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                        Delivery Pickup point
+                      </h4>
+                      <div className="space-y-3">
+                        {/* Option 1: PostNord/Bring-delivery point */}
+                        <label
+                          className={`block p-4 rounded-xl border cursor-pointer transition-all ${
+                            selectedDelivery?.id === "postnord_bring_pickup"
+                              ? "border-amber-400 bg-amber-50/20 shadow-sm"
+                              : "border-slate-200 hover:border-slate-300 bg-white"
+                          }`}
+                          onClick={() =>
+                            setSelectedDelivery({
+                              id: "postnord_bring_pickup",
+                              name: "PostNord/Bring-delivery point",
+                              price: 39.99,
+                            })
+                          }
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="delivery_option"
+                                checked={selectedDelivery?.id === "postnord_bring_pickup" || !selectedDelivery}
+                                onChange={() => {}}
+                                className="w-4 h-4 accent-amber-400 cursor-pointer"
+                              />
+                              <span className="text-xs font-extrabold text-slate-900">
+                                PostNord/Bring-delivery point
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-slate-900">
+                              39,99 kr <span className="text-[10px] text-slate-500 font-normal">2–4 hverdage</span>
+                            </span>
+                          </div>
+                          <div className="pl-7 pt-2 text-[11px] text-slate-500 leading-relaxed font-medium">
+                            Mozart's Kiosk og pakkeshop<br />
+                            Mozarts Plads 3 st tv<br />
+                            2450 København Sv
+                          </div>
+                        </label>
+
+                        {/* Option 2: Bring- pakkeboks */}
+                        <label
+                          className={`block p-4 rounded-xl border cursor-pointer transition-all ${
+                            selectedDelivery?.id === "bring_pakkeboks"
+                              ? "border-amber-400 bg-amber-50/20 shadow-sm"
+                              : "border-slate-200 hover:border-slate-300 bg-white"
+                          }`}
+                          onClick={() =>
+                            setSelectedDelivery({
+                              id: "bring_pakkeboks",
+                              name: "Bring- pakkeboks",
+                              price: 39.99,
+                            })
+                          }
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="delivery_option"
+                                checked={selectedDelivery?.id === "bring_pakkeboks"}
+                                onChange={() => {}}
+                                className="w-4 h-4 accent-amber-400 cursor-pointer"
+                              />
+                              <span className="text-xs font-extrabold text-slate-900">
+                                Bring- pakkeboks
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-slate-900">
+                              39,99 kr <span className="text-[10px] text-slate-500 font-normal">2–4 hverdage</span>
+                            </span>
+                          </div>
+                          <div className="pl-7 pt-2 text-[11px] text-slate-500 leading-relaxed font-medium">
+                            Mozart's Kiosk og pakkeshop<br />
+                            Mozarts Plads 3 st tv<br />
+                            2450 København Sv
+                          </div>
+                        </label>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-slate-505 font-semibold">
-                      <span>Moms (25%):</span>
-                      <span className="text-slate-850 font-bold font-mono">
-                        {(
-                          getCartTotal() -
-                          getCartTotal() / 1.25
-                        ).toLocaleString("da-DK", {
-                          minimumFractionDigits: 2,
-                        })}{" "}
-                        DKK
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-slate-505 font-semibold">
-                      <span>Levering:</span>
-                      <span className="text-emerald-500 font-bold uppercase tracking-wider">
-                        Gratis
-                      </span>
-                    </div>
-                    <div className="border-t border-slate-100 pt-2.5 flex items-center justify-between font-black">
-                      <span className="text-xs text-slate-900">Total:</span>
-                      <span className="text-sm font-mono text-amber-505">
-                        {getCartTotal().toLocaleString("da-DK", {
-                          minimumFractionDigits: 2,
-                        })}{" "}
-                        DKK
-                      </span>
+
+                    {/* Home Delivery Section */}
+                    <div className="space-y-3 pt-4 border-t border-slate-100">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                        Home Delivery
+                      </h4>
+                      <div className="space-y-3">
+                        {/* Option 3: Budbee - hjemmelevering */}
+                        <label
+                          className={`block p-4 rounded-xl border cursor-pointer transition-all ${
+                            selectedDelivery?.id === "budbee_home"
+                              ? "border-amber-400 bg-amber-50/20 shadow-sm"
+                              : "border-slate-200 hover:border-slate-300 bg-white"
+                          }`}
+                          onClick={() =>
+                            setSelectedDelivery({
+                              id: "budbee_home",
+                              name: "Budbee - hjemmelevering",
+                              price: 49.99,
+                            })
+                          }
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="delivery_option"
+                                checked={selectedDelivery?.id === "budbee_home"}
+                                onChange={() => {}}
+                                className="w-4 h-4 accent-amber-400 cursor-pointer"
+                              />
+                              <span className="text-xs font-extrabold text-slate-900">
+                                Budbee - hjemmelevering
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-slate-900">
+                              49,99 kr <span className="text-[10px] text-slate-500 font-normal">2–4 hverdage til privatadresse</span>
+                            </span>
+                          </div>
+                        </label>
+
+                        {/* Option 4: Postnord - hjemmelevering */}
+                        <label
+                          className={`block p-4 rounded-xl border cursor-pointer transition-all ${
+                            selectedDelivery?.id === "postnord_home"
+                              ? "border-amber-400 bg-amber-50/20 shadow-sm"
+                              : "border-slate-200 hover:border-slate-300 bg-white"
+                          }`}
+                          onClick={() =>
+                            setSelectedDelivery({
+                              id: "postnord_home",
+                              name: "Postnord - hjemmelevering",
+                              price: 49.99,
+                            })
+                          }
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="delivery_option"
+                                checked={selectedDelivery?.id === "postnord_home"}
+                                onChange={() => {}}
+                                className="w-4 h-4 accent-amber-400 cursor-pointer"
+                              />
+                              <span className="text-xs font-extrabold text-slate-900">
+                                Postnord - hjemmelevering
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-slate-900">
+                              49,99 kr <span className="text-[10px] text-slate-500 font-normal">2–4 hverdage til privatadresse</span>
+                            </span>
+                          </div>
+                        </label>
+
+                        {/* Option 5: Budbee Express - hjemmelevering */}
+                        <label
+                          className={`block p-4 rounded-xl border cursor-pointer transition-all ${
+                            selectedDelivery?.id === "budbee_express_home"
+                              ? "border-amber-400 bg-amber-50/20 shadow-sm"
+                              : "border-slate-200 hover:border-slate-300 bg-white"
+                          }`}
+                          onClick={() =>
+                            setSelectedDelivery({
+                              id: "budbee_express_home",
+                              name: "Budbee Express - hjemmelevering",
+                              price: 69.99,
+                            })
+                          }
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="radio"
+                                name="delivery_option"
+                                checked={selectedDelivery?.id === "budbee_express_home"}
+                                onChange={() => {}}
+                                className="w-4 h-4 accent-amber-400 cursor-pointer"
+                              />
+                              <span className="text-xs font-extrabold text-slate-900">
+                                Budbee Express - hjemmelevering
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-slate-900">
+                              69,99 kr <span className="text-[10px] text-slate-500 font-normal">2–4 hverdage til privatadresse</span>
+                            </span>
+                          </div>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Right Column: Order Summary, Action Button & FAQ */}
+                <div className="space-y-6">
+                  
+                  {/* Order Summary Box */}
+                  <div className="border border-slate-200 rounded-2xl bg-white p-5 shadow-sm space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+                        Ordreoversigt
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setView("cart");
+                          if (isPreviewMode) window.location.hash = "shop/cart";
+                        }}
+                        className="text-slate-400 hover:text-amber-500 transition-colors bg-transparent border-none cursor-pointer"
+                        title="Rediger kurv"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Cart Items List */}
+                    <div className="max-h-[300px] overflow-y-auto space-y-3 divide-y divide-slate-100 pr-1">
+                      {cart.map((item) => (
+                        <div key={item.product.id} className="pt-3 first:pt-0 flex items-center justify-between gap-3 text-left">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 p-1 flex items-center justify-center shrink-0">
+                              <img
+                                src={item.product.image}
+                                alt={item.product.name}
+                                className="max-h-full max-w-full object-contain mix-blend-multiply"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-slate-900 leading-tight">
+                                {item.product.name}
+                              </p>
+                              <p className="text-[10px] text-slate-400 mt-0.5">
+                                Varenr: {item.product.id}
+                              </p>
+                              <p className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                                Antal: {item.quantity}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-xs font-bold text-slate-900 shrink-0 font-mono">
+                            {(item.product.price * item.quantity).toLocaleString("da-DK", { minimumFractionDigits: 2 })} DKK
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Pricing Breakdown */}
+                    <div className="border-t border-slate-100 pt-4 space-y-2 text-xs text-slate-600">
+                      <div className="flex items-center justify-between">
+                        <span>Varebeløb ekskl. moms</span>
+                        <span className="font-semibold text-slate-900 font-mono">
+                          {(getCartTotal() / 1.25).toLocaleString("da-DK", { minimumFractionDigits: 2 })} DKK
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Levering ekskl. moms (PostNord Pakkeboks)</span>
+                        <span className="font-semibold text-slate-900 font-mono">
+                          30,00 DKK
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Miljøtillæg ekskl. moms (levering)</span>
+                        <span className="font-semibold text-slate-900 font-mono">
+                          10,00 DKK
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Moms 25%</span>
+                        <span className="font-semibold text-slate-900 font-mono">
+                          {(getCartTotal() - getCartTotal() / 1.25 + 10).toLocaleString("da-DK", { minimumFractionDigits: 2 })} DKK
+                        </span>
+                      </div>
+                      <div className="border-t border-slate-200 pt-3 flex items-center justify-between font-black text-slate-900 text-sm">
+                        <span>I alt inkl. moms</span>
+                        <span className="font-mono text-slate-900">
+                          {(getCartTotal() + 50).toLocaleString("da-DK", { minimumFractionDigits: 2 })} DKK
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fortsæt til levering Yellow Action Button */}
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer border-none"
+                  >
+                    Fortsæt til levering
+                  </button>
+
+                  {/* Frequently Asked Questions Section */}
+                  <div className="pt-4 space-y-3">
+                    <h4 className="text-sm font-black text-slate-900">
+                      Frequently Asked Questions
+                    </h4>
+                    <div className="space-y-2">
+                      {[
+                        {
+                          q: "Hvor lang er leveringstiden?",
+                          a: "Vi bestræber os på at levere hurtigst muligt og er varen på lager, kan du oftest forvente dag-til-dag levering. Hvis du bestiller inden kl 15:00 mandag til torsdag og fredag inden kl 15, leveringstiden kan blive forlænget, hvis du skriver en kommentar til ordren eller bestiller volumenvarer, der sendes med fragtmand. Den forventede afsendelsesdato for hele ordren er angivet under levering i checkout og på din ordrebekræftelse.",
+                        },
+                        {
+                          q: "Kan jeg fortryde mit køb?",
+                          a: "Ja, du har altid 14 dages fuld returret på standardvarer købt på vores webshop. Varerne skal returneres i ubrugt stand og original emballage.",
+                        },
+                        {
+                          q: "Kan jeg returnere Outlet varer?",
+                          a: "Ja, Outlet varer er omfattet af de samme returvilkår som vores øvrige sortiment.",
+                        },
+                        {
+                          q: "Kan jeg returnere i butik?",
+                          a: "Ja, du er altid velkommen til at indlevere din returvare direkte i vores fysiske butik i København.",
+                        },
+                        {
+                          q: "Får min ordre Track & Trace?",
+                          a: "Ja, så snart din ordre afsendes fra vores lager, modtager du en e-mail med dit unikke Track & Trace nummer.",
+                        },
+                        {
+                          q: "Kan jeg handle som privat?",
+                          a: "Ja, vi sælger både til private husholdninger og erhvervskunder/selskaber.",
+                        },
+                      ].map((item, idx) => {
+                        const isOpen = openFaqIndex === idx;
+                        return (
+                          <div
+                            key={idx}
+                            className="border-b border-slate-100 pb-2 text-left"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                              className="w-full flex items-center justify-between py-1.5 text-xs font-bold text-slate-800 hover:text-amber-600 transition-colors bg-transparent border-none cursor-pointer text-left gap-2"
+                            >
+                              <span>{item.q}</span>
+                              {isOpen ? (
+                                <ChevronUp className="w-4 h-4 text-slate-500 shrink-0" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                              )}
+                            </button>
+                            {isOpen && (
+                              <p className="text-[11px] text-slate-500 leading-relaxed pt-1 pb-2 font-normal">
+                                {item.a}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                </div>
+              </form>
             </div>
           )}
 
