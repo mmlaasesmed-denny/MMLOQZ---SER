@@ -4202,6 +4202,38 @@ export default function WebshopComponent({
                 </div>
               </div>
 
+              {!isPreviewMode && (
+                <div className="bg-amber-50 border border-amber-200 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-left shadow-xs">
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-900">
+                    <Edit2 className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>✏️ Redigeringstilstand ({stripHtml(activeSubcategory.name)}): Klik på enhver overskrift, tekst eller fordel for at redigere direkte.</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() => promptEditImage("subcategory", activeSubcategory.id, "image")}
+                      className="px-3 py-1.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5" /> Skift Bannerbillede
+                    </button>
+                    <button
+                      onClick={() => {
+                        const url = prompt("Indtast YouTube/Vimeo video embed URL:", s[`subcatVideoUrl_${activeSubcategory.id}`] || "");
+                        if (url !== null) updateSetting(`subcatVideoUrl_${activeSubcategory.id}`, url);
+                      }}
+                      className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
+                    >
+                      <Video className="w-3.5 h-3.5 text-amber-400" /> Skift Video Link
+                    </button>
+                    <button
+                      onClick={() => promptAddProduct(activeSubcategory.id)}
+                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Tilføj Produkt
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Banner Header Image with overlay text */}
               <div
                 className={`relative overflow-hidden flex items-center justify-center group transition-all duration-300 ${
