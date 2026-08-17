@@ -2662,17 +2662,19 @@ export default function WebshopComponent({
                   setView("wishlist");
                   if (isPreviewMode) window.location.hash = "shop/wishlist";
                 }}
-                className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
               >
-                <Heart className="w-5 h-5 text-slate-750" />
+                <div className="relative">
+                  <Heart className="w-5 h-5 text-slate-750" />
+                  {wishlist.length > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider">
                   Wishlist
                 </span>
-                {wishlist.length > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                    {wishlist.length}
-                  </span>
-                )}
               </div>
 
               {/* Cart */}
@@ -2681,17 +2683,19 @@ export default function WebshopComponent({
                   setView("cart");
                   if (isPreviewMode) window.location.hash = "shop/cart";
                 }}
-                className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
               >
-                <ShoppingCart className="w-5 h-5 text-slate-755" />
+                <div className="relative">
+                  <ShoppingCart className="w-5 h-5 text-slate-755" />
+                  {getCartItemsCount() > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                      {getCartItemsCount()}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider">
                   cart
                 </span>
-                {getCartItemsCount() > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                    {getCartItemsCount()}
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -2984,17 +2988,19 @@ export default function WebshopComponent({
                   setView("wishlist");
                   if (isPreviewMode) window.location.hash = "shop/wishlist";
                 }}
-                className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
               >
-                <Heart className="w-5 h-5 text-slate-750" />
+                <div className="relative">
+                  <Heart className="w-5 h-5 text-slate-750" />
+                  {wishlist.length > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider">
                   Wishlist
                 </span>
-                {wishlist.length > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                    {wishlist.length}
-                  </span>
-                )}
               </div>
 
               {/* Cart */}
@@ -3003,17 +3009,19 @@ export default function WebshopComponent({
                   setView("cart");
                   if (isPreviewMode) window.location.hash = "shop/cart";
                 }}
-                className="relative flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
               >
-                <ShoppingCart className="w-5 h-5 text-slate-755" />
+                <div className="relative">
+                  <ShoppingCart className="w-5 h-5 text-slate-755" />
+                  {getCartItemsCount() > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                      {getCartItemsCount()}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider">
                   cart
                 </span>
-                {getCartItemsCount() > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                    {getCartItemsCount()}
-                  </span>
-                )}
               </div>
             </div>
           </div>
