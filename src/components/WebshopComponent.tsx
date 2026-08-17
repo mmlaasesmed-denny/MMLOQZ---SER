@@ -30,10 +30,13 @@ import {
   Truck,
   Search,
   Heart,
+  Edit2,
   Edit3,
   ChevronUp,
   ChevronDown,
   X,
+  Image as ImageIcon,
+  Video,
 } from "lucide-react";
 import { SiteTheme } from "../types";
 import {
