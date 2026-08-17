@@ -2282,8 +2282,9 @@ export default function WebshopComponent({
       )}
 
         {/* Webshop Header Bar */}
-        <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4 @md:flex-row @md:items-center @md:justify-between @md:gap-4">
-          {/* Mobile Top Row: Hamburger, Logo, Actions */}
+        <div className="pb-4 @md:pb-5 mb-4 relative z-[100] flex flex-col gap-4">
+          
+          {/* MOBILE TOP ROW (@md:hidden): Hamburger, Logo, Actions */}
           <div className="flex items-center justify-between w-full @md:hidden relative">
             {/* Mobile Hamburger Menu Button */}
             <button
@@ -2298,363 +2299,9 @@ export default function WebshopComponent({
               <span>☰</span>
             </button>
 
-              {/* Mega Menu Flyout */}
-              {isMegaMenuOpen && (
-                <div
-                  className="absolute top-full left-4 right-4 @md:left-0 @md:right-auto mt-2 w-auto @md:w-[800px] min-h-[400px] max-h-[80vh] overflow-y-auto @md:overflow-hidden bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col @md:flex-row z-50 animate-in fade-in slide-in-from-top-2 duration-200"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Column 1: Categories */}
-                  <div className="w-full @md:w-1/3 bg-slate-50 border-b @md:border-b-0 @md:border-r border-slate-200 py-4 shrink-0">
-                    <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                      Kategorier
-                    </h4>
-                    <ul className="space-y-1">
-                      {categories.map((cat) => (
-                        <li key={cat.id}>
-                          {/* DESKTOP CATEGORY BUTTON */}
-                          <button
-                            onMouseEnter={() => {
-                              setMegaMenuHoverCatId(cat.id);
-                              setMegaMenuHoverSubcatId(null);
-                            }}
-                            onClick={() => {
-                              setSelectedCatId(cat.id);
-                              setView("subcategories");
-                              setIsMegaMenuOpen(false);
-                              if (isPreviewMode)
-                                window.location.hash = `shop/cat/${cat.id}`;
-                            }}
-                            className={`hidden @md:flex w-full text-left px-6 py-2.5 font-bold transition-colors justify-between items-center ${
-                              megaMenuHoverCatId === cat.id
-                                ? "bg-amber-100"
-                                : "hover:bg-slate-100"
-                            }`}
-                            style={{
-                              fontSize: `${megaMenuFontSize}px`,
-                              fontWeight: megaMenuFontWeight,
-                              fontStyle: megaMenuFontStyle,
-                              color:
-                                megaMenuHoverCatId === cat.id
-                                  ? megaMenuActiveColor
-                                  : megaMenuTextColor,
-                            }}
-                          >
-                            <span>{stripHtml(cat.name)}</span>
-                            <span
-                              style={{ color: megaMenuTextColor, opacity: 0.5 }}
-                            >
-                              &rsaquo;
-                            </span>
-                          </button>
-
-                          {/* MOBILE CATEGORY BUTTON */}
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              if (megaMenuHoverCatId !== cat.id) {
-                                setMegaMenuHoverCatId(cat.id);
-                                setMegaMenuHoverSubcatId(null);
-                              } else {
-                                setSelectedCatId(cat.id);
-                                setView("subcategories");
-                                setIsMegaMenuOpen(false);
-                                if (isPreviewMode)
-                                  window.location.hash = `shop/cat/${cat.id}`;
-                              }
-                            }}
-                            className={`flex @md:hidden w-full text-left px-6 py-2.5 font-bold transition-colors justify-between items-center ${
-                              megaMenuHoverCatId === cat.id
-                                ? "bg-amber-100"
-                                : "hover:bg-slate-100"
-                            }`}
-                            style={{
-                              fontSize: `${megaMenuFontSize}px`,
-                              fontWeight: megaMenuFontWeight,
-                              fontStyle: megaMenuFontStyle,
-                              color:
-                                megaMenuHoverCatId === cat.id
-                                  ? megaMenuActiveColor
-                                  : megaMenuTextColor,
-                            }}
-                          >
-                            <span>{stripHtml(cat.name)}</span>
-                            <span
-                              style={{ color: megaMenuTextColor, opacity: 0.5 }}
-                            >
-                              {megaMenuHoverCatId === cat.id ? "▼" : "▶"}
-                            </span>
-                          </button>
-
-                          {/* MOBILE ONLY: Inline Subcategories (Accordion) */}
-                          {megaMenuHoverCatId === cat.id && (
-                            <div className="w-full bg-white @md:hidden border-b border-slate-100">
-                              <ul className="space-y-0 py-1">
-                                {subcategories
-                                  .filter((sub) => sub.categoryId === cat.id)
-                                  .map((sub) => (
-                                    <li key={sub.id}>
-                                      <button
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          if (
-                                            megaMenuHoverSubcatId !== sub.id
-                                          ) {
-                                            setMegaMenuHoverSubcatId(sub.id);
-                                          } else {
-                                            setSelectedCatId(cat.id);
-                                            setSelectedSubcatId(sub.id);
-                                            setView("subcategory-detail");
-                                            setIsMegaMenuOpen(false);
-                                            if (isPreviewMode)
-                                              window.location.hash = `shop/subcat/${sub.id}`;
-                                          }
-                                        }}
-                                        className={`w-full text-left pl-10 pr-6 py-2 font-semibold transition-colors flex justify-between items-center ${
-                                          megaMenuHoverSubcatId === sub.id
-                                            ? "bg-slate-50"
-                                            : "hover:bg-white"
-                                        }`}
-                                        style={{
-                                          fontSize: `${megaMenuFontSize}px`,
-                                          fontWeight: megaMenuFontWeight,
-                                          fontStyle: megaMenuFontStyle,
-                                          color:
-                                            megaMenuHoverSubcatId === sub.id
-                                              ? megaMenuActiveColor
-                                              : megaMenuTextColor,
-                                        }}
-                                      >
-                                        <span>{sub.name}</span>
-                                        <span
-                                          style={{
-                                            color: megaMenuTextColor,
-                                            opacity: 0.3,
-                                          }}
-                                          className="@md:hidden"
-                                        >
-                                          {megaMenuHoverSubcatId === sub.id
-                                            ? "▼"
-                                            : "▶"}
-                                        </span>
-                                      </button>
-
-                                      {/* MOBILE ONLY: Inline Products (Accordion) */}
-                                      {megaMenuHoverSubcatId === sub.id && (
-                                        <div className="w-full bg-slate-50 py-2 border-t border-slate-100 @md:hidden">
-                                          <ul className="space-y-2">
-                                            {products
-                                              .filter(
-                                                (p) =>
-                                                  p.subcategoryId === sub.id,
-                                              )
-                                              .slice(0, 5)
-                                              .map((prod) => (
-                                                <li key={prod.id}>
-                                                  <button
-                                                    onClick={(e) => {
-                                                      e.preventDefault();
-                                                      setSelectedProductId(
-                                                        prod.id,
-                                                      );
-                                                      setView("product-detail");
-                                                      setIsMegaMenuOpen(false);
-                                                      if (isPreviewMode)
-                                                        window.location.hash = `shop/product/${prod.id}`;
-                                                    }}
-                                                    className="w-full text-left pl-14 pr-6 py-1 transition-colors hover:bg-slate-100 flex items-center gap-3"
-                                                  >
-                                                    <div className="w-8 h-8 bg-white border border-slate-200 rounded-md flex items-center justify-center overflow-hidden shrink-0">
-                                                      <img
-                                                        src={prod.image}
-                                                        alt={prod.name}
-                                                        className="max-h-full max-w-full object-contain"
-                                                      />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                      <span className="font-bold text-[11px] leading-tight text-slate-700 line-clamp-1">
-                                                        {prod.name}
-                                                      </span>
-                                                      <span className="font-bold text-slate-400 text-[10px]">
-                                                        {prod.price} kr.
-                                                      </span>
-                                                    </div>
-                                                  </button>
-                                                </li>
-                                              ))}
-                                            <li>
-                                              <button
-                                                onClick={(e) => {
-                                                  e.preventDefault();
-                                                  setSelectedCatId(cat.id);
-                                                  setSelectedSubcatId(sub.id);
-                                                  setView("subcategory-detail");
-                                                  setIsMegaMenuOpen(false);
-                                                  if (isPreviewMode)
-                                                    window.location.hash = `shop/subcat/${sub.id}`;
-                                                }}
-                                                className="w-full text-left pl-14 pr-6 pt-2 text-[10px] font-black uppercase text-amber-500 hover:text-amber-600 tracking-wider"
-                                              >
-                                                Se alle produkter &rarr;
-                                              </button>
-                                            </li>
-                                          </ul>
-                                        </div>
-                                      )}
-                                    </li>
-                                  ))}
-                              </ul>
-                            </div>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Column 2: Subcategories (Desktop ONLY) */}
-                  {megaMenuHoverCatId && (
-                    <div className="hidden @md:block w-full @md:w-1/3 bg-white border-b @md:border-b-0 @md:border-r border-slate-100 py-4 shrink-0">
-                      <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                        Underkategorier
-                      </h4>
-                      <ul className="space-y-1">
-                        {subcategories
-                          .filter(
-                            (sub) => sub.categoryId === megaMenuHoverCatId,
-                          )
-                          .map((sub) => (
-                            <li key={sub.id}>
-                              <button
-                                onMouseEnter={() =>
-                                  setMegaMenuHoverSubcatId(sub.id)
-                                }
-                                onClick={() => {
-                                  setSelectedCatId(megaMenuHoverCatId);
-                                  setSelectedSubcatId(sub.id);
-                                  setView("subcategory-detail");
-                                  setIsMegaMenuOpen(false);
-                                  if (isPreviewMode)
-                                    window.location.hash = `shop/subcat/${sub.id}`;
-                                }}
-                                className={`w-full text-left px-6 py-2 font-semibold transition-colors flex justify-between items-center ${
-                                  megaMenuHoverSubcatId === sub.id
-                                    ? "bg-slate-50"
-                                    : "hover:bg-slate-50"
-                                }`}
-                                style={{
-                                  fontSize: `${megaMenuFontSize}px`,
-                                  fontWeight: megaMenuFontWeight,
-                                  fontStyle: megaMenuFontStyle,
-                                  color:
-                                    megaMenuHoverSubcatId === sub.id
-                                      ? megaMenuActiveColor
-                                      : megaMenuTextColor,
-                                }}
-                              >
-                                <span>{sub.name}</span>
-                                <span
-                                  style={{
-                                    color: megaMenuTextColor,
-                                    opacity: 0.3,
-                                  }}
-                                >
-                                  &rsaquo;
-                                </span>
-                              </button>
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Column 3: Products (Desktop ONLY) */}
-                  {megaMenuHoverSubcatId && (
-                    <div className="hidden @md:block w-full @md:w-1/3 bg-white py-4 overflow-y-auto max-h-[400px] shrink-0">
-                      <h4 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                        Udvalgte Produkter
-                      </h4>
-                      <ul className="space-y-3 px-6">
-                        {products
-                          .filter(
-                            (p) => p.subcategoryId === megaMenuHoverSubcatId,
-                          )
-                          .slice(0, 5) // Show only up to 5 products in mega menu
-                          .map((prod) => (
-                            <li
-                              key={prod.id}
-                              className="group cursor-pointer"
-                              onMouseEnter={() =>
-                                setMegaMenuHoverProdId(prod.id)
-                              }
-                              onMouseLeave={() => setMegaMenuHoverProdId(null)}
-                              onClick={() => {
-                                setSelectedProductId(prod.id);
-                                setView("product-detail");
-                                setIsMegaMenuOpen(false);
-                                if (isPreviewMode)
-                                  window.location.hash = `shop/product/${prod.id}`;
-                              }}
-                            >
-                              <div className="flex gap-3 items-center">
-                                <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
-                                  <img
-                                    src={prod.image}
-                                    alt={prod.name}
-                                    className="max-h-full max-w-full object-contain"
-                                  />
-                                </div>
-                                <div>
-                                  <h5
-                                    className="font-bold transition-colors leading-tight line-clamp-1"
-                                    style={{
-                                      fontSize: `${megaMenuFontSize}px`,
-                                      fontWeight: megaMenuFontWeight,
-                                      fontStyle: megaMenuFontStyle,
-                                      color:
-                                        megaMenuHoverProdId === prod.id
-                                          ? megaMenuActiveColor
-                                          : megaMenuTextColor,
-                                    }}
-                                  >
-                                    {prod.name}
-                                  </h5>
-                                  <span
-                                    className="font-bold text-slate-400"
-                                    style={{
-                                      fontSize: `${Math.max(8, megaMenuFontSize - 2)}px`,
-                                    }}
-                                  >
-                                    {prod.price} kr.
-                                  </span>
-                                </div>
-                              </div>
-                            </li>
-                          ))}
-                      </ul>
-                      <div className="px-6 mt-4 pt-4 border-t border-slate-100">
-                        <button
-                          onClick={() => {
-                            setSelectedCatId(megaMenuHoverCatId);
-                            setSelectedSubcatId(megaMenuHoverSubcatId);
-                            setView("subcategory-detail");
-                            setIsMegaMenuOpen(false);
-                            if (isPreviewMode)
-                              window.location.hash = `shop/subcat/${megaMenuHoverSubcatId}`;
-                          }}
-                          className="text-[10px] font-black uppercase text-amber-500 hover:text-amber-600 tracking-wider"
-                        >
-                          Se alle produkter &rarr;
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
             {/* Mobile Logo Centered */}
             <div
-              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center cursor-pointer select-none"
+              className="flex items-center justify-center cursor-pointer select-none"
               onClick={() => {
                 setView("categories");
                 setSelectedCatId(null);
@@ -2666,9 +2313,139 @@ export default function WebshopComponent({
             >
               {(() => {
                 const logoType = s.logoType || "text";
-                const logoFontSize = s.logoFontSize
-                  ? Number(s.logoFontSize)
-                  : 18;
+                const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
+                const logoSrc = s.logoSrc || "";
+                const ratio = logoFontSize / 18;
+
+                if (logoType === "image" && logoSrc) {
+                  return (
+                    <img
+                      src={logoSrc}
+                      alt="Logo"
+                      className="max-h-12 object-contain"
+                      style={{ height: `${36 * ratio}px` }}
+                    />
+                  );
+                }
+
+                return (
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
+                      style={{
+                        width: `${36 * ratio}px`,
+                        height: `${36 * ratio}px`,
+                      }}
+                    >
+                      <EditableText
+                        tag="span"
+                        isPreviewMode={isPreviewMode}
+                        html={logoBadge}
+                        className="text-amber-500 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
+                        style={{ fontSize: `${12 * ratio}px` }}
+                        onBlur={(e) =>
+                          updateSetting("logoBadge", e.currentTarget.innerHTML)
+                        }
+                      />
+                    </div>
+                    <div className="text-left">
+                      <EditableText
+                        tag="h2"
+                        isPreviewMode={isPreviewMode}
+                        html={logoText}
+                        className="font-black tracking-tighter text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
+                        style={{ fontSize: `${logoFontSize * 0.8}px` }}
+                        onBlur={(e) =>
+                          updateSetting("logoText", e.currentTarget.innerHTML)
+                        }
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Mobile Actions */}
+            <div className="flex items-center justify-end gap-3">
+              {/* Account Icon */}
+              <div className="relative profile-dropdown-root">
+                <div
+                  onClick={() => {
+                    if (loggedInUser) {
+                      setIsProfileDropdownOpen(!isProfileDropdownOpen);
+                    } else {
+                      setView("login");
+                      if (isPreviewMode) window.location.hash = "shop/login";
+                    }
+                  }}
+                  className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+                >
+                  {loggedInUser ? (
+                    <div className="w-5 h-5 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-bold text-[10px]">
+                      {loggedInUser.name.charAt(0).toUpperCase()}
+                    </div>
+                  ) : (
+                    <User className="w-5 h-5 text-slate-700" />
+                  )}
+                </div>
+              </div>
+
+              {/* Wishlist */}
+              <div
+                onClick={() => {
+                  setView("wishlist");
+                  if (isPreviewMode) window.location.hash = "shop/wishlist";
+                }}
+                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+              >
+                <div className="relative">
+                  <Heart className="w-5 h-5 text-slate-700" />
+                  {wishlist.length > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Cart */}
+              <div
+                onClick={() => {
+                  setView("cart");
+                  if (isPreviewMode) window.location.hash = "shop/cart";
+                }}
+                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
+              >
+                <div className="relative">
+                  <ShoppingCart className="w-5 h-5 text-slate-700" />
+                  {getCartItemsCount() > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                      {getCartItemsCount()}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* DESKTOP HEADER ROW (hidden on mobile, flex on desktop): Logo Left, Search Center, Actions Right */}
+          <div className="hidden @md:flex items-center justify-between w-full relative gap-6">
+            
+            {/* Desktop Logo */}
+            <div
+              className="flex items-center justify-start gap-3 cursor-pointer select-none shrink-0"
+              onClick={() => {
+                setView("categories");
+                setSelectedCatId(null);
+                setSelectedSubcatId(null);
+                setSelectedBrandId(null);
+                setSelectedProductId(null);
+                if (isPreviewMode) window.location.hash = "shop";
+              }}
+            >
+              {(() => {
+                const logoType = s.logoType || "text";
+                const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
                 const logoSrc = s.logoSrc || "";
                 const ratio = logoFontSize / 18;
 
@@ -2773,8 +2550,84 @@ export default function WebshopComponent({
               })()}
             </div>
 
-            {/* Mobile Actions */}
-            <div className="flex items-center justify-end gap-3 @md:gap-5 order-2 @md:order-none">
+            {/* Desktop Search Bar (Centered) */}
+            <div className="search-container-root relative flex-grow max-w-md z-20">
+              <div className="flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-white focus-within:border-amber-400 transition-colors">
+                <input
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  value={searchInputValue}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSearchInputValue(val);
+                    setShowSuggestions(val.trim().length >= 1);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchSubmit(searchInputValue);
+                    }
+                  }}
+                  className="w-full text-xs pl-3 pr-8 py-2 border-none bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none"
+                />
+                {searchInputValue && (
+                  <button
+                    onClick={() => {
+                      setSearchInputValue("");
+                      setShowSuggestions(false);
+                    }}
+                    className="px-2 text-slate-400 hover:text-slate-600 border-none bg-transparent cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                )}
+                <button
+                  onClick={() => handleSearchSubmit(searchInputValue)}
+                  className="px-4 bg-amber-400 hover:bg-amber-500 text-slate-900 flex items-center justify-center border-none cursor-pointer transition-colors"
+                >
+                  <Search className="w-4 h-4 text-slate-955" />
+                </button>
+              </div>
+
+              {/* Autocomplete Dropdown suggestions list */}
+              {showSuggestions && searchSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden z-50 max-h-72 overflow-y-auto divide-y divide-slate-100 animate-in fade-in slide-in-from-top-1 duration-150 text-left">
+                  {searchSuggestions.map((prod) => (
+                    <div
+                      key={prod.id}
+                      onClick={() => {
+                        setSelectedProductId(prod.id);
+                        setView("product-detail");
+                        setShowSuggestions(false);
+                        if (isPreviewMode) window.location.hash = `shop/product/${prod.id}`;
+                      }}
+                      className="p-3 hover:bg-slate-50 transition-colors cursor-pointer flex items-center justify-between gap-3 group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <img
+                          src={prod.image}
+                          alt={prod.name}
+                          className="w-8 h-8 object-contain rounded shrink-0 bg-slate-50 border border-slate-100 p-0.5"
+                        />
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-900 group-hover:text-amber-500 transition-colors truncate">
+                            {prod.name}
+                          </p>
+                          <p className="text-[10px] text-slate-400 truncate">
+                            {prod.id}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-black text-slate-900 font-mono shrink-0">
+                        {prod.price.toLocaleString("da-DK", { minimumFractionDigits: 2 })} DKK
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Actions (Right-aligned) */}
+            <div className="flex items-center justify-end gap-5 shrink-0">
               {/* Account Icon */}
               <div className="relative profile-dropdown-root">
                 <div
@@ -2811,13 +2664,12 @@ export default function WebshopComponent({
                 </div>
 
                 {loggedInUser && isProfileDropdownOpen && (
-                  <div className="absolute top-full right-1/2 translate-x-1/2 @sm:translate-x-0 @sm:right-0 mt-3 w-40 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                  <div className="absolute top-full right-0 mt-3 w-40 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
                     <button
                       onClick={() => {
                         setView("profile");
                         setIsProfileDropdownOpen(false);
-                        if (isPreviewMode)
-                          window.location.hash = "shop/profile";
+                        if (isPreviewMode) window.location.hash = "shop/profile";
                       }}
                       className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100"
                     >
@@ -2887,130 +2739,8 @@ export default function WebshopComponent({
             </div>
           </div>
 
-          {/* Desktop Layout Elements */}
-
-          {/* Desktop Logo */}
-          <div
-            className="hidden @md:flex items-center justify-start gap-3 cursor-pointer select-none order-1 @md:order-none"
-            onClick={() => {
-              setView("categories");
-              setSelectedCatId(null);
-              setSelectedSubcatId(null);
-              setSelectedBrandId(null);
-              setSelectedProductId(null);
-              if (isPreviewMode) window.location.hash = "shop";
-            }}
-          >
-            {(() => {
-              const logoType = s.logoType || "text";
-              const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
-              const logoSrc = s.logoSrc || "";
-              const ratio = logoFontSize / 18;
-
-              if (logoType === "image" && logoSrc) {
-                return (
-                  <div className="relative group">
-                    <div
-                      className={`flex items-center justify-center shrink-0 ${!isPreviewMode ? "cursor-pointer outline-dashed outline-1 outline-transparent hover:outline-slate-300" : ""}`}
-                      onClick={(e) => {
-                        if (!isPreviewMode) {
-                          e.stopPropagation();
-                          promptEditImage("setting", "", "logoSrc");
-                        }
-                      }}
-                    >
-                      <img
-                        src={logoSrc}
-                        alt="Logo"
-                        className="max-h-32 object-contain"
-                        style={{ height: `${48 * ratio}px` }}
-                      />
-                    </div>
-                    {!isPreviewMode && (
-                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-white border border-slate-200 rounded-md shadow-sm p-1 z-50">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateSetting(
-                              "logoFontSize",
-                              String(Math.max(10, logoFontSize - 2)),
-                            );
-                          }}
-                          className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
-                        >
-                          -
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateSetting(
-                              "logoFontSize",
-                              String(Math.min(72, logoFontSize + 2)),
-                            );
-                          }}
-                          className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
-                        >
-                          +
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              }
-
-              return (
-                <>
-                  <div
-                    className="rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
-                    style={{
-                      width: `${48 * ratio}px`,
-                      height: `${48 * ratio}px`,
-                    }}
-                  >
-                    <EditableText
-                      tag="span"
-                      isPreviewMode={isPreviewMode}
-                      html={logoBadge}
-                      className="text-amber-455 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
-                      style={{ fontSize: `${14 * ratio}px` }}
-                      onBlur={(e) =>
-                        updateSetting("logoBadge", e.currentTarget.innerHTML)
-                      }
-                    />
-                  </div>
-                  <div className="text-left">
-                    <EditableText
-                      tag="h2"
-                      isPreviewMode={isPreviewMode}
-                      html={logoText}
-                      className="font-black tracking-tighter text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
-                      style={{ fontSize: `${logoFontSize}px` }}
-                      onBlur={(e) =>
-                        updateSetting("logoText", e.currentTarget.innerHTML)
-                      }
-                    />
-                    <EditableText
-                      tag="span"
-                      isPreviewMode={isPreviewMode}
-                      html={tagline}
-                      className="text-slate-400 font-bold tracking-widest uppercase block outline-none focus:bg-slate-100 px-0.5 rounded"
-                      style={{
-                        fontSize: `${8 * ratio}px`,
-                        marginTop: `${4 * ratio}px`,
-                      }}
-                      onBlur={(e) =>
-                        updateSetting("tagline", e.currentTarget.innerHTML)
-                      }
-                    />
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-
-          {/* Search Bar (Both Mobile & Desktop) */}
-          {/* Search Bar Container */}
-          <div className="search-container-root relative flex-grow w-full @md:max-w-md z-20 order-3 @md:order-none">
+          {/* MOBILE SEARCH BAR (full width under top mobile row) */}
+          <div className="search-container-root relative w-full @md:hidden z-20">
             <div className="flex items-stretch rounded-xl border border-slate-200 overflow-hidden bg-white focus-within:border-amber-400 transition-colors">
               <input
                 type="text"
@@ -3046,172 +2776,9 @@ export default function WebshopComponent({
                 <Search className="w-4 h-4 text-slate-955" />
               </button>
             </div>
-
-            {/* Autocomplete Dropdown suggestions list */}
-            {showSuggestions && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-50 text-slate-850">
-                {getSuggestions(searchInputValue).length === 0 ? (
-                  <div className="p-3 text-xs text-slate-400 text-center">
-                    Ingen resultater fundet
-                  </div>
-                ) : (
-                  <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto">
-                    {getSuggestions(searchInputValue).map((p) => {
-                      const brand = WEBSHOP_BRANDS.find(
-                        (b) => b.id === p.brandId,
-                      );
-                      return (
-                        <div
-                          key={p.id}
-                          onClick={() => {
-                            setSelectedProductId(p.id);
-                            setView("product-detail");
-                            setShowSuggestions(false);
-                            setSearchInputValue("");
-                            if (isPreviewMode) {
-                              window.location.hash = `shop/product/${p.id}`;
-                            }
-                          }}
-                          className="flex items-center gap-3 p-2.5 hover:bg-slate-50 cursor-pointer transition-colors text-left"
-                        >
-                          <img
-                            src={p.image}
-                            className="w-8 h-8 rounded-lg object-cover bg-slate-100 shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-[9px] text-amber-500 font-bold uppercase tracking-wider leading-none">
-                              {brand ? brand.name : ""}
-                            </div>
-                            <div className="text-xs text-slate-700 font-bold truncate mt-0.5">
-                              {stripHtml(p.name)}
-                            </div>
-                          </div>
-                          <div className="text-[10px] font-mono font-bold text-slate-900 whitespace-nowrap">
-                            {p.price.toLocaleString("da-DK")},- DKK
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
-          {/* Desktop Actions */}
-          <div className="hidden @md:flex">
-            <div className="flex items-center justify-end gap-3 @md:gap-5 order-2 @md:order-none">
-              {/* Account Icon */}
-              <div className="relative profile-dropdown-root">
-                <div
-                  onClick={() => {
-                    if (loggedInUser) {
-                      setIsProfileDropdownOpen(!isProfileDropdownOpen);
-                    } else {
-                      setView("login");
-                      if (isPreviewMode) window.location.hash = "shop/login";
-                    }
-                  }}
-                  className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
-                >
-                  {loggedInUser ? (
-                    <>
-                      <div className="w-5 h-5 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-bold text-[10px]">
-                        {loggedInUser.name.charAt(0).toUpperCase()}
-                      </div>
-                      <span
-                        className="text-[9px] font-extrabold uppercase tracking-wider truncate max-w-[40px] text-center"
-                        title={loggedInUser.name}
-                      >
-                        {loggedInUser.name.split(" ")[0]}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <User className="w-5 h-5 text-slate-750" />
-                      <span className="text-[9px] font-extrabold uppercase tracking-wider">
-                        Konto
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                {loggedInUser && isProfileDropdownOpen && (
-                  <div className="absolute top-full right-1/2 translate-x-1/2 @sm:translate-x-0 @sm:right-0 mt-3 w-40 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
-                    <button
-                      onClick={() => {
-                        setView("profile");
-                        setIsProfileDropdownOpen(false);
-                        if (isPreviewMode)
-                          window.location.hash = "shop/profile";
-                      }}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100"
-                    >
-                      Min Profil
-                    </button>
-                    <button
-                      onClick={() => {
-                        localStorage.removeItem("mm_lase_session");
-                        setLoggedInUser(null);
-                        setCart([]);
-                        setWishlist([]);
-                        localStorage.removeItem("mm_lase_cart");
-                        localStorage.removeItem("mm_lase_wishlist");
-                        setIsProfileDropdownOpen(false);
-                        setView("categories");
-                        if (isPreviewMode) window.location.hash = "shop";
-                      }}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors"
-                    >
-                      Log ud
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Wishlist */}
-              <div
-                onClick={() => {
-                  setView("wishlist");
-                  if (isPreviewMode) window.location.hash = "shop/wishlist";
-                }}
-                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
-              >
-                <div className="relative">
-                  <Heart className="w-5 h-5 text-slate-750" />
-                  {wishlist.length > 0 && (
-                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
-                      {wishlist.length}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[9px] font-extrabold uppercase tracking-wider">
-                  Wishlist
-                </span>
-              </div>
-
-              {/* Cart */}
-              <div
-                onClick={() => {
-                  setView("cart");
-                  if (isPreviewMode) window.location.hash = "shop/cart";
-                }}
-                className="flex flex-col items-center gap-0.5 cursor-pointer text-slate-500 hover:text-slate-900 transition-colors select-none"
-              >
-                <div className="relative">
-                  <ShoppingCart className="w-5 h-5 text-slate-755" />
-                  {getCartItemsCount() > 0 && (
-                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white font-extrabold text-[8px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
-                      {getCartItemsCount()}
-                    </span>
-                  )}
-                </div>
-                <span className="text-[9px] font-extrabold uppercase tracking-wider">
-                  cart
-                </span>
-              </div>
-            </div>
-          </div>
+        </div>
 
       {/* Nav Link Bar */}
       <div
