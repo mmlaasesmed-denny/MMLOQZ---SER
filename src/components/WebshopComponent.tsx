@@ -4384,14 +4384,13 @@ export default function WebshopComponent({
                 />
               </div>
 
-              {/* Combined Info & Video Section */}
-              <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 text-left mt-8 items-start">
-                {/* Left Column: All Text Content */}
-                <div className="@md:col-span-2 space-y-6">
-                  {/* Part 1: Intro Title & Desc */}
-                  <div className="space-y-4">
+              {/* Info & Video Sections */}
+              <div className="space-y-10 text-left mt-8">
+                {/* Row 1: Intro Text Left + Yellow Benefits Box Right */}
+                <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 items-start">
+                  <div className="@md:col-span-2 space-y-4">
                     <h4
-                      className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
+                      className="text-xl font-extrabold text-slate-900 dark:text-slate-100 outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onBlur={(e) =>
@@ -4412,7 +4411,7 @@ export default function WebshopComponent({
                         activeSubcategory.detailedDescription ||
                         activeSubcategory.description
                       }
-                      className="text-sm text-slate-500 leading-relaxed font-medium outline-none focus:bg-slate-100 px-2 rounded"
+                      className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-2 rounded"
                       onBlur={(e) => {
                         const h = e.currentTarget.innerHTML;
                         updateSubcategoryField(activeSubcategory.id, "detailedDescription", stripHtml(h));
@@ -4421,89 +4420,8 @@ export default function WebshopComponent({
                     />
                   </div>
 
-                  {/* Part 2: Secondary Section Title & Paragraphs (Positioned Left of Video) */}
-                  <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                    <h4
-                      className="text-xl font-extrabold text-slate-900 dark:text-slate-100 outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onBlur={(e) =>
-                        updateSetting(
-                          `subcatVideoTitle_${activeSubcategory.id}`,
-                          e.currentTarget.innerText,
-                        )
-                      }
-                    >
-                      {s[`subcatVideoTitle_${activeSubcategory.id}`] ||
-                        `Find de rette elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} hos mmlaasesmed`}
-                    </h4>
-                    <p
-                      className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onBlur={(e) =>
-                        updateSetting(
-                          `subcatVideoDesc1_${activeSubcategory.id}`,
-                          e.currentTarget.innerText,
-                        )
-                      }
-                    >
-                      {s[`subcatVideoDesc1_${activeSubcategory.id}`] ||
-                        `Her finder du vores nøje udvalgte sortiment af elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} fra vores leverandører. Vi har elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
-                    </p>
-                    <p
-                      className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
-                      contentEditable={!isPreviewMode}
-                      suppressContentEditableWarning
-                      onBlur={(e) =>
-                        updateSetting(
-                          `subcatVideoDesc2_${activeSubcategory.id}`,
-                          e.currentTarget.innerText,
-                        )
-                      }
-                    >
-                      {s[`subcatVideoDesc2_${activeSubcategory.id}`] ||
-                        `Om du skal bruge elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
-                    </p>
-
-                    {/* Dedicated Editable Text Block directly Left to Video */}
-                    <div className="bg-amber-50/70 dark:bg-slate-900/60 p-5 rounded-2xl border border-amber-200/80 dark:border-slate-800 space-y-2 mt-4 shadow-2xs">
-                      <h5
-                        className="text-xs uppercase font-extrabold tracking-wider text-amber-900 dark:text-amber-400 outline-none focus:bg-amber-100 dark:focus:bg-slate-800 px-1 rounded"
-                        contentEditable={!isPreviewMode}
-                        suppressContentEditableWarning
-                        onBlur={(e) =>
-                          updateSetting(
-                            `subcatVideoExtraTitle_${activeSubcategory.id}`,
-                            e.currentTarget.innerText,
-                          )
-                        }
-                      >
-                        {s[`subcatVideoExtraTitle_${activeSubcategory.id}`] ||
-                          `Ekstra Tekst & Information (${stripHtml(activeSubcategory.name)})`}
-                      </h5>
-                      <p
-                        className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium outline-none focus:bg-amber-100 dark:focus:bg-slate-800 px-1 rounded"
-                        contentEditable={!isPreviewMode}
-                        suppressContentEditableWarning
-                        onBlur={(e) =>
-                          updateSetting(
-                            `subcatVideoExtraText_${activeSubcategory.id}`,
-                            e.currentTarget.innerText,
-                          )
-                        }
-                      >
-                        {s[`subcatVideoExtraText_${activeSubcategory.id}`] ||
-                          `Skriv din egen tilpassede tekst eller produktdetaljer her (placeret direkte til venstre for videoen). Klik blot her for at redigere teksten live.`}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column: Stacked Yellow Block, Video Block & Side Text */}
-                <div className="space-y-6">
                   {/* Yellow Block: Vigtige Fordele */}
-                  <div className="bg-amber-400 text-slate-900 p-8 shadow-sm flex flex-col justify-between">
+                  <div className="bg-amber-400 text-slate-900 p-8 shadow-sm flex flex-col justify-between rounded-2xl">
                     <div>
                       <h5
                         className="text-lg font-black tracking-wider mb-5 outline-none focus:bg-amber-300 px-1 rounded"
@@ -4546,9 +4464,58 @@ export default function WebshopComponent({
                       </ul>
                     </div>
                   </div>
+                </div>
 
-                  {/* Video & Side Text Block */}
-                  <div className="space-y-3">
+                {/* Row 2: Video Explanation Text Left + Video Player Box Right */}
+                <div className="grid grid-cols-1 @md:grid-cols-3 gap-8 items-start pt-8 border-t border-slate-100 dark:border-slate-800">
+                  {/* Left Column: Video Explanation Text (Directly Left of Video) */}
+                  <div className="@md:col-span-2 space-y-4">
+                    <h4
+                      className="text-xl font-extrabold text-slate-900 dark:text-slate-100 outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) =>
+                        updateSetting(
+                          `subcatVideoTitle_${activeSubcategory.id}`,
+                          e.currentTarget.innerText,
+                        )
+                      }
+                    >
+                      {s[`subcatVideoTitle_${activeSubcategory.id}`] ||
+                        `Find de rette elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} hos mmlaasesmed`}
+                    </h4>
+                    <p
+                      className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) =>
+                        updateSetting(
+                          `subcatVideoDesc1_${activeSubcategory.id}`,
+                          e.currentTarget.innerText,
+                        )
+                      }
+                    >
+                      {s[`subcatVideoDesc1_${activeSubcategory.id}`] ||
+                        `Her finder du vores nøje udvalgte sortiment af elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} fra vores leverandører. Vi har elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
+                    </p>
+                    <p
+                      className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
+                      contentEditable={!isPreviewMode}
+                      suppressContentEditableWarning
+                      onBlur={(e) =>
+                        updateSetting(
+                          `subcatVideoDesc2_${activeSubcategory.id}`,
+                          e.currentTarget.innerText,
+                        )
+                      }
+                    >
+                      {s[`subcatVideoDesc2_${activeSubcategory.id}`] ||
+                        `Om du skal bruge elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
+                    </p>
+                  </div>
+
+                  {/* Right Column: Video Player Box */}
+                  <div>
                     {(() => {
                       let embedUrl =
                         s[`subcatVideoUrl_${activeSubcategory.id}`] || "";
@@ -4578,7 +4545,7 @@ export default function WebshopComponent({
                       }
 
                       return (
-                        <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
+                        <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200 rounded-xl">
                           {embedUrl ? (
                             <iframe
                               src={embedUrl}
@@ -4645,38 +4612,6 @@ export default function WebshopComponent({
                         </div>
                       );
                     })()}
-
-                    {/* Editable Video Description Box Below Video */}
-                    <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1.5">
-                      <h6
-                        className="text-xs uppercase font-extrabold tracking-wider text-slate-800 dark:text-slate-200 outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
-                        contentEditable={!isPreviewMode}
-                        suppressContentEditableWarning
-                        onBlur={(e) =>
-                          updateSetting(
-                            `subcatVideoSideTitle_${activeSubcategory.id}`,
-                            e.currentTarget.innerText,
-                          )
-                        }
-                      >
-                        {s[`subcatVideoSideTitle_${activeSubcategory.id}`] ||
-                          `Videoforklaring: ${stripHtml(activeSubcategory.name)}`}
-                      </h6>
-                      <p
-                        className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
-                        contentEditable={!isPreviewMode}
-                        suppressContentEditableWarning
-                        onBlur={(e) =>
-                          updateSetting(
-                            `subcatVideoSideText_${activeSubcategory.id}`,
-                            e.currentTarget.innerText,
-                          )
-                        }
-                      >
-                        {s[`subcatVideoSideText_${activeSubcategory.id}`] ||
-                          `Se videoen for en komplet gennemgang af vores ${stripHtml(activeSubcategory.name).toLowerCase()} løsninger.`}
-                      </p>
-                    </div>
                   </div>
                 </div>
               </div>
