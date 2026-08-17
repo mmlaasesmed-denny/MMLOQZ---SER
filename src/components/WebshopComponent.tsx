@@ -827,7 +827,10 @@ export default function WebshopComponent({
         : null;
     if (catsStr) {
       try {
-        return JSON.parse(catsStr);
+        const parsed = JSON.parse(catsStr);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
       } catch (e) {
         console.error("Failed to parse categories", e);
       }
@@ -843,7 +846,10 @@ export default function WebshopComponent({
           : null;
       if (subcatsStr) {
         try {
-          return JSON.parse(subcatsStr);
+          const parsed = JSON.parse(subcatsStr);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
         } catch (e) {
           console.error("Failed to parse subcategories", e);
         }
@@ -871,20 +877,22 @@ export default function WebshopComponent({
     if (productsStr) {
       try {
         let parsed = JSON.parse(productsStr);
-        // Migration: add default specs if missing
-        parsed = parsed.map((p: any) => {
-          if (!p.specifications) {
-            p.specifications = [
-              { key: "Overflade", value: "Rustfrit stål A2 børstet" },
-              { key: "Model", value: "Evolo/Exivo" },
-              { key: "Bredde mm", value: "39" },
-              { key: "Højde mm", value: "310" },
-              { key: "Låsesystem", value: "Kaba evolo" },
-            ];
-          }
-          return p;
-        });
-        return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Migration: add default specs if missing
+          parsed = parsed.map((p: any) => {
+            if (!p.specifications) {
+              p.specifications = [
+                { key: "Overflade", value: "Rustfrit stål A2 børstet" },
+                { key: "Model", value: "Evolo/Exivo" },
+                { key: "Bredde mm", value: "39" },
+                { key: "Højde mm", value: "310" },
+                { key: "Låsesystem", value: "Kaba evolo" },
+              ];
+            }
+            return p;
+          });
+          return parsed;
+        }
       } catch (e) {
         console.error("Failed to parse mm_lase_products", e);
       }
