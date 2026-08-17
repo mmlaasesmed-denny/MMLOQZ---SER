@@ -943,6 +943,11 @@ export default function WebshopComponent({
   }, [subcategories]);
 
   const [invSearchQuery, setInvSearchQuery] = useState("");
+  const [selectedProductImage, setSelectedProductImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSelectedProductImage(null);
+  }, [selectedProductId]);
 
   // Auth states
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -5335,60 +5340,68 @@ export default function WebshopComponent({
 
                   {/* Grid block: Left side image gallery, right side info */}
                   <div className="grid grid-cols-1 @md:grid-cols-2 gap-8 text-left items-start">
-                    {/* Left Side: Main Image and Thumbnails */}
-                    <div className="space-y-4">
-                      <div className="relative rounded-3xl overflow-hidden bg-slate-50 border border-slate-200 p-4 aspect-square flex items-center justify-center">
-                        <img
-                          src={activeProduct.image}
-                          alt={stripHtml(activeProduct.name)}
-                          className={`max-h-full max-w-full object-contain rounded-2xl ${!isPreviewMode ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
-                          onClick={() =>
-                            promptEditImage(
-                              "product",
-                              activeProduct.id,
-                              "image",
-                            )
-                          }
-                        />
-                        <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
-                          {activeProduct.badges.map((badge, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2.5 py-1 text-[9px] font-bold bg-[#0f172a] text-[#FFC502] uppercase rounded-full shadow-sm"
-                            >
-                              {badge}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      {/* Thumbnail gallery */}
-                      <div className="grid grid-cols-4 gap-3">
-                        <div className="aspect-square bg-slate-50 border-2 border-amber-400 rounded-2xl p-1 flex items-center justify-center cursor-pointer">
-                          <img
-                            src={activeProduct.image}
-                            className="max-h-full max-w-full object-contain rounded-lg"
-                          />
-                        </div>
-                        <div className="aspect-square bg-slate-50 border border-slate-200 hover:border-amber-300 rounded-2xl p-1 flex items-center justify-center cursor-pointer">
-                          <img
-                            src="https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?w=150&auto=format&fit=crop&q=80"
-                            className="max-h-full max-w-full object-cover rounded-lg"
-                          />
-                        </div>
-                        <div className="aspect-square bg-slate-50 border border-slate-200 hover:border-amber-300 rounded-2xl p-1 flex items-center justify-center cursor-pointer">
-                          <img
-                            src="https://images.unsplash.com/photo-1558002038-1055907df827?w=150&auto=format&fit=crop&q=80"
-                            className="max-h-full max-w-full object-cover rounded-lg"
-                          />
-                        </div>
-                        <div className="aspect-square bg-slate-50 border border-slate-200 hover:border-amber-300 rounded-2xl p-1 flex items-center justify-center cursor-pointer">
-                          <img
-                            src="https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?w=150&auto=format&fit=crop&q=80"
-                            className="max-h-full max-w-full object-cover rounded-lg"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                      {/* Left Side: Main Image and Thumbnails */}
+                      {(() => {
+                        const productGallery = [
+                          activeProduct.image,
+                          s[`prodGalleryImg1_${activeProduct.id}`] || "https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?w=600&auto=format&fit=crop&q=80",
+                          s[`prodGalleryImg2_${activeProduct.id}`] || "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&auto=format&fit=crop&q=80",
+                          s[`prodGalleryImg3_${activeProduct.id}`] || "https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?w=600&auto=format&fit=crop&q=80",
+                        ];
+                        const mainImageSrc = selectedProductImage || activeProduct.image;
+
+                        return (
+                          <div className="space-y-4">
+                            <div className="relative rounded-3xl overflow-hidden bg-slate-50 border border-slate-200 p-4 aspect-square flex items-center justify-center">
+                              <img
+                                src={mainImageSrc}
+                                alt={stripHtml(activeProduct.name)}
+                                className={`max-h-full max-w-full object-contain rounded-2xl ${!isPreviewMode ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+                                onClick={() =>
+                                  promptEditImage(
+                                    "product",
+                                    activeProduct.id,
+                                    "image",
+                                  )
+                                }
+                              />
+                              <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
+                                {activeProduct.badges.map((badge, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-2.5 py-1 text-[9px] font-bold bg-[#0f172a] text-[#FFC502] uppercase rounded-full shadow-sm"
+                                  >
+                                    {badge}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            {/* Thumbnail gallery */}
+                            <div className="grid grid-cols-4 gap-3">
+                              {productGallery.map((imgUrl, idx) => {
+                                const isActive = mainImageSrc === imgUrl;
+                                return (
+                                  <div
+                                    key={idx}
+                                    onClick={() => setSelectedProductImage(imgUrl)}
+                                    className={`aspect-square bg-slate-50 rounded-2xl p-1 flex items-center justify-center cursor-pointer transition-all ${
+                                      isActive
+                                        ? "border-2 border-amber-400 shadow-sm ring-2 ring-amber-400/20"
+                                        : "border border-slate-200 hover:border-amber-300"
+                                    }`}
+                                  >
+                                    <img
+                                      src={imgUrl}
+                                      alt={`Thumbnail ${idx + 1}`}
+                                      className="max-h-full max-w-full object-cover rounded-lg"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                     {/* Right Side: Product Info, Price & Cart buttons */}
                     <div className="space-y-6">
