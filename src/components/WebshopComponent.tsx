@@ -4392,10 +4392,10 @@ export default function WebshopComponent({
                     />
                   </div>
 
-                  {/* Part 2: Secondary Section Title & Paragraphs */}
-                  <div className="space-y-4 pt-2">
+                  {/* Part 2: Secondary Section Title & Paragraphs (Positioned Left of Video) */}
+                  <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800/60">
                     <h4
-                      className="text-xl font-extrabold text-slate-900 outline-none focus:bg-slate-100 px-1 rounded"
+                      className="text-xl font-extrabold text-slate-900 dark:text-slate-100 outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onBlur={(e) =>
@@ -4409,7 +4409,7 @@ export default function WebshopComponent({
                         `Find de rette elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} hos mmlaasesmed`}
                     </h4>
                     <p
-                      className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
+                      className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onBlur={(e) =>
@@ -4423,7 +4423,7 @@ export default function WebshopComponent({
                         `Her finder du vores nøje udvalgte sortiment af elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} fra vores leverandører. Vi har elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} til praktisk talt alle formål, uanset dit behov og hvilken opgave, du står overfor.`}
                     </p>
                     <p
-                      className="text-xs text-slate-505 leading-relaxed font-medium outline-none focus:bg-slate-100 px-1 rounded"
+                      className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
                       contentEditable={!isPreviewMode}
                       suppressContentEditableWarning
                       onBlur={(e) =>
@@ -4436,10 +4436,42 @@ export default function WebshopComponent({
                       {s[`subcatVideoDesc2_${activeSubcategory.id}`] ||
                         `Om du skal bruge elektroniske ${stripHtml(activeSubcategory.name).toLowerCase()} i dit daglige arbejde eller blot en gang imellem, er professionel eller gør-det-selv'er, så har vi produkter, der passer til dit behov.`}
                     </p>
+
+                    {/* Dedicated Editable Text Block directly Left to Video */}
+                    <div className="bg-amber-50/70 dark:bg-slate-900/60 p-5 rounded-2xl border border-amber-200/80 dark:border-slate-800 space-y-2 mt-4 shadow-2xs">
+                      <h5
+                        className="text-xs uppercase font-extrabold tracking-wider text-amber-900 dark:text-amber-400 outline-none focus:bg-amber-100 dark:focus:bg-slate-800 px-1 rounded"
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateSetting(
+                            `subcatVideoExtraTitle_${activeSubcategory.id}`,
+                            e.currentTarget.innerText,
+                          )
+                        }
+                      >
+                        {s[`subcatVideoExtraTitle_${activeSubcategory.id}`] ||
+                          `Ekstra Tekst & Information (${stripHtml(activeSubcategory.name)})`}
+                      </h5>
+                      <p
+                        className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium outline-none focus:bg-amber-100 dark:focus:bg-slate-800 px-1 rounded"
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateSetting(
+                            `subcatVideoExtraText_${activeSubcategory.id}`,
+                            e.currentTarget.innerText,
+                          )
+                        }
+                      >
+                        {s[`subcatVideoExtraText_${activeSubcategory.id}`] ||
+                          `Skriv din egen tilpassede tekst eller produktdetaljer her (placeret direkte til venstre for videoen). Klik blot her for at redigere teksten live.`}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Right Column: Stacked Yellow Block & Video Block */}
+                {/* Right Column: Stacked Yellow Block, Video Block & Side Text */}
                 <div className="space-y-6">
                   {/* Yellow Block: Vigtige Fordele */}
                   <div className="bg-amber-400 text-slate-900 p-8 shadow-sm flex flex-col justify-between">
@@ -4486,103 +4518,137 @@ export default function WebshopComponent({
                     </div>
                   </div>
 
-                  {/* Video Block */}
-                  {(() => {
-                    let embedUrl =
-                      s[`subcatVideoUrl_${activeSubcategory.id}`] || "";
-                    if (embedUrl) {
-                      if (embedUrl.includes("youtube.com/watch?v=")) {
-                        embedUrl = embedUrl.replace(
-                          "youtube.com/watch?v=",
-                          "youtube.com/embed/",
-                        );
-                        const ampIdx = embedUrl.indexOf("&");
-                        if (ampIdx !== -1)
-                          embedUrl = embedUrl.substring(0, ampIdx);
-                      } else if (embedUrl.includes("youtu.be/")) {
-                        embedUrl = embedUrl.replace(
-                          "youtu.be/",
-                          "youtube.com/embed/",
-                        );
-                      } else if (
-                        embedUrl.includes("vimeo.com/") &&
-                        !embedUrl.includes("player.vimeo.com")
-                      ) {
-                        const match = embedUrl.match(/vimeo\.com\/(\d+)/);
-                        if (match) {
-                          embedUrl = `https://player.vimeo.com/video/${match[1]}`;
+                  {/* Video & Side Text Block */}
+                  <div className="space-y-3">
+                    {(() => {
+                      let embedUrl =
+                        s[`subcatVideoUrl_${activeSubcategory.id}`] || "";
+                      if (embedUrl) {
+                        if (embedUrl.includes("youtube.com/watch?v=")) {
+                          embedUrl = embedUrl.replace(
+                            "youtube.com/watch?v=",
+                            "youtube.com/embed/",
+                          );
+                          const ampIdx = embedUrl.indexOf("&");
+                          if (ampIdx !== -1)
+                            embedUrl = embedUrl.substring(0, ampIdx);
+                        } else if (embedUrl.includes("youtu.be/")) {
+                          embedUrl = embedUrl.replace(
+                            "youtu.be/",
+                            "youtube.com/embed/",
+                          );
+                        } else if (
+                          embedUrl.includes("vimeo.com/") &&
+                          !embedUrl.includes("player.vimeo.com")
+                        ) {
+                          const match = embedUrl.match(/vimeo\.com\/(\d+)/);
+                          if (match) {
+                            embedUrl = `https://player.vimeo.com/video/${match[1]}`;
+                          }
                         }
                       }
-                    }
 
-                    return (
-                      <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
-                        {embedUrl ? (
-                          <iframe
-                            src={embedUrl}
-                            title="Video"
-                            className="absolute inset-0 w-full h-full border-none"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        ) : (
-                          <>
-                            <img
-                              src={
-                                s[`subcatVideoImg_${activeSubcategory.id}`] ||
-                                "https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80"
-                              }
-                              alt="Video explanation"
-                              className={`absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-500 ${!isPreviewMode ? "group-hover:opacity-100" : "group-hover:scale-102"}`}
+                      return (
+                        <div className="relative aspect-video overflow-hidden shadow-md group bg-[#1f2937] flex items-center justify-center border border-slate-200">
+                          {embedUrl ? (
+                            <iframe
+                              src={embedUrl}
+                              title="Video"
+                              className="absolute inset-0 w-full h-full border-none"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
                             />
-                            <div className="absolute inset-0 bg-black/15 pointer-events-none" />
-                            <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 pointer-events-none">
-                              <span className="text-slate-900 text-xl font-extrabold ml-1">
-                                ▶
-                              </span>
-                            </div>
-                          </>
-                        )}
-
-                        {!isPreviewMode && (
-                          <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                promptEditImage(
-                                  "setting",
-                                  "",
-                                  `subcatVideoImg_${activeSubcategory.id}`,
-                                );
-                              }}
-                              className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
-                            >
-                              Skift Billede
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const url = window.prompt(
-                                  "Indtast video URL (f.eks. YouTube eller Vimeo):",
-                                  s[`subcatVideoUrl_${activeSubcategory.id}`] ||
-                                    "",
-                                );
-                                if (url !== null) {
-                                  updateSetting(
-                                    `subcatVideoUrl_${activeSubcategory.id}`,
-                                    url,
-                                  );
+                          ) : (
+                            <>
+                              <img
+                                src={
+                                  s[`subcatVideoImg_${activeSubcategory.id}`] ||
+                                  "https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&auto=format&fit=crop&q=80"
                                 }
-                              }}
-                              className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
-                            >
-                              Skift Video URL
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
+                                alt="Video explanation"
+                                className={`absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-500 ${!isPreviewMode ? "group-hover:opacity-100" : "group-hover:scale-102"}`}
+                              />
+                              <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+                              <div className="relative w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 pointer-events-none">
+                                <span className="text-slate-900 text-xl font-extrabold ml-1">
+                                  ▶
+                                </span>
+                              </div>
+                            </>
+                          )}
+
+                          {!isPreviewMode && (
+                            <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  promptEditImage(
+                                    "setting",
+                                    "",
+                                    `subcatVideoImg_${activeSubcategory.id}`,
+                                  );
+                                }}
+                                className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
+                              >
+                                Skift Billede
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const url = window.prompt(
+                                    "Indtast video URL (f.eks. YouTube eller Vimeo):",
+                                    s[`subcatVideoUrl_${activeSubcategory.id}`] ||
+                                      "",
+                                  );
+                                  if (url !== null) {
+                                    updateSetting(
+                                      `subcatVideoUrl_${activeSubcategory.id}`,
+                                      url,
+                                    );
+                                  }
+                                }}
+                                className="bg-white/90 text-slate-900 px-3 py-1.5 rounded-full text-xs font-bold shadow hover:bg-white transition-colors border-none cursor-pointer"
+                              >
+                                Skift Video URL
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+
+                    {/* Editable Video Description Box Below Video */}
+                    <div className="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1.5">
+                      <h6
+                        className="text-xs uppercase font-extrabold tracking-wider text-slate-800 dark:text-slate-200 outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateSetting(
+                            `subcatVideoSideTitle_${activeSubcategory.id}`,
+                            e.currentTarget.innerText,
+                          )
+                        }
+                      >
+                        {s[`subcatVideoSideTitle_${activeSubcategory.id}`] ||
+                          `Videoforklaring: ${stripHtml(activeSubcategory.name)}`}
+                      </h6>
+                      <p
+                        className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium outline-none focus:bg-slate-100 dark:focus:bg-slate-800 px-1 rounded"
+                        contentEditable={!isPreviewMode}
+                        suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateSetting(
+                            `subcatVideoSideText_${activeSubcategory.id}`,
+                            e.currentTarget.innerText,
+                          )
+                        }
+                      >
+                        {s[`subcatVideoSideText_${activeSubcategory.id}`] ||
+                          `Se videoen for en komplet gennemgang af vores ${stripHtml(activeSubcategory.name).toLowerCase()} løsninger.`}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
