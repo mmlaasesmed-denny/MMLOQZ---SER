@@ -37,6 +37,7 @@ import {
   X,
   Image as ImageIcon,
   Video,
+  RotateCcw,
 } from "lucide-react";
 import { SiteTheme } from "../types";
 import {
@@ -4251,6 +4252,34 @@ export default function WebshopComponent({
                       className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
                     >
                       <Plus className="w-3.5 h-3.5" /> Tilføj Produkt
+                    </button>
+                    <button
+                      onClick={() => {
+                        const confirmReset = window.confirm(`Vil du gendanne alt oprindeligt indhold, overskrifter og tekster for ${stripHtml(activeSubcategory.name)}?`);
+                        if (confirmReset) {
+                          const keys = [
+                            `subcatBannerName_${activeSubcategory.id}`,
+                            `subcatIntroTitle_${activeSubcategory.id}`,
+                            `subcatIntroDesc_${activeSubcategory.id}`,
+                            `subcatVideoTitle_${activeSubcategory.id}`,
+                            `subcatVideoDesc1_${activeSubcategory.id}`,
+                            `subcatVideoDesc2_${activeSubcategory.id}`,
+                            `subcatVideoExtraTitle_${activeSubcategory.id}`,
+                            `subcatVideoExtraText_${activeSubcategory.id}`,
+                            `subcatBenefitsTitle_${activeSubcategory.id}`,
+                            `subcatBenefitsList_${activeSubcategory.id}`,
+                            `subcatVideoSideTitle_${activeSubcategory.id}`,
+                            `subcatVideoSideText_${activeSubcategory.id}`,
+                            `subcatVideoUrl_${activeSubcategory.id}`,
+                            `subcatVideoImg_${activeSubcategory.id}`
+                          ];
+                          keys.forEach(k => updateSetting(k, ""));
+                          alert(`Alt indhold for ${stripHtml(activeSubcategory.name)} er nu fuldstændigt gendannet!`);
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-xs cursor-pointer border-none flex items-center gap-1.5 select-none"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" /> Gendan Indhold
                     </button>
                   </div>
                 </div>
