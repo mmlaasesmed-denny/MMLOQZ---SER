@@ -4150,11 +4150,11 @@ export default function WebshopComponent({
                 ].map((badge, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col items-center text-center space-y-2 p-4"
+                    className="flex flex-col items-center text-center justify-center space-y-2 p-4 w-full"
                   >
-                    <div className="relative group">
+                    <div className="relative group flex items-center justify-center">
                       <div
-                        className={`cursor-pointer ${!isPreviewMode ? "hover:opacity-80 transition-opacity outline-dashed outline-1 outline-transparent hover:outline-slate-300" : ""}`}
+                        className={`cursor-pointer flex items-center justify-center ${!isPreviewMode ? "hover:opacity-80 transition-opacity outline-dashed outline-1 outline-transparent hover:outline-slate-300" : ""}`}
                         onClick={() =>
                           promptEditImage("setting", "", badge.iKey)
                         }
@@ -4214,7 +4214,7 @@ export default function WebshopComponent({
                       tag="h5"
                       isPreviewMode={isPreviewMode}
                       html={badge.title}
-                      className="font-black uppercase text-slate-900 tracking-wider outline-none focus:bg-slate-100 px-1 rounded"
+                      className="font-black uppercase text-slate-900 tracking-wider outline-none focus:bg-slate-100 px-1 rounded text-center w-full"
                       style={{ fontSize: `${badgeTitleSize}px` }}
                       onBlur={(e) =>
                         updateSetting(badge.tKey, e.currentTarget.innerHTML)
@@ -4224,7 +4224,7 @@ export default function WebshopComponent({
                       tag="p"
                       isPreviewMode={isPreviewMode}
                       html={badge.desc}
-                      className="text-slate-500 leading-relaxed max-w-[200px] outline-none focus:bg-slate-100 px-1 rounded"
+                      className="text-slate-500 leading-relaxed max-w-[240px] mx-auto text-center w-full outline-none focus:bg-slate-100 px-1 rounded"
                       style={{ fontSize: `${badgeTextSize}px` }}
                       onBlur={(e) =>
                         updateSetting(badge.dKey, e.currentTarget.innerHTML)
