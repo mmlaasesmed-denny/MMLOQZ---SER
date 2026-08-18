@@ -1238,8 +1238,13 @@ export default function WebshopComponent({
   // Handle hash navigation back/forward in browser
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (!hash || hash === "#shop" || hash.endsWith("#shop")) {
+      let rawHash = window.location.hash || "";
+      let hash = rawHash;
+      if (rawHash.includes("#shop")) {
+        hash = "#shop" + rawHash.split("#shop")[1];
+      }
+
+      if (!hash || hash === "#shop" || hash === "#" || hash.endsWith("#shop")) {
         setView("categories");
         setSelectedCatId(null);
         setSelectedSubcatId(null);
@@ -1255,34 +1260,34 @@ export default function WebshopComponent({
       } else if (hash.startsWith("#shop/subcat/")) {
         const subcatId = hash.replace("#shop/subcat/", "");
         const sub = subcategories.find((s) => s.id === subcatId);
+        setView("subcategory-detail");
+        setSelectedSubcatId(subcatId);
         if (sub) {
-          setView("subcategory-detail");
           setSelectedCatId(sub.categoryId);
-          setSelectedSubcatId(subcatId);
-          setSelectedBrandId(null);
-          setSelectedProductId(null);
         }
+        setSelectedBrandId(null);
+        setSelectedProductId(null);
       } else if (hash.startsWith("#shop/brand/")) {
         const parts = hash.replace("#shop/brand/", "").split("/");
         if (parts.length === 2) {
           const [subcatId, brandId] = parts;
           const sub = subcategories.find((s) => s.id === subcatId);
+          setView("brand-products");
+          setSelectedSubcatId(subcatId);
+          setSelectedBrandId(brandId);
           if (sub) {
-            setView("brand-products");
             setSelectedCatId(sub.categoryId);
-            setSelectedSubcatId(subcatId);
-            setSelectedBrandId(brandId);
-            setSelectedProductId(null);
           }
+          setSelectedProductId(null);
         }
       } else if (hash.startsWith("#shop/product/")) {
         const productId = hash.replace("#shop/product/", "");
         const product =
           products.find((p) => p.id === productId) ||
           WEBSHOP_PRODUCTS.find((p) => p.id === productId);
+        setView("product-detail");
+        setSelectedProductId(productId);
         if (product) {
-          setView("product-detail");
-          setSelectedProductId(productId);
           setSelectedSubcatId(product.subcategoryId);
           setSelectedBrandId(product.brandId);
           const sub = subcategories.find((s) => s.id === product.subcategoryId);
@@ -1325,6 +1330,9 @@ export default function WebshopComponent({
           } catch (e) {}
         }
         setView("profile");
+      } else {
+        // Fallback for any unrecognized hash to prevent blank screen
+        setView("categories");
       }
     };
 
