@@ -1691,18 +1691,32 @@ export default function WebshopComponent({
         } catch (e) {}
       }
 
-      // Merge current cart with saved user cart
+      // Merge current cart with saved user cart using valid product IDs
+      const getCartItemId = (item: any): string => {
+        if (!item) return "";
+        if (item.product && item.product.id) return item.product.id;
+        if (item.productId) return item.productId;
+        return "";
+      };
+
       const mergedCartMap = new Map<string, CartItem>();
-      savedUserCart.forEach((item) => mergedCartMap.set(item.productId, { ...item }));
+      savedUserCart.forEach((item) => {
+        const pId = getCartItemId(item);
+        if (pId) mergedCartMap.set(pId, { ...item });
+      });
+
       cart.forEach((item) => {
-        if (mergedCartMap.has(item.productId)) {
-          const existing = mergedCartMap.get(item.productId)!;
-          mergedCartMap.set(item.productId, {
-            ...existing,
-            quantity: Math.max(existing.quantity, item.quantity),
-          });
-        } else {
-          mergedCartMap.set(item.productId, { ...item });
+        const pId = getCartItemId(item);
+        if (pId) {
+          if (mergedCartMap.has(pId)) {
+            const existing = mergedCartMap.get(pId)!;
+            mergedCartMap.set(pId, {
+              ...existing,
+              quantity: Math.max(existing.quantity, item.quantity),
+            });
+          } else {
+            mergedCartMap.set(pId, { ...item });
+          }
         }
       });
       const mergedCart = Array.from(mergedCartMap.values());
