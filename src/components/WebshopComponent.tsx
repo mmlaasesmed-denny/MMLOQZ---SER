@@ -9802,9 +9802,9 @@ export default function WebshopComponent({
 
         {/* Toast Notification rendered at document.body level to bypass any container clipping */}
         {toast && typeof document !== "undefined" && createPortal(
-          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[99999999] pointer-events-none animate-in slide-in-from-top-6 fade-in duration-200">
+          <div className="fixed top-16 left-8 md:left-16 z-[99999999] pointer-events-none animate-in slide-in-from-top-6 fade-in duration-200">
             <div
-              className={`px-6 py-3.5 rounded-full shadow-2xl border-2 flex items-center gap-3 min-w-[280px] max-w-[90vw] text-center justify-center font-sans backdrop-blur-xl
+              className={`px-6 py-3.5 rounded-full shadow-2xl border-2 flex items-center gap-3 min-w-[260px] max-w-[90vw] text-left justify-start font-sans backdrop-blur-xl
             ${toast.type === "success" || !toast.type ? "bg-slate-900/95 text-white border-emerald-400 shadow-emerald-500/40" : ""}
             ${toast.type === "error" ? "bg-slate-900/95 text-white border-rose-500 shadow-rose-500/40" : ""}
             ${toast.type === "info" ? "bg-slate-900/95 text-white border-amber-400 shadow-amber-400/40" : ""}
