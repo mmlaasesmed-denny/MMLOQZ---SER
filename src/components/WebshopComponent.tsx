@@ -9784,9 +9784,9 @@ export default function WebshopComponent({
 
         {/* Toast Notification */}
         {toast && (
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[99999] pointer-events-none animate-in zoom-in-95 fade-in duration-200">
+          <div className="fixed top-20 left-6 z-[99999] pointer-events-none animate-in slide-in-from-top-4 fade-in duration-200">
             <div
-              className={`px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-3.5 min-w-[280px] max-w-[90vw] backdrop-blur-xl text-center justify-center
+              className={`px-5 py-3.5 rounded-2xl shadow-xl border flex items-center gap-3 min-w-[240px] max-w-[90vw] backdrop-blur-xl text-left justify-start
             ${toast.type === "success" ? "bg-slate-900/95 border-emerald-500/50 text-white shadow-emerald-500/20" : ""}
             ${toast.type === "error" ? "bg-slate-900/95 border-rose-500/50 text-white shadow-rose-500/20" : ""}
             ${toast.type === "info" ? "bg-slate-900/95 border-amber-400/50 text-white shadow-amber-400/20" : ""}
