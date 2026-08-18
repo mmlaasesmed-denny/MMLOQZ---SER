@@ -776,6 +776,19 @@ export default function WebshopComponent({
     }
   };
 
+  // Account & Auth states
+  const [loggedInUser, setLoggedInUser] = useState<Account | null>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("mm_lase_session");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {}
+      }
+    }
+    return null;
+  });
+
   // Cart states
   const [cart, setCart] = useState<CartItem[]>(() => {
     const saved =
@@ -920,19 +933,6 @@ export default function WebshopComponent({
   const [pickupPoints, setPickupPoints] = useState<any[]>([]);
   const [homeDeliveryOptions, setHomeDeliveryOptions] = useState<any[]>([]);
   const [selectedDelivery, setSelectedDelivery] = useState<any | null>(null);
-
-  // Account & Auth states
-  const [loggedInUser, setLoggedInUser] = useState<Account | null>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("mm_lase_session");
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {}
-      }
-    }
-    return null;
-  });
 
   // Fetch session on load
   useEffect(() => {
