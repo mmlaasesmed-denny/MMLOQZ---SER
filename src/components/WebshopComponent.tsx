@@ -2799,6 +2799,46 @@ export default function WebshopComponent({
                     <User className="w-5 h-5 text-slate-700" />
                   )}
                 </div>
+
+                {loggedInUser && isProfileDropdownOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-44 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden z-[200]">
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-100">
+                      <p className="text-xs font-bold text-slate-900 truncate">{loggedInUser.name}</p>
+                      <p className="text-[10px] text-slate-500 truncate">{loggedInUser.email}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setView("profile");
+                        setIsProfileDropdownOpen(false);
+                        if (isPreviewMode) window.location.hash = "shop/profile";
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer flex items-center gap-2"
+                    >
+                      <span>👤</span> Min Profil
+                    </button>
+                    {(loggedInUser.is_staff || loggedInUser.is_superuser) && (
+                      <button
+                        onClick={() => {
+                          setView("admin");
+                          setIsProfileDropdownOpen(false);
+                          if (isPreviewMode) window.location.hash = "shop/admin";
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-indigo-650 hover:bg-indigo-50 transition-colors border-b border-slate-100 cursor-pointer flex items-center gap-2"
+                      >
+                        <span>⚙️</span> Admin Kontrolpanel
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer flex items-center gap-2"
+                    >
+                      <span>🚪</span> Log ud
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Wishlist */}
@@ -3085,32 +3125,41 @@ export default function WebshopComponent({
                 </div>
 
                 {loggedInUser && isProfileDropdownOpen && (
-                  <div className="absolute top-full right-0 mt-3 w-40 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
+                  <div className="absolute top-full right-0 mt-3 w-44 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-100">
+                      <p className="text-xs font-bold text-slate-900 truncate">{loggedInUser.name}</p>
+                      <p className="text-[10px] text-slate-500 truncate">{loggedInUser.email}</p>
+                    </div>
                     <button
                       onClick={() => {
                         setView("profile");
                         setIsProfileDropdownOpen(false);
                         if (isPreviewMode) window.location.hash = "shop/profile";
                       }}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100"
+                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors border-b border-slate-100 cursor-pointer flex items-center gap-2"
                     >
-                      Min Profil
+                      <span>👤</span> Min Profil
                     </button>
+                    {(loggedInUser.is_staff || loggedInUser.is_superuser) && (
+                      <button
+                        onClick={() => {
+                          setView("admin");
+                          setIsProfileDropdownOpen(false);
+                          if (isPreviewMode) window.location.hash = "shop/admin";
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-indigo-650 hover:bg-indigo-50 transition-colors border-b border-slate-100 cursor-pointer flex items-center gap-2"
+                      >
+                        <span>⚙️</span> Admin Kontrolpanel
+                      </button>
+                    )}
                     <button
                       onClick={() => {
-                        localStorage.removeItem("mm_lase_session");
-                        setLoggedInUser(null);
-                        setCart([]);
-                        setWishlist([]);
-                        localStorage.removeItem("mm_lase_cart");
-                        localStorage.removeItem("mm_lase_wishlist");
+                        handleLogout();
                         setIsProfileDropdownOpen(false);
-                        setView("categories");
-                        if (isPreviewMode) window.location.hash = "shop";
                       }}
-                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors"
+                      className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer flex items-center gap-2"
                     >
-                      Log ud
+                      <span>🚪</span> Log ud
                     </button>
                   </div>
                 )}
