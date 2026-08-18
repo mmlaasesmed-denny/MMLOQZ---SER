@@ -38,6 +38,7 @@ import {
   X,
   Image as ImageIcon,
   Video,
+  Globe,
   RotateCcw,
 } from "lucide-react";
 import { SiteTheme } from "../types";
@@ -553,6 +554,70 @@ export default function WebshopComponent({
       updateSetting(settingKey, url);
     }
   };
+
+  const promptEditFavicon = () => {
+    if (isPreviewMode) return;
+    const choice = window.confirm(
+      "Klik OK for at vælge en favicon-billedfil (.png, .ico, .svg, .jpg) fra din computer, eller klik Annuller for at indtaste en Billede URL."
+    );
+
+    if (choice) {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/x-icon,image/png,image/jpeg,image/svg+xml,image/*";
+      input.onchange = (e: any) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (reader.result) {
+              updateSetting("faviconSrc", reader.result as string);
+              showToast("Favicon / Site ikon opdateret!", "success");
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      input.click();
+    } else {
+      const url = window.prompt(
+        "Indtast Favicon Billede URL (f.eks. https://.../favicon.png):",
+        s.faviconSrc || ""
+      );
+      if (url !== null && url.trim() !== "") {
+        updateSetting("faviconSrc", url);
+        showToast("Favicon URL opdateret!", "success");
+      }
+    }
+  };
+
+  // Dynamic Favicon Updater Effect for document head
+  useEffect(() => {
+    const faviconUrl =
+      s.faviconSrc ||
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=64&h=64&auto=format&fit=crop&q=80";
+    if (typeof document !== "undefined") {
+      let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "shortcut icon";
+        document.getElementsByTagName("head")[0].appendChild(link);
+      }
+      link.type = faviconUrl.startsWith("data:image/svg")
+        ? "image/svg+xml"
+        : "image/x-icon";
+      link.href = faviconUrl;
+
+      let appleLink: HTMLLinkElement | null =
+        document.querySelector("link[rel='apple-touch-icon']");
+      if (!appleLink) {
+        appleLink = document.createElement("link");
+        appleLink.rel = "apple-touch-icon";
+        document.getElementsByTagName("head")[0].appendChild(appleLink);
+      }
+      appleLink.href = faviconUrl;
+    }
+  }, [s.faviconSrc]);
 
   // Helper for responsive grid columns based on preview viewportMode
   const getGridCols = (
@@ -2679,6 +2744,16 @@ export default function WebshopComponent({
                             className="w-5 h-5 flex items-center justify-center bg-slate-100 hover:bg-slate-200 rounded text-slate-600 font-bold leading-none cursor-pointer border-none"
                           >
                             +
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              promptEditFavicon();
+                            }}
+                            className="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-amber-400 font-black text-[10px] rounded flex items-center gap-1 border-none cursor-pointer select-none"
+                            title="Skift webstedets Favicon (faneblad ikon)"
+                          >
+                            <Globe className="w-3 h-3 text-amber-400" /> Favicon
                           </button>
                         </div>
                       )}

@@ -1508,7 +1508,67 @@ export default function Sidebar({
                         </div>
                       </div>
 
-                      {/* Footer Logo Size Slider */}
+                      {/* Favicon Settings */}
+                      <div className="space-y-3 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Favicon / Site Ikon</span>
+                          {selectedElement.settings?.faviconSrc && (
+                            <img 
+                              src={selectedElement.settings.faviconSrc} 
+                              alt="Favicon Preview" 
+                              className="w-5 h-5 object-contain rounded border border-slate-200 bg-white" 
+                            />
+                          )}
+                        </div>
+                        <p className="text-[10px] text-slate-500 leading-tight">
+                          Dette ikon vises i browserens faneblad ved siden af sidens titel.
+                        </p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={selectedElement.settings?.faviconSrc || ''}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  faviconSrc: e.target.value
+                                }
+                              });
+                            }}
+                            className="flex-1 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-mono text-[10px] focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            placeholder="Favicon URL..."
+                          />
+                          <input
+                            type="file"
+                            id="sidebar-favicon-upload"
+                            className="hidden"
+                            accept="image/x-icon,image/png,image/jpeg,image/svg+xml,image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  if (reader.result) {
+                                    onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                      settings: {
+                                        ...(selectedElement.settings || {}),
+                                        faviconSrc: reader.result as string
+                                      }
+                                    });
+                                  }
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor="sidebar-favicon-upload"
+                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs cursor-pointer transition-colors flex items-center shrink-0"
+                          >
+                            Upload
+                          </label>
+                        </div>
+                      </div>
                       <div className="space-y-1 mt-4">
                         <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
                           <span>Footer Logo Størrelse</span>
