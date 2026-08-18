@@ -776,6 +776,13 @@ export default function WebshopComponent({
     }
   };
 
+  // Helper for stable storage keys per user
+  const getUserStorageKey = (user: Account | null, prefix: string) => {
+    if (!user || !user.email) return `${prefix}_guest`;
+    const cleanEmail = user.email.toLowerCase().trim().replace(/[^a-z0-9]/g, "_");
+    return `${prefix}_${cleanEmail}`;
+  };
+
   // Account & Auth states
   const [loggedInUser, setLoggedInUser] = useState<Account | null>(() => {
     if (typeof window !== "undefined") {
@@ -791,87 +798,65 @@ export default function WebshopComponent({
 
   // Cart states
   const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved =
-      typeof window !== "undefined"
-        ? localStorage.getItem("mm_lase_cart")
-        : null;
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          return parsed;
-        } else if (parsed && parsed.items) {
-          const session =
-            typeof window !== "undefined"
-              ? localStorage.getItem("mm_lase_session")
-              : null;
-          if (!session && parsed.expiry && Date.now() > parsed.expiry) {
-            localStorage.removeItem("mm_lase_cart");
-            return [];
-          }
-          return parsed.items || [];
-        }
-      } catch (e) {
-        return [];
+    if (typeof window === "undefined") return [];
+    try {
+      const savedSession = localStorage.getItem("mm_lase_session");
+      let userObj: Account | null = null;
+      if (savedSession) {
+        try {
+          userObj = JSON.parse(savedSession);
+        } catch (e) {}
       }
-    }
+      const key = getUserStorageKey(userObj, "mm_lase_cart");
+      const saved = localStorage.getItem(key) || localStorage.getItem("mm_lase_cart");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && parsed.items) return parsed.items;
+      }
+    } catch (e) {}
     return [];
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const session = localStorage.getItem("mm_lase_session");
-      const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000;
+      const expiry = loggedInUser ? null : Date.now() + 7 * 24 * 60 * 60 * 1000;
       const data = JSON.stringify({ items: cart, expiry });
       localStorage.setItem("mm_lase_cart", data);
-      if (loggedInUser?.id) {
-        localStorage.setItem(`mm_lase_cart_${loggedInUser.id}`, data);
-      } else {
-        localStorage.setItem("mm_lase_cart_guest", data);
-      }
+      const key = getUserStorageKey(loggedInUser, "mm_lase_cart");
+      localStorage.setItem(key, data);
     }
   }, [cart, loggedInUser]);
 
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>(() => {
-    const saved =
-      typeof window !== "undefined"
-        ? localStorage.getItem("mm_lase_wishlist")
-        : null;
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          return parsed;
-        } else if (parsed && parsed.items) {
-          const session =
-            typeof window !== "undefined"
-              ? localStorage.getItem("mm_lase_session")
-              : null;
-          if (!session && parsed.expiry && Date.now() > parsed.expiry) {
-            localStorage.removeItem("mm_lase_wishlist");
-            return [];
-          }
-          return parsed.items || [];
-        }
-      } catch (e) {
-        return [];
+    if (typeof window === "undefined") return [];
+    try {
+      const savedSession = localStorage.getItem("mm_lase_session");
+      let userObj: Account | null = null;
+      if (savedSession) {
+        try {
+          userObj = JSON.parse(savedSession);
+        } catch (e) {}
       }
-    }
+      const key = getUserStorageKey(userObj, "mm_lase_wishlist");
+      const saved = localStorage.getItem(key) || localStorage.getItem("mm_lase_wishlist");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+        if (parsed && parsed.items) return parsed.items;
+      }
+    } catch (e) {}
     return [];
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const session = localStorage.getItem("mm_lase_session");
-      const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000;
+      const expiry = loggedInUser ? null : Date.now() + 7 * 24 * 60 * 60 * 1000;
       const data = JSON.stringify({ items: wishlist, expiry });
       localStorage.setItem("mm_lase_wishlist", data);
-      if (loggedInUser?.id) {
-        localStorage.setItem(`mm_lase_wishlist_${loggedInUser.id}`, data);
-      } else {
-        localStorage.setItem("mm_lase_wishlist_guest", data);
-      }
+      const key = getUserStorageKey(loggedInUser, "mm_lase_wishlist");
+      localStorage.setItem(key, data);
     }
   }, [wishlist, loggedInUser]);
 
@@ -1682,9 +1667,9 @@ export default function WebshopComponent({
 
       localStorage.setItem("mm_lase_session", JSON.stringify(userObj));
       
-      // Load & Merge Cart and Wishlist items for logged-in user
-      const userCartKey = `mm_lase_cart_${userObj.id}`;
-      const userWishlistKey = `mm_lase_wishlist_${userObj.id}`;
+      // Load & Merge Cart and Wishlist items for logged-in user using stable email key
+      const userCartKey = getUserStorageKey(userObj, "mm_lase_cart");
+      const userWishlistKey = getUserStorageKey(userObj, "mm_lase_wishlist");
 
       let savedUserCart: CartItem[] = [];
       const savedCartRaw = localStorage.getItem(userCartKey) || localStorage.getItem("mm_lase_cart");
@@ -1729,6 +1714,13 @@ export default function WebshopComponent({
       setWishlist(mergedWishlist);
       setLoggedInUser(userObj);
 
+      const cartData = JSON.stringify({ items: mergedCart, expiry: null });
+      const wishlistData = JSON.stringify({ items: mergedWishlist, expiry: null });
+      localStorage.setItem("mm_lase_cart", cartData);
+      localStorage.setItem("mm_lase_wishlist", wishlistData);
+      localStorage.setItem(userCartKey, cartData);
+      localStorage.setItem(userWishlistKey, wishlistData);
+
       showToast(`Velkommen tilbage, ${userObj.name}!`);
       setLoginEmail("");
       setLoginPassword("");
@@ -1761,11 +1753,13 @@ export default function WebshopComponent({
       console.error(err);
     }
 
-    if (loggedInUser?.id) {
+    if (loggedInUser?.email) {
+      const userCartKey = getUserStorageKey(loggedInUser, "mm_lase_cart");
+      const userWishlistKey = getUserStorageKey(loggedInUser, "mm_lase_wishlist");
       const cartData = JSON.stringify({ items: cart, expiry: null });
       const wishlistData = JSON.stringify({ items: wishlist, expiry: null });
-      localStorage.setItem(`mm_lase_cart_${loggedInUser.id}`, cartData);
-      localStorage.setItem(`mm_lase_wishlist_${loggedInUser.id}`, wishlistData);
+      localStorage.setItem(userCartKey, cartData);
+      localStorage.setItem(userWishlistKey, wishlistData);
       localStorage.setItem("mm_lase_cart", cartData);
       localStorage.setItem("mm_lase_wishlist", wishlistData);
     }
