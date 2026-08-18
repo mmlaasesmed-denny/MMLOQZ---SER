@@ -1508,6 +1508,157 @@ export default function Sidebar({
                         </div>
                       </div>
 
+                      {/* Mobile Logo Positioning (Left / Right / Up / Down) */}
+                      <div className="space-y-3 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                        <span className="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+                          Mobil Logo Placering (Mobile Logo Position)
+                        </span>
+
+                        {/* Alignment Buttons */}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Justering (Align)</label>
+                          <div className="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800">
+                            {["left", "center", "right"].map((align) => (
+                              <button
+                                key={align}
+                                type="button"
+                                onClick={() => {
+                                  onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                    settings: {
+                                      ...(selectedElement.settings || {}),
+                                      mobileLogoAlign: align
+                                    }
+                                  });
+                                }}
+                                className={`flex-1 py-1 text-[11px] font-bold rounded-md capitalize transition-colors border-none cursor-pointer ${
+                                  (selectedElement.settings?.mobileLogoAlign || "center") === align
+                                    ? "bg-indigo-600 text-white shadow-xs"
+                                    : "bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                                }`}
+                              >
+                                {align === "left" ? "Venstre" : align === "right" ? "Højre" : "Center"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Horizontal Offset (Left / Right) */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                            <span>Vandret (Left ◄ ► Right)</span>
+                            <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.mobileLogoOffsetX || 0)}px</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="-100"
+                            max="100"
+                            value={selectedElement.settings?.mobileLogoOffsetX || 0}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  mobileLogoOffsetX: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="w-full accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+
+                        {/* Vertical Offset (Up / Down) */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                            <span>Lodret (Up ▲ ▼ Down)</span>
+                            <span className="font-mono text-indigo-500 font-bold">{(selectedElement.settings?.mobileLogoOffsetY || 0)}px</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="-60"
+                            max="60"
+                            value={selectedElement.settings?.mobileLogoOffsetY || 0}
+                            onChange={(e) => {
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: {
+                                  ...(selectedElement.settings || {}),
+                                  mobileLogoOffsetY: parseInt(e.target.value)
+                                }
+                              });
+                            }}
+                            className="w-full accent-indigo-650 cursor-pointer h-1 rounded-sm bg-slate-200 dark:bg-slate-800"
+                          />
+                        </div>
+
+                        {/* Quick Arrow Pad for Mobile Logo */}
+                        <div className="flex flex-col items-center gap-1 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const curr = Number(selectedElement.settings?.mobileLogoOffsetY || 0);
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: { ...(selectedElement.settings || {}), mobileLogoOffsetY: curr - 4 }
+                              });
+                            }}
+                            className="w-8 h-7 bg-slate-100 hover:bg-indigo-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded font-bold text-xs flex items-center justify-center border border-slate-200 dark:border-slate-700 cursor-pointer"
+                            title="Flyt Op (Up)"
+                          >
+                            ▲
+                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const curr = Number(selectedElement.settings?.mobileLogoOffsetX || 0);
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: { ...(selectedElement.settings || {}), mobileLogoOffsetX: curr - 4 }
+                                });
+                              }}
+                              className="w-8 h-7 bg-slate-100 hover:bg-indigo-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded font-bold text-xs flex items-center justify-center border border-slate-200 dark:border-slate-700 cursor-pointer"
+                              title="Flyt Venstre (Left)"
+                            >
+                              ◄
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: { ...(selectedElement.settings || {}), mobileLogoOffsetX: 0, mobileLogoOffsetY: 0 }
+                                });
+                              }}
+                              className="px-2 h-7 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded text-[10px] font-bold flex items-center justify-center border border-slate-300 dark:border-slate-600 cursor-pointer"
+                              title="Nulstil (Reset)"
+                            >
+                              Nulstil
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const curr = Number(selectedElement.settings?.mobileLogoOffsetX || 0);
+                                onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                  settings: { ...(selectedElement.settings || {}), mobileLogoOffsetX: curr + 4 }
+                                });
+                              }}
+                              className="w-8 h-7 bg-slate-100 hover:bg-indigo-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded font-bold text-xs flex items-center justify-center border border-slate-200 dark:border-slate-700 cursor-pointer"
+                              title="Flyt Højre (Right)"
+                            >
+                              ►
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const curr = Number(selectedElement.settings?.mobileLogoOffsetY || 0);
+                              onUpdateElement(selectedElement.id, {}, undefined, undefined, undefined, {
+                                settings: { ...(selectedElement.settings || {}), mobileLogoOffsetY: curr + 4 }
+                              });
+                            }}
+                            className="w-8 h-7 bg-slate-100 hover:bg-indigo-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded font-bold text-xs flex items-center justify-center border border-slate-200 dark:border-slate-700 cursor-pointer"
+                            title="Flyt Ned (Down)"
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      </div>
+
                       {/* Favicon Settings */}
                       <div className="space-y-3 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
                         <div className="flex justify-between items-center">

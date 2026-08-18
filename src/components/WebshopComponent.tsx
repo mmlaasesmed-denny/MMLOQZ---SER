@@ -2630,71 +2630,151 @@ export default function WebshopComponent({
               <span>☰</span>
             </button>
 
-            {/* Mobile Logo Centered */}
-            <div
-              className="flex items-center justify-center cursor-pointer select-none"
-              onClick={() => {
-                setView("categories");
-                setSelectedCatId(null);
-                setSelectedSubcatId(null);
-                setSelectedBrandId(null);
-                setSelectedProductId(null);
-                if (isPreviewMode) window.location.hash = "shop";
-              }}
-            >
-              {(() => {
-                const logoType = s.logoType || "text";
-                const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
-                const logoSrc = s.logoSrc || "";
-                const ratio = logoFontSize / 18;
+            {/* Mobile Logo Container with Position Controls */}
+            {(() => {
+              const mobileLogoOffsetX = s.mobileLogoOffsetX !== undefined ? Number(s.mobileLogoOffsetX) : 0;
+              const mobileLogoOffsetY = s.mobileLogoOffsetY !== undefined ? Number(s.mobileLogoOffsetY) : 0;
+              const mobileLogoAlign = s.mobileLogoAlign || "center";
 
-                if (logoType === "image" && logoSrc) {
-                  return (
-                    <img
-                      src={logoSrc}
-                      alt="Logo"
-                      className="max-h-12 object-contain"
-                      style={{ height: `${36 * ratio}px` }}
-                    />
-                  );
-                }
+              return (
+                <div
+                  className={`flex-1 flex items-center cursor-pointer select-none relative group ${
+                    mobileLogoAlign === "left"
+                      ? "justify-start"
+                      : mobileLogoAlign === "right"
+                      ? "justify-end"
+                      : "justify-center"
+                  }`}
+                  style={{
+                    transform: `translate(${mobileLogoOffsetX}px, ${mobileLogoOffsetY}px)`,
+                  }}
+                  onClick={() => {
+                    setView("categories");
+                    setSelectedCatId(null);
+                    setSelectedSubcatId(null);
+                    setSelectedBrandId(null);
+                    setSelectedProductId(null);
+                    if (isPreviewMode) window.location.hash = "shop";
+                  }}
+                >
+                  {(() => {
+                    const logoType = s.logoType || "text";
+                    const logoFontSize = s.logoFontSize ? Number(s.logoFontSize) : 18;
+                    const logoSrc = s.logoSrc || "";
+                    const ratio = logoFontSize / 18;
 
-                return (
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
-                      style={{
-                        width: `${36 * ratio}px`,
-                        height: `${36 * ratio}px`,
-                      }}
-                    >
-                      <EditableText
-                        tag="span"
-                        isPreviewMode={isPreviewMode}
-                        html={logoBadge}
-                        className="text-amber-500 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
-                        style={{ fontSize: `${12 * ratio}px` }}
-                        onBlur={(e) =>
-                          updateSetting("logoBadge", e.currentTarget.innerHTML)
-                        }
-                      />
+                    if (logoType === "image" && logoSrc) {
+                      return (
+                        <img
+                          src={logoSrc}
+                          alt="Logo"
+                          className="max-h-12 object-contain"
+                          style={{ height: `${36 * ratio}px` }}
+                        />
+                      );
+                    }
+
+                    return (
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="rounded-full border border-amber-400 flex items-center justify-center text-slate-800 font-black font-mono bg-white shadow-sm shrink-0"
+                          style={{
+                            width: `${36 * ratio}px`,
+                            height: `${36 * ratio}px`,
+                          }}
+                        >
+                          <EditableText
+                            tag="span"
+                            isPreviewMode={isPreviewMode}
+                            html={logoBadge}
+                            className="text-amber-500 font-extrabold outline-none focus:bg-slate-100 px-0.5 rounded"
+                            style={{ fontSize: `${12 * ratio}px` }}
+                            onBlur={(e) =>
+                              updateSetting("logoBadge", e.currentTarget.innerHTML)
+                            }
+                          />
+                        </div>
+                        <div className="text-left">
+                          <EditableText
+                            tag="h2"
+                            isPreviewMode={isPreviewMode}
+                            html={logoText}
+                            className="font-black tracking-tighter text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
+                            style={{ fontSize: `${logoFontSize * 0.8}px` }}
+                            onBlur={(e) =>
+                              updateSetting("logoText", e.currentTarget.innerHTML)
+                            }
+                          />
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Hover Arrow Nudge Toolbar for Mobile Logo */}
+                  {!isPreviewMode && (
+                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center gap-1 bg-slate-900 text-white rounded-lg shadow-xl px-2 py-1 z-50 select-none border border-slate-700">
+                      <span className="text-[9px] font-black text-amber-400 uppercase tracking-tighter mr-0.5">Flyt:</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateSetting("mobileLogoOffsetY", String(mobileLogoOffsetY - 4));
+                        }}
+                        className="w-5 h-5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded flex items-center justify-center text-[10px] cursor-pointer border-none"
+                        title="Flyt Op (Up)"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateSetting("mobileLogoOffsetY", String(mobileLogoOffsetY + 4));
+                        }}
+                        className="w-5 h-5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded flex items-center justify-center text-[10px] cursor-pointer border-none"
+                        title="Flyt Ned (Down)"
+                      >
+                        ▼
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateSetting("mobileLogoOffsetX", String(mobileLogoOffsetX - 4));
+                        }}
+                        className="w-5 h-5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded flex items-center justify-center text-[10px] cursor-pointer border-none"
+                        title="Flyt Venstre (Left)"
+                      >
+                        ◄
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateSetting("mobileLogoOffsetX", String(mobileLogoOffsetX + 4));
+                        }}
+                        className="w-5 h-5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded flex items-center justify-center text-[10px] cursor-pointer border-none"
+                        title="Flyt Højre (Right)"
+                      >
+                        ►
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateSetting("mobileLogoOffsetX", "0");
+                          updateSetting("mobileLogoOffsetY", "0");
+                        }}
+                        className="px-1.5 py-0.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-300 font-bold rounded text-[9px] cursor-pointer border-none"
+                        title="Nulstil (Reset)"
+                      >
+                        0
+                      </button>
                     </div>
-                    <div className="text-left">
-                      <EditableText
-                        tag="h2"
-                        isPreviewMode={isPreviewMode}
-                        html={logoText}
-                        className="font-black tracking-tighter text-slate-900 leading-none uppercase outline-none focus:bg-slate-100 px-0.5 rounded"
-                        style={{ fontSize: `${logoFontSize * 0.8}px` }}
-                        onBlur={(e) =>
-                          updateSetting("logoText", e.currentTarget.innerHTML)
-                        }
-                      />
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Mobile Actions */}
             <div className="flex items-center justify-end gap-3">
