@@ -781,25 +781,26 @@ export default function WebshopComponent({
   });
 
   const toggleWishlist = (productId: string) => {
-    setWishlist((prev) => {
-      const isAdding = !prev.includes(productId);
-      const next = isAdding
-        ? [...prev, productId]
-        : prev.filter((id) => id !== productId);
-      if (typeof window !== "undefined") {
-        const session = localStorage.getItem("mm_lase_session");
-        const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days for guests
-        localStorage.setItem(
-          "mm_lase_wishlist",
-          JSON.stringify({ items: next, expiry }),
-        );
-      }
-      showToast(
-        isAdding ? "Tilføjet til ønskeliste" : "Fjernet fra ønskeliste",
-        isAdding ? "success" : "info",
+    const isAdding = !wishlist.includes(productId);
+    const next = isAdding
+      ? [...wishlist, productId]
+      : wishlist.filter((id) => id !== productId);
+
+    setWishlist(next);
+
+    if (typeof window !== "undefined") {
+      const session = localStorage.getItem("mm_lase_session");
+      const expiry = session ? null : Date.now() + 7 * 24 * 60 * 60 * 1000;
+      localStorage.setItem(
+        "mm_lase_wishlist",
+        JSON.stringify({ items: next, expiry }),
       );
-      return next;
-    });
+    }
+
+    showToast(
+      isAdding ? "Tilføjet til ønskeliste ♥" : "Fjernet fra ønskeliste",
+      isAdding ? "success" : "info",
+    );
   };
 
   // Mega Menu & Mobile Drawer State
@@ -9784,9 +9785,9 @@ export default function WebshopComponent({
 
         {/* Toast Notification */}
         {toast && (
-          <div className="fixed top-6 left-6 z-[9999999] pointer-events-none animate-in slide-in-from-top-5 fade-in duration-200">
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999999] pointer-events-none animate-in slide-in-from-top-6 fade-in duration-200">
             <div
-              className={`px-5 py-3.5 rounded-2xl shadow-2xl border-2 flex items-center gap-3 min-w-[260px] max-w-[90vw] text-left justify-start font-sans
+              className={`px-6 py-3.5 rounded-full shadow-2xl border-2 flex items-center gap-3 min-w-[280px] max-w-[90vw] text-center justify-center font-sans
             ${toast.type === "success" || !toast.type ? "bg-slate-900 text-white border-emerald-400 shadow-emerald-500/30" : ""}
             ${toast.type === "error" ? "bg-slate-900 text-white border-rose-500 shadow-rose-500/30" : ""}
             ${toast.type === "info" ? "bg-slate-900 text-white border-amber-400 shadow-amber-400/30" : ""}
