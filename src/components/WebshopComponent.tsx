@@ -6343,17 +6343,19 @@ export default function WebshopComponent({
                 <h2 className="text-2xl @md:text-3xl font-black text-slate-900 tracking-tight">
                   Fakturering
                 </h2>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setView("login");
-                    if (isPreviewMode) window.location.hash = "shop/login";
-                  }}
-                  className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-amber-500 transition-colors bg-transparent border-none cursor-pointer"
-                >
-                  <span className="underline">Kontokunde? Login her</span>
-                  <User className="w-4 h-4 text-slate-800" />
-                </button>
+                {!loggedInUser && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("login");
+                      if (isPreviewMode) window.location.hash = "shop/login";
+                    }}
+                    className="flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-amber-500 transition-colors bg-transparent border-none cursor-pointer"
+                  >
+                    <span className="underline">Kontokunde? Login her</span>
+                    <User className="w-4 h-4 text-slate-800" />
+                  </button>
+                )}
               </div>
 
               {/* Shop for Customer Type Toggle */}
