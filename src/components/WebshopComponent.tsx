@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   ShoppingCart,
   ArrowLeft,
@@ -4746,6 +4747,22 @@ export default function WebshopComponent({
                                     {badgeText}
                                   </span>
                                 )}
+                                <button
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     toggleWishlist(p.id);
+                                   }}
+                                   className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all active:scale-90 border-none cursor-pointer group/heart"
+                                   title={wishlist.includes(p.id) ? "Fjern fra ønskeliste" : "Tilføj til ønskeliste"}
+                                 >
+                                   <Heart
+                                     className={`w-4 h-4 transition-colors ${
+                                       wishlist.includes(p.id)
+                                         ? "text-rose-500 fill-rose-500"
+                                         : "text-slate-400 group-hover/heart:text-rose-500"
+                                     }`}
+                                   />
+                                 </button>
                                 <div
                                   onClick={() => {
                                     setSelectedProductId(p.id);
@@ -9783,14 +9800,14 @@ export default function WebshopComponent({
           </div>
         </footer>
 
-        {/* Toast Notification */}
-        {toast && (
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999999] pointer-events-none animate-in slide-in-from-top-6 fade-in duration-200">
+        {/* Toast Notification rendered at document.body level to bypass any container clipping */}
+        {toast && typeof document !== "undefined" && createPortal(
+          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[99999999] pointer-events-none animate-in slide-in-from-top-6 fade-in duration-200">
             <div
-              className={`px-6 py-3.5 rounded-full shadow-2xl border-2 flex items-center gap-3 min-w-[280px] max-w-[90vw] text-center justify-center font-sans
-            ${toast.type === "success" || !toast.type ? "bg-slate-900 text-white border-emerald-400 shadow-emerald-500/30" : ""}
-            ${toast.type === "error" ? "bg-slate-900 text-white border-rose-500 shadow-rose-500/30" : ""}
-            ${toast.type === "info" ? "bg-slate-900 text-white border-amber-400 shadow-amber-400/30" : ""}
+              className={`px-6 py-3.5 rounded-full shadow-2xl border-2 flex items-center gap-3 min-w-[280px] max-w-[90vw] text-center justify-center font-sans backdrop-blur-xl
+            ${toast.type === "success" || !toast.type ? "bg-slate-900/95 text-white border-emerald-400 shadow-emerald-500/40" : ""}
+            ${toast.type === "error" ? "bg-slate-900/95 text-white border-rose-500 shadow-rose-500/40" : ""}
+            ${toast.type === "info" ? "bg-slate-900/95 text-white border-amber-400 shadow-amber-400/40" : ""}
           `}
             >
               {(toast.type === "success" || !toast.type) && (
@@ -9802,9 +9819,10 @@ export default function WebshopComponent({
               {toast.type === "info" && (
                 <Info className="w-5 h-5 text-amber-400 shrink-0" />
               )}
-              <span className="text-xs font-extrabold tracking-wide text-white">{toast.message}</span>
+              <span className="text-xs font-black tracking-wide text-white">{toast.message}</span>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </div>
