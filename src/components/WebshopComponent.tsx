@@ -7890,6 +7890,37 @@ export default function WebshopComponent({
                     </div>
 
                     <button
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            backendLang === "da"
+                              ? "Vil du nulstille alt data og starte en helt ren hjemmeside uden gamle produkter eller kategorier?"
+                              : "Are you sure you want to reset all data and start a completely fresh site without old products or categories?",
+                          )
+                        ) {
+                          localStorage.removeItem("mm_lase_categories");
+                          localStorage.removeItem("mm_lase_subcategories");
+                          localStorage.removeItem("mm_lase_products");
+                          localStorage.removeItem("mm_lase_orders");
+                          localStorage.removeItem("mm_lase_cart");
+                          localStorage.removeItem("mm_lase_wishlist");
+                          setCategories([]);
+                          setSubcategories([]);
+                          setProducts([]);
+                          setOrders([]);
+                          showToast(
+                            backendLang === "da"
+                              ? "Hjemmesiden er nu nulstillet til en helt ren tilstand!"
+                              : "The website is now reset to a completely fresh state!",
+                            "success",
+                          );
+                        }
+                      }}
+                      className="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none shadow-md shadow-rose-600/15 whitespace-nowrap"
+                    >
+                      {bt("Nulstil Alt Data (Fresh Site)", "Reset All Data (Fresh Site)")}
+                    </button>
+                    <button
                       onClick={generateMockOrders}
                       className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-slate-900 font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none shadow-md shadow-indigo-600/15 whitespace-nowrap"
                     >
