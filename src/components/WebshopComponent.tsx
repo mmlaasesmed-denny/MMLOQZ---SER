@@ -1585,10 +1585,28 @@ export default function WebshopComponent({
           id: `user_${Date.now()}`,
           name: registerName,
           email: registerEmail,
+          password: registerPassword,
           is_staff: false,
           is_superuser: false,
         };
       }
+
+      // Save to registered users list for client authentication fallback
+      try {
+        const storedUsersRaw = localStorage.getItem("mm_lase_registered_users");
+        let registeredUsers: any[] = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+        if (!registeredUsers.some((u: any) => u.email?.toLowerCase() === registerEmail.toLowerCase())) {
+          registeredUsers.push({
+            id: userObj.id,
+            name: userObj.name,
+            email: userObj.email,
+            password: registerPassword,
+            is_staff: !!userObj.is_staff,
+            is_superuser: !!userObj.is_superuser
+          });
+          localStorage.setItem("mm_lase_registered_users", JSON.stringify(registeredUsers));
+        }
+      } catch (e) {}
 
       localStorage.setItem("mm_lase_session", JSON.stringify(userObj));
       setLoggedInUser(userObj);
@@ -1630,7 +1648,7 @@ export default function WebshopComponent({
       }
 
       if (!userObj) {
-        if (loginEmail === "admin@mmlaseshop.dk" && loginPassword === "admin123") {
+        if (loginEmail.toLowerCase() === "admin@mmlaseshop.dk" && loginPassword === "admin123") {
           userObj = {
             id: "superuser-1",
             name: "Superuser Admin",
@@ -1639,29 +1657,48 @@ export default function WebshopComponent({
             is_superuser: true,
           };
         } else if (loginEmail && loginPassword) {
-          const storedSession = localStorage.getItem("mm_lase_session");
-          if (storedSession) {
+          // Check registered users store in local database/localStorage
+          const storedUsersRaw = localStorage.getItem("mm_lase_registered_users");
+          let registeredUsers: any[] = [];
+          if (storedUsersRaw) {
             try {
-              const parsed = JSON.parse(storedSession);
-              if (parsed.email === loginEmail) {
-                userObj = parsed;
-              }
-            } catch (err) {}
+              registeredUsers = JSON.parse(storedUsersRaw);
+            } catch (e) {}
           }
-          if (!userObj) {
+          
+          const found = registeredUsers.find(
+            (u: any) => u.email?.toLowerCase().trim() === loginEmail.toLowerCase().trim()
+          );
+
+          if (found) {
+            if (found.password && found.password !== loginPassword) {
+              setLoginError("Ugyldig e-mail eller adgangskode.");
+              return;
+            }
             userObj = {
-              id: `user_${Date.now()}`,
-              name: loginEmail.split("@")[0],
-              email: loginEmail,
-              is_staff: false,
-              is_superuser: false,
+              id: found.id || `user_${Date.now()}`,
+              name: found.name || loginEmail.split("@")[0],
+              email: found.email,
+              is_staff: !!found.is_staff,
+              is_superuser: !!found.is_superuser,
             };
+          } else {
+            // Check current stored session if matching email
+            const storedSession = localStorage.getItem("mm_lase_session");
+            if (storedSession) {
+              try {
+                const parsed = JSON.parse(storedSession);
+                if (parsed.email?.toLowerCase().trim() === loginEmail.toLowerCase().trim()) {
+                  userObj = parsed;
+                }
+              } catch (err) {}
+            }
           }
         }
       }
 
       if (!userObj) {
-        setLoginError("Ugyldig e-mail eller adgangskode.");
+        setLoginError("Kontoen findes ikke. Opret venligst en konto først.");
         return;
       }
 
