@@ -138,18 +138,24 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
         name: 'Header & Navigation',
         fullWidth: true,
         paddingY: 'sm',
-        elements: [
+        columns: [
           {
-            id: 'nav-logo',
-            type: 'heading',
-            content: 'BRAND NAME',
-            style: { fontSize: '24px', fontWeight: '800', color: '#0f172a' }
-          },
-          {
-            id: 'nav-menu',
-            type: 'text',
-            content: 'Forside | Om os | Ydelser | Kontakt',
-            style: { fontSize: '14px', color: '#64748b', fontWeight: '600' }
+            id: 'col-nav-1',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'nav-logo',
+                type: 'heading',
+                content: 'BRAND NAME',
+                style: { fontSize: '24px', fontWeight: '800', color: '#0f172a' }
+              },
+              {
+                id: 'nav-menu',
+                type: 'text',
+                content: 'Forside | Om os | Ydelser | Kontakt',
+                style: { fontSize: '14px', color: '#64748b', fontWeight: '600' }
+              }
+            ]
           }
         ]
       },
@@ -158,24 +164,30 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
         name: 'Hero Sektion',
         fullWidth: false,
         paddingY: 'lg',
-        elements: [
+        columns: [
           {
-            id: 'hero-title',
-            type: 'heading',
-            content: 'Velkommen til din nye hjemmeside',
-            style: { fontSize: '44px', fontWeight: '800', color: '#0f172a', textAlign: 'center', marginBottom: '16px' }
-          },
-          {
-            id: 'hero-subtitle',
-            type: 'text',
-            content: 'Klik på teksten for at redigere direkte, eller tilføj nye sektioner og elementer.',
-            style: { fontSize: '18px', color: '#475569', textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }
-          },
-          {
-            id: 'hero-btn',
-            type: 'button',
-            content: 'Udforsk mere',
-            style: { backgroundColor: '#2563eb', color: '#ffffff', padding: '12px 28px', borderRadius: '8px', fontWeight: '700' }
+            id: 'col-hero-1',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'hero-title',
+                type: 'heading',
+                content: 'Velkommen til din nye hjemmeside',
+                style: { fontSize: '44px', fontWeight: '800', color: '#0f172a', textAlign: 'center', marginBottom: '16px' }
+              },
+              {
+                id: 'hero-subtitle',
+                type: 'text',
+                content: 'Klik på teksten for at redigere direkte, eller tilføj nye sektioner og elementer.',
+                style: { fontSize: '18px', color: '#475569', textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }
+              },
+              {
+                id: 'hero-btn',
+                type: 'button',
+                content: 'Udforsk mere',
+                style: { backgroundColor: '#2563eb', color: '#ffffff', padding: '12px 28px', borderRadius: '8px', fontWeight: '700' }
+              }
+            ]
           }
         ]
       },
@@ -184,12 +196,18 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
         name: 'Footer',
         fullWidth: true,
         paddingY: 'md',
-        elements: [
+        columns: [
           {
-            id: 'footer-text',
-            type: 'text',
-            content: '© 2026 Alle rettigheder forbeholdes.',
-            style: { fontSize: '14px', color: '#94a3b8', textAlign: 'center' }
+            id: 'col-foot-1',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'footer-text',
+                type: 'text',
+                content: '© 2026 Alle rettigheder forbeholdes.',
+                style: { fontSize: '14px', color: '#94a3b8', textAlign: 'center' }
+              }
+            ]
           }
         ]
       }
@@ -200,11 +218,11 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-clean-v1');
+    const saved = localStorage.getItem('visual-builder-pages-cms-clean-v4');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id && parsed[0].sections) {
+        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id && parsed[0].sections && parsed[0].sections[0].columns) {
           return parsed;
         }
       } catch (err) {}
@@ -213,7 +231,7 @@ export default function App() {
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-clean-v1') || 'home';
+    return localStorage.getItem('visual-builder-active-page-id-clean-v4') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
