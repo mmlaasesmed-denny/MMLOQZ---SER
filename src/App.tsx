@@ -123,212 +123,97 @@ const ensureIndependentOverrides = (sections: Section[]): Section[] => {
 };
 
 const ensureWebshopPagesExist = (loadedPages: SinglePageCMS[]): SinglePageCMS[] => {
-  const webshopPagesTemplates = [
-    { id: 'webshop-home', name: '🛒 Webshop - Hjem', slug: 'shop', forcedView: 'categories' },
-    { id: 'webshop-product', name: '🛒 Webshop - Produkt Visning', slug: 'shop-product', forcedView: 'product-detail' },
-    { id: 'webshop-cart', name: '🛒 Webshop - Kurv (Cart)', slug: 'shop-cart', forcedView: 'cart' },
-    { id: 'webshop-checkout', name: '🛒 Webshop - Kasse (Checkout)', slug: 'shop-checkout', forcedView: 'checkout' },
-    { id: 'webshop-account', name: '🛒 Webshop - Profil / Log ind', slug: 'shop-account', forcedView: 'login' },
-  ];
-  
-  const nextPages = [...loadedPages];
-  const homepage = nextPages.find(p => p.id === 'portfolio') || nextPages[0];
-
-  webshopPagesTemplates.forEach(tpl => {
-    const exists = nextPages.some(p => p.id === tpl.id || p.slug === tpl.slug);
-    if (!exists) {
-      // Find standard webshop sections
-      const defaultWebshopTemplate = TEMPLATES.find(t => t.id === 'webshop');
-      const defaultSections = defaultWebshopTemplate 
-        ? JSON.parse(JSON.stringify(defaultWebshopTemplate.sections)) 
-        : [];
-      
-      // Update the main store section to be full width with no top/bottom gap
-      const webshopStoreSection = defaultSections.find((s: any) => s.id === 'webshop-main-sec') || defaultSections[0];
-      if (webshopStoreSection) {
-        webshopStoreSection.fullWidth = true;
-        webshopStoreSection.paddingY = 'none';
-      }
-
-      // Copy header and footer from homepage for design consistency
-      const pageSections: any[] = [];
-      if (homepage && homepage.sections.length > 0) {
-        // Copy homepage header (first section)
-        const homeHeader = JSON.parse(JSON.stringify(homepage.sections[0]));
-        homeHeader.id = `${homeHeader.id}-${tpl.id}`;
-        pageSections.push(homeHeader);
-      }
-
-      // Add the full-width webshop store section in the middle
-      pageSections.push(...defaultSections);
-
-      if (homepage && homepage.sections.length > 1) {
-        // Copy homepage footer (last section)
-        const homeFooter = JSON.parse(JSON.stringify(homepage.sections[homepage.sections.length - 1]));
-        homeFooter.id = `${homeFooter.id}-${tpl.id}`;
-        // Prevent duplicate footers if defaultSections already contains a footer
-        const hasWebshopFooter = defaultSections.some((s: any) => s.id === 'webshop-foot' || s.name.toLowerCase().includes('foot'));
-        if (!hasWebshopFooter) {
-          pageSections.push(homeFooter);
-        }
-      }
-
-      // Map forcedView and webshopMappings settings
-      const updatedSections = pageSections.map((sec: any) => {
-        return {
-          ...sec,
-          columns: sec.columns.map((col: any) => {
-            return {
-              ...col,
-              elements: col.elements.map((el: any) => {
-                if (el.type === 'webshop') {
-                  return {
-                    ...el,
-                    settings: {
-                      ...(el.settings || {}),
-                      forcedView: tpl.forcedView,
-                      webshopMappings: {
-                        shopHome: 'webshop-home',
-                        productDetail: 'webshop-product',
-                        categoryDetail: 'webshop-product',
-                        cart: 'webshop-cart',
-                        checkout: 'webshop-checkout',
-                        login: 'webshop-account',
-                        searchResults: 'webshop-home'
-                      }
-                    }
-                  };
-                }
-                return el;
-              })
-            };
-          })
-        };
-      });
-
-      nextPages.push({
-        id: tpl.id,
-        name: tpl.name,
-        slug: tpl.slug,
-        sections: ensureIndependentOverrides(updatedSections),
-        theme: homepage ? homepage.theme : COLOR_THEMES[0]
-      });
-    }
-  });
-
-  // For existing pages, force fullWidth: true, paddingY: 'none', and ensure image-based logos
-  const defaultLogoSrc = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=120&h=120&q=80';
-
-  return nextPages.map(page => {
-    const tpl = webshopPagesTemplates.find(t => t.id === page.id);
-    return {
-      ...page,
-      sections: page.sections.map(sec => {
-        const isMainWebshopSec = sec.id === 'webshop-main-sec' || sec.columns.some(c => c.elements.some(e => e.type === 'webshop'));
-        const updatedSec = isMainWebshopSec ? {
-          ...sec,
-          fullWidth: true,
-          paddingY: 'none' as any
-        } : sec;
-
-        return {
-          ...updatedSec,
-          columns: updatedSec.columns.map(col => ({
-            ...col,
-            elements: col.elements.map(el => {
-              // Convert text-based overlay logos to image-based logos
-              let updatedOverlays = el.overlays;
-              if (el.overlays && el.overlays.length > 0) {
-                updatedOverlays = el.overlays.map((o: any) => {
-                  if (o.type === 'logo' && !o.src) {
-                    return {
-                      ...o,
-                      src: defaultLogoSrc,
-                      styles: {
-                        ...o.styles,
-                        fontSize: '32px',
-                        width: '60px',
-                        borderRadius: '8px'
-                      }
-                    };
-                  }
-                  return o;
-                });
-              }
-
-              if (el.type === 'webshop') {
-                return {
-                  ...el,
-                  overlays: updatedOverlays,
-                  settings: {
-                    ...(el.settings || {}),
-                    forcedView: tpl ? tpl.forcedView : el.settings?.forcedView,
-                    webshopMappings: {
-                      shopHome: 'webshop-home',
-                      productDetail: 'webshop-product',
-                      categoryDetail: 'webshop-product',
-                      cart: 'webshop-cart',
-                      checkout: 'webshop-checkout',
-                      login: 'webshop-account',
-                      searchResults: 'webshop-home'
-                    }
-                  }
-                };
-              }
-              return {
-                ...el,
-                overlays: updatedOverlays
-              };
-            })
-          }))
-        };
-      })
-    };
-  });
+  return loadedPages;
 };
+
+const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
+  {
+    id: 'home',
+    name: 'Hjem (Home)',
+    slug: '',
+    theme: COLOR_THEMES[0],
+    sections: [
+      {
+        id: 'clean-nav-1',
+        name: 'Header & Navigation',
+        fullWidth: true,
+        paddingY: 'small',
+        elements: [
+          {
+            id: 'nav-logo',
+            type: 'heading',
+            content: 'BRAND NAME',
+            style: { fontSize: '24px', fontWeight: '800', color: '#0f172a' }
+          },
+          {
+            id: 'nav-menu',
+            type: 'text',
+            content: 'Forside | Om os | Ydelser | Kontakt',
+            style: { fontSize: '14px', color: '#64748b', fontWeight: '600' }
+          }
+        ]
+      },
+      {
+        id: 'clean-hero-1',
+        name: 'Hero Sektion',
+        fullWidth: false,
+        paddingY: 'large',
+        elements: [
+          {
+            id: 'hero-title',
+            type: 'heading',
+            content: 'Velkommen til din nye hjemmeside',
+            style: { fontSize: '44px', fontWeight: '800', color: '#0f172a', textAlign: 'center', marginBottom: '16px' }
+          },
+          {
+            id: 'hero-subtitle',
+            type: 'text',
+            content: 'Klik på teksten for at redigere direkte, eller tilføj nye sektioner og elementer.',
+            style: { fontSize: '18px', color: '#475569', textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }
+          },
+          {
+            id: 'hero-btn',
+            type: 'button',
+            content: 'Udforsk mere',
+            style: { backgroundColor: '#2563eb', color: '#ffffff', padding: '12px 28px', borderRadius: '8px', fontWeight: '700' }
+          }
+        ]
+      },
+      {
+        id: 'clean-footer-1',
+        name: 'Footer',
+        fullWidth: true,
+        paddingY: 'medium',
+        elements: [
+          {
+            id: 'footer-text',
+            type: 'text',
+            content: '© 2026 Alle rettigheder forbeholdes.',
+            style: { fontSize: '14px', color: '#94a3b8', textAlign: 'center' }
+          }
+        ]
+      }
+    ]
+  }
+];
 
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-v2');
+    const saved = localStorage.getItem('visual-builder-pages-cms-clean-v1');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id && parsed[0].sections) {
-            const loaded = parsed.map((p: any) => ({
-              ...p,
-              sections: ensureIndependentOverrides(p.sections || []),
-              slug: p.slug !== undefined ? p.slug : (p.id === 'portfolio' ? '' : p.id)
-            }));
-            return ensureWebshopPagesExist(loaded);
+          return parsed;
         }
-      } catch (err) {
-        console.error("Local caching parse failure:", err);
-      }
+      } catch (err) {}
     }
-    // Initialize with 5 distinct pages from our preconfigured TEMPLATES
-    const defaults = TEMPLATES.map(t => {
-      let defaultSlug = t.id;
-      if (t.id === 'portfolio') defaultSlug = '';
-      else if (t.id === 'bistro') defaultSlug = 'bistro-menu';
-      else if (t.id === 'saas') defaultSlug = 'saas-cloud';
-      else if (t.id === 'about') defaultSlug = 'about-team';
-      else if (t.id === 'terms') defaultSlug = 'legal-terms';
-      else if (t.id === 'webshop') defaultSlug = 'webshop';
-      
-      return {
-        id: t.id,
-        name: t.name,
-        slug: defaultSlug,
-        sections: ensureIndependentOverrides(JSON.parse(JSON.stringify(t.sections))),
-        theme: t.id === 'bistro' ? COLOR_THEMES[4] : (t.id === 'saas' ? COLOR_THEMES[3] : COLOR_THEMES[0])
-      };
-    });
-    return ensureWebshopPagesExist(defaults);
+    return CLEAN_STARTER_PAGES;
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-v2') || 'webshop';
+    return localStorage.getItem('visual-builder-active-page-id-clean-v1') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
