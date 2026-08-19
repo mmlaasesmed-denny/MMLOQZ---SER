@@ -13,6 +13,7 @@ import {
   Key,
   Phone,
   ChevronRight,
+  ChevronLeft,
   ArrowUp,
   ArrowDown,
   Mail,

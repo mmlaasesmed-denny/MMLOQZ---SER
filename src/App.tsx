@@ -137,7 +137,7 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
         id: 'clean-nav-1',
         name: 'Header & Navigation',
         fullWidth: true,
-        paddingY: 'small',
+        paddingY: 'sm',
         elements: [
           {
             id: 'nav-logo',
@@ -157,7 +157,7 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
         id: 'clean-hero-1',
         name: 'Hero Sektion',
         fullWidth: false,
-        paddingY: 'large',
+        paddingY: 'lg',
         elements: [
           {
             id: 'hero-title',
@@ -183,7 +183,7 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
         id: 'clean-footer-1',
         name: 'Footer',
         fullWidth: true,
-        paddingY: 'medium',
+        paddingY: 'md',
         elements: [
           {
             id: 'footer-text',
