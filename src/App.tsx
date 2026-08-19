@@ -328,7 +328,7 @@ export default function App() {
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-v2') || 'portfolio';
+    return localStorage.getItem('visual-builder-active-page-id-v2') || 'webshop';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
@@ -729,7 +729,7 @@ export default function App() {
   // 3.5 Admin Secure Gateway States - Defaulted to false (Visitor Mode by default)
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     const saved = localStorage.getItem('visual-builder-is-admin');
-    return saved === 'true';
+    return saved ? saved === 'true' : true;
   });
   const [adminPasscode, setAdminPasscode] = useState<string>(() => {
     return localStorage.getItem('visual-builder-admin-passcode') || 'admin';
@@ -1999,7 +1999,7 @@ export default function App() {
   }
 
   const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
-  const isEditorPath = currentPath === 'admin-editor';
+  const isEditorPath = currentPath === 'admin-editor' || currentPath === '' || window.location.hash.includes('shop');
 
   if (!isEditorPath) {
     return (
