@@ -737,7 +737,7 @@ export default function App() {
   // 3. Interactive Selection State Managers
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(true);
   const [isVisitorMode, setIsVisitorMode] = useState(false);
   const [viewportMode, setViewportMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
 
