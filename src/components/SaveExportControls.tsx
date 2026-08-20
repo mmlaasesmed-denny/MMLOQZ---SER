@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Code, Download, RefreshCw, Upload, Check, Database, Wifi, WifiOff, Server, Trash2, LogOut, Lock, Monitor, Tablet, Smartphone, Moon, Sun, Globe } from 'lucide-react';
 import { Section, SiteTheme } from '../types';
+import CodeImporterModal from './CodeImporterModal';
 import { WEBSHOP_CATEGORIES as WEBSHOP_CATEGORIES_ORIG, WEBSHOP_SUBCATEGORIES as WEBSHOP_SUBCATEGORIES_ORIG, WEBSHOP_BRANDS, WEBSHOP_PRODUCTS as WEBSHOP_PRODUCTS_ORIG } from '../webshopData';
 import { useLanguage } from '../i18n';
 
@@ -54,6 +55,7 @@ export default function SaveExportControls({
   const { language, setLanguage } = useLanguage();
   const [showCodeExport, setShowCodeExport] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [showCodeImporterModal, setShowCodeImporterModal] = useState(false);
 
   // Python Django Server Sync States
   const [showDjangoModal, setShowDjangoModal] = useState(false);
@@ -4251,6 +4253,16 @@ export default function SaveExportControls({
 
       {/* Right Commands */}
       <div className="flex items-center gap-2">
+        {/* Code to Layout Importer */}
+        <button
+          onClick={() => setShowCodeImporterModal(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 dark:bg-indigo-950 dark:border-indigo-800 dark:text-indigo-300 rounded-lg transition-colors font-bold cursor-pointer"
+          title="Paste HTML/JSX/Tailwind Code and Convert to Visual Builder Layout"
+        >
+          <Code className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+          <span>Code to Layout</span>
+        </button>
+
         {/* Backup File upload wrapper */}
         <label className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors font-medium">
           <Upload className="w-3.5 h-3.5 text-slate-400" />
@@ -4714,6 +4726,16 @@ export default function SaveExportControls({
           </div>
         </div>
       )}
+
+      {/* Code to Layout Converter Modal */}
+      <CodeImporterModal
+        isOpen={showCodeImporterModal}
+        onClose={() => setShowCodeImporterModal(false)}
+        onApplyLayout={(newSections) => {
+          onImport(newSections, theme);
+          setShowCodeImporterModal(false);
+        }}
+      />
     </div>
   );
 }
