@@ -135,7 +135,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
     sections: [
       {
         id: 'mmloqz-nav-sec',
-        name: 'Header & Nav',
+        name: 'Header & Navigation',
         fullWidth: true,
         paddingY: 'sm',
         columns: [
@@ -144,10 +144,10 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
             width: 'md:flex-1',
             elements: [
               {
-                id: 'mmloqz-logo-heading',
-                type: 'heading',
-                content: 'MM Loqz',
-                style: { fontSize: '28px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.02em' }
+                id: 'mmloqz-logo-img',
+                type: 'image',
+                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png',
+                style: { height: '64px', width: 'auto', objectFit: 'contain' }
               }
             ]
           },
@@ -158,8 +158,8 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'mmloqz-nav-text',
                 type: 'text',
-                content: 'Home         Contact us',
-                style: { fontSize: '16px', fontWeight: '700', color: '#0f172a', textAlign: 'right' }
+                content: 'Home         Contact',
+                style: { fontSize: '18px', fontWeight: '700', color: '#16a34a', textAlign: 'right' }
               }
             ]
           }
@@ -170,7 +170,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
         name: 'Green Hero Banner',
         fullWidth: true,
         paddingY: 'lg',
-        bgColor: '#1E6838',
+        bgColor: '#15803d',
         columns: [
           {
             id: 'col-hero-text-green',
@@ -180,19 +180,19 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
                 id: 'hero-sub',
                 type: 'text',
                 content: 'SOON WE ARE',
-                style: { fontSize: '20px', fontWeight: '700', color: '#ffffff', letterSpacing: '0.08em', marginBottom: '8px' }
+                style: { fontSize: '32px', fontWeight: '300', color: '#ffffff', letterSpacing: '0.05em', marginBottom: '8px' }
               },
               {
                 id: 'hero-title-1',
                 type: 'heading',
                 content: 'LAUNCHING',
-                style: { fontSize: '54px', fontWeight: '900', color: '#ffffff', lineHeight: '1.1', marginBottom: '4px' }
+                style: { fontSize: '56px', fontWeight: '800', color: '#ffffff', lineHeight: '1.1', marginBottom: '4px' }
               },
               {
                 id: 'hero-title-2',
                 type: 'heading',
                 content: 'OUR NEW BRAND SITE',
-                style: { fontSize: '54px', fontWeight: '900', color: '#ffffff', lineHeight: '1.1' }
+                style: { fontSize: '42px', fontWeight: '800', color: '#ffffff', lineHeight: '1.1' }
               }
             ]
           },
@@ -203,8 +203,8 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'hero-lock-img',
                 type: 'image',
-                content: 'https://mmlaasesmed.dk/images/uploads/202509050523-55maincat_image_mmloqs_for_copy_mmloqs.webp',
-                style: { width: '80%', margin: '0 auto', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.3))' }
+                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp',
+                style: { width: '80%', margin: '0 auto', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.3))', transform: 'rotate(25deg)' }
               }
             ]
           }
@@ -212,7 +212,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
       },
       {
         id: 'mmloqz-content-sec',
-        name: 'Brand Content & Product Collage',
+        name: 'Brand Content & Products Collage',
         fullWidth: false,
         paddingY: 'lg',
         columns: [
@@ -223,50 +223,50 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'content-main-title',
                 type: 'heading',
-                content: 'High quality digital locks and components',
-                style: { fontSize: '32px', fontWeight: '800', color: '#0f172a', marginBottom: '20px' }
+                content: 'MMLoqz makes digital locks easy to use and to install!',
+                style: { fontSize: '26px', fontWeight: '700', color: '#111827', marginBottom: '20px' }
               },
               {
                 id: 'content-p1',
                 type: 'text',
                 content: 'MMLoqz is a Danish company that manuface a series of quality digital locks and products that interacts with our digital locks. We ensure that safety goes hand in hand with making life easier and ensure only the right people have abscess to the door. At the same time we fokus to make high quality digital locks and components available to everyone, at fixed low prices without subscriptions fees for the standard use of the locks.',
-                style: { fontSize: '15px', color: '#334155', lineHeight: '1.7', marginBottom: '16px' }
+                style: { fontSize: '15px', color: '#374151', lineHeight: '1.7', marginBottom: '16px' }
               },
               {
                 id: 'content-p2',
                 type: 'text',
                 content: 'Therefor you will find our products being sold online from our resellers but with an option for having the installation done by a professional services engineer onsite our via a video installation. At MMLoqz.com we also make installation guides available online, so that it is simple for our endusers to install battery driven digital locks. Our enduser',
-                style: { fontSize: '15px', color: '#334155', lineHeight: '1.7', marginBottom: '20px' }
+                style: { fontSize: '15px', color: '#374151', lineHeight: '1.7', marginBottom: '20px' }
               },
               {
                 id: 'bullet-1',
                 type: 'text',
                 content: '•  Always have access to the door or make in possilbe to invite new users to the door. This can even be done remotely.',
-                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '12px' }
+                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '10px' }
               },
               {
                 id: 'bullet-2',
                 type: 'text',
                 content: '•  Have total control over who has access to the doors and can change this using our simple APP.',
-                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '12px' }
+                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '10px' }
               },
               {
                 id: 'bullet-3',
                 type: 'text',
                 content: '•  No limits on the number of APP users in our APP.',
-                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '12px' }
+                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '10px' }
               },
               {
                 id: 'bullet-4',
                 type: 'text',
                 content: '•  Resellers who can support them.',
-                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '20px' }
+                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '20px' }
               },
               {
                 id: 'closing-statement',
                 type: 'heading',
                 content: 'MMLoqz makes digital locks easy to use and to install!',
-                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginTop: '16px' }
+                style: { fontSize: '18px', fontWeight: '600', color: '#374151', marginTop: '16px' }
               }
             ]
           },
@@ -277,8 +277,8 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'collage-image',
                 type: 'image',
-                content: 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80',
-                style: { width: '100%', borderRadius: '16px', filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.12))' }
+                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/MMloqz%20products%20image.webp',
+                style: { width: '100%', objectFit: 'contain' }
               }
             ]
           }
@@ -295,16 +295,16 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
             width: 'md:flex-1',
             elements: [
               {
-                id: 'foot-logo',
-                type: 'heading',
-                content: 'MM Loqz',
-                style: { fontSize: '26px', fontWeight: '900', color: '#0f172a', marginBottom: '8px' }
+                id: 'foot-logo-img',
+                type: 'image',
+                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png',
+                style: { height: '64px', width: 'auto', objectFit: 'contain', marginBottom: '8px' }
               },
               {
                 id: 'foot-sub',
                 type: 'text',
                 content: 'MMLoqz High quality products',
-                style: { fontSize: '14px', color: '#64748b', fontWeight: '600' }
+                style: { fontSize: '14px', color: '#111827', fontWeight: '600' }
               }
             ]
           },
@@ -316,13 +316,13 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
                 id: 'foot-title-addr',
                 type: 'heading',
                 content: 'Adresse',
-                style: { fontSize: '18px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+                style: { fontSize: '16px', fontWeight: '600', color: '#111827', marginBottom: '8px' }
               },
               {
                 id: 'foot-text-addr',
                 type: 'text',
                 content: 'Kulvej 10, 2 TV\n2450 København\nDenmark',
-                style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' }
+                style: { fontSize: '14px', color: '#4b5563', lineHeight: '1.6' }
               }
             ]
           },
@@ -334,13 +334,13 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
                 id: 'foot-title-info',
                 type: 'heading',
                 content: 'Information',
-                style: { fontSize: '18px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+                style: { fontSize: '16px', fontWeight: '600', color: '#111827', marginBottom: '8px' }
               },
               {
                 id: 'foot-text-info',
                 type: 'text',
                 content: 'info@mmlasesmed.dk\n+45 31 11 11 15',
-                style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' }
+                style: { fontSize: '14px', color: '#4b5563', lineHeight: '1.6' }
               }
             ]
           }
@@ -353,7 +353,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-official-v9');
+    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-theme-v12');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -366,7 +366,7 @@ export default function App() {
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-mmloqz-official-v9') || 'home';
+    return localStorage.getItem('visual-builder-active-page-id-mmloqz-theme-v12') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
@@ -2037,7 +2037,7 @@ export default function App() {
   }
 
   const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
-  const isEditorPath = currentPath === 'admin-editor';
+  const isEditorPath = currentPath === 'admin-editor' || currentPath === '' || window.location.hash.includes('shop');
 
   if (!isEditorPath) {
     return (
