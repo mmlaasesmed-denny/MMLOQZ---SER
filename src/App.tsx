@@ -126,85 +126,197 @@ const ensureWebshopPagesExist = (loadedPages: SinglePageCMS[]): SinglePageCMS[] 
   return loadedPages;
 };
 
-const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
+const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
   {
     id: 'home',
-    name: 'Hjem (Home)',
+    name: 'Hjem (Main Responsive Theme)',
     slug: '',
     theme: COLOR_THEMES[0],
     sections: [
       {
-        id: 'clean-nav-1',
+        id: 'resp-nav-1',
         name: 'Header & Navigation',
         fullWidth: true,
         paddingY: 'sm',
         columns: [
           {
-            id: 'col-nav-1',
+            id: 'col-nav-logo',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'nav-logo',
+                id: 'nav-logo-text',
                 type: 'heading',
-                content: 'BRAND NAME',
-                style: { fontSize: '24px', fontWeight: '800', color: '#0f172a' }
-              },
+                content: 'MMLOQZ',
+                style: { fontSize: '26px', fontWeight: '900', color: '#0f172a', letterSpacing: '0.05em' }
+              }
+            ]
+          },
+          {
+            id: 'col-nav-links',
+            width: 'md:flex-1',
+            elements: [
               {
-                id: 'nav-menu',
+                id: 'nav-menu-links',
                 type: 'text',
-                content: 'Forside | Om os | Ydelser | Kontakt',
-                style: { fontSize: '14px', color: '#64748b', fontWeight: '600' }
+                content: 'Forside  •  Ydelser  •  Om Os  •  Produkter  •  Kontakt',
+                style: { fontSize: '14px', color: '#475569', fontWeight: '700', textAlign: 'right' }
               }
             ]
           }
         ]
       },
       {
-        id: 'clean-hero-1',
+        id: 'resp-hero-1',
         name: 'Hero Sektion',
         fullWidth: false,
         paddingY: 'lg',
         columns: [
           {
-            id: 'col-hero-1',
+            id: 'col-hero-text',
             width: 'md:flex-1',
             elements: [
               {
+                id: 'hero-badge',
+                type: 'text',
+                content: '⚡ NÆSTE GENERATIONS CMS EDITOR',
+                style: { fontSize: '12px', fontWeight: '800', color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }
+              },
+              {
                 id: 'hero-title',
                 type: 'heading',
-                content: 'Velkommen til din nye hjemmeside',
-                style: { fontSize: '44px', fontWeight: '800', color: '#0f172a', textAlign: 'center', marginBottom: '16px' }
+                content: 'Professionel, Fleksibel og Responsiv Hjemmeside',
+                style: { fontSize: '46px', fontWeight: '900', color: '#0f172a', lineHeight: '1.15', marginBottom: '20px' }
               },
               {
                 id: 'hero-subtitle',
                 type: 'text',
-                content: 'Klik på teksten for at redigere direkte, eller tilføj nye sektioner og elementer.',
-                style: { fontSize: '18px', color: '#475569', textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }
+                content: 'Design, tilpas og udgiv din nye hjemmeside med vores intuitive visuelle CMS-editor. Fuld kontrol over layout, sektioner og indhold.',
+                style: { fontSize: '18px', color: '#475569', lineHeight: '1.6', marginBottom: '28px' }
               },
               {
-                id: 'hero-btn',
+                id: 'hero-cta-btn',
                 type: 'button',
-                content: 'Udforsk mere',
-                style: { backgroundColor: '#2563eb', color: '#ffffff', padding: '12px 28px', borderRadius: '8px', fontWeight: '700' }
+                content: 'Kom I Gang Nu',
+                style: { backgroundColor: '#2563eb', color: '#ffffff', padding: '14px 32px', borderRadius: '10px', fontWeight: '800', fontSize: '15px' }
+              }
+            ]
+          },
+          {
+            id: 'col-hero-media',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'hero-image-card',
+                type: 'image',
+                content: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+                style: { width: '100%', borderRadius: '16px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }
               }
             ]
           }
         ]
       },
       {
-        id: 'clean-footer-1',
+        id: 'resp-features-1',
+        name: 'Funktioner & Fordele',
+        fullWidth: false,
+        paddingY: 'lg',
+        columns: [
+          {
+            id: 'col-feat-1',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-title-1',
+                type: 'heading',
+                content: '📱 100% Responsivt Design',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-desc-1',
+                type: 'text',
+                content: 'Fungerer perfekt og ser fantastisk ud på alle skærmstørrelser fra smartphone til desktop.',
+                style: { fontSize: '15px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          },
+          {
+            id: 'col-feat-2',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-title-2',
+                type: 'heading',
+                content: '✏️ Visuel CMS Editor',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-desc-2',
+                type: 'text',
+                content: 'Rediger tekst, billeder og sektioner direkte på skærmen uden behov for kodning.',
+                style: { fontSize: '15px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          },
+          {
+            id: 'col-feat-3',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-title-3',
+                type: 'heading',
+                content: '🚀 Lynhurtig Ydeevne',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-desc-3',
+                type: 'text',
+                content: 'Bygget med moderne webteknologi for lynhurtig indlæsning og høj søgemaskineoptimering.',
+                style: { fontSize: '15px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'resp-cta-sec',
+        name: 'Call to Action Banner',
+        fullWidth: true,
+        paddingY: 'md',
+        columns: [
+          {
+            id: 'col-cta-main',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'cta-heading',
+                type: 'heading',
+                content: 'Klar til at bygge din nye hjemmeside?',
+                style: { fontSize: '32px', fontWeight: '900', color: '#0f172a', textAlign: 'center', marginBottom: '16px' }
+              },
+              {
+                id: 'cta-button',
+                type: 'button',
+                content: 'Start Redigering Nu',
+                style: { backgroundColor: '#0f172a', color: '#ffffff', padding: '14px 36px', borderRadius: '10px', fontWeight: '800', margin: '0 auto', display: 'block' }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'resp-footer-1',
         name: 'Footer',
         fullWidth: true,
         paddingY: 'md',
         columns: [
           {
-            id: 'col-foot-1',
+            id: 'col-foot-main',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'footer-text',
+                id: 'footer-copyright',
                 type: 'text',
-                content: '© 2026 Alle rettigheder forbeholdes.',
+                content: '© 2026 MMLOQZ. Alle rettigheder forbeholdes. Designed and Powered by Visual CMS Builder.',
                 style: { fontSize: '14px', color: '#94a3b8', textAlign: 'center' }
               }
             ]
@@ -218,7 +330,7 @@ const CLEAN_STARTER_PAGES: SinglePageCMS[] = [
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-clean-v4');
+    const saved = localStorage.getItem('visual-builder-pages-cms-responsive-v5');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -227,11 +339,11 @@ export default function App() {
         }
       } catch (err) {}
     }
-    return CLEAN_STARTER_PAGES;
+    return MAIN_RESPONSIVE_THEME_PAGES;
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-clean-v4') || 'home';
+    return localStorage.getItem('visual-builder-active-page-id-responsive-v5') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
