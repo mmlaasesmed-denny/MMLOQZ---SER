@@ -129,195 +129,218 @@ const ensureWebshopPagesExist = (loadedPages: SinglePageCMS[]): SinglePageCMS[] 
 const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
   {
     id: 'home',
-    name: 'Hjem (Main Responsive Theme)',
+    name: 'MMLoqz Official Brand Site',
     slug: '',
     theme: COLOR_THEMES[0],
     sections: [
       {
-        id: 'resp-nav-1',
-        name: 'Header & Navigation',
+        id: 'mmloqz-nav-sec',
+        name: 'Header & Nav',
         fullWidth: true,
         paddingY: 'sm',
         columns: [
           {
-            id: 'col-nav-logo',
+            id: 'col-mmloqz-logo',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'nav-logo-text',
+                id: 'mmloqz-logo-heading',
                 type: 'heading',
-                content: 'MMLOQZ',
-                style: { fontSize: '26px', fontWeight: '900', color: '#0f172a', letterSpacing: '0.05em' }
+                content: 'MM Loqz',
+                style: { fontSize: '28px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.02em' }
               }
             ]
           },
           {
-            id: 'col-nav-links',
+            id: 'col-mmloqz-navlinks',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'nav-menu-links',
+                id: 'mmloqz-nav-text',
                 type: 'text',
-                content: 'Forside  •  Ydelser  •  Om Os  •  Produkter  •  Kontakt',
-                style: { fontSize: '14px', color: '#475569', fontWeight: '700', textAlign: 'right' }
+                content: 'Home         Contact us',
+                style: { fontSize: '16px', fontWeight: '700', color: '#0f172a', textAlign: 'right' }
               }
             ]
           }
         ]
       },
       {
-        id: 'resp-hero-1',
-        name: 'Hero Sektion',
-        fullWidth: false,
+        id: 'mmloqz-green-hero',
+        name: 'Green Hero Banner',
+        fullWidth: true,
         paddingY: 'lg',
+        bgColor: '#1E6838',
         columns: [
           {
-            id: 'col-hero-text',
+            id: 'col-hero-text-green',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'hero-badge',
+                id: 'hero-sub',
                 type: 'text',
-                content: '⚡ NÆSTE GENERATIONS CMS EDITOR',
-                style: { fontSize: '12px', fontWeight: '800', color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }
+                content: 'SOON WE ARE',
+                style: { fontSize: '20px', fontWeight: '700', color: '#ffffff', letterSpacing: '0.08em', marginBottom: '8px' }
               },
               {
-                id: 'hero-title',
+                id: 'hero-title-1',
                 type: 'heading',
-                content: 'Professionel, Fleksibel og Responsiv Hjemmeside',
-                style: { fontSize: '46px', fontWeight: '900', color: '#0f172a', lineHeight: '1.15', marginBottom: '20px' }
+                content: 'LAUNCHING',
+                style: { fontSize: '54px', fontWeight: '900', color: '#ffffff', lineHeight: '1.1', marginBottom: '4px' }
               },
               {
-                id: 'hero-subtitle',
-                type: 'text',
-                content: 'Design, tilpas og udgiv din nye hjemmeside med vores intuitive visuelle CMS-editor. Fuld kontrol over layout, sektioner og indhold.',
-                style: { fontSize: '18px', color: '#475569', lineHeight: '1.6', marginBottom: '28px' }
-              },
-              {
-                id: 'hero-cta-btn',
-                type: 'button',
-                content: 'Kom I Gang Nu',
-                style: { backgroundColor: '#2563eb', color: '#ffffff', padding: '14px 32px', borderRadius: '10px', fontWeight: '800', fontSize: '15px' }
+                id: 'hero-title-2',
+                type: 'heading',
+                content: 'OUR NEW BRAND SITE',
+                style: { fontSize: '54px', fontWeight: '900', color: '#ffffff', lineHeight: '1.1' }
               }
             ]
           },
           {
-            id: 'col-hero-media',
+            id: 'col-hero-img-green',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'hero-image-card',
+                id: 'hero-lock-img',
                 type: 'image',
-                content: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
-                style: { width: '100%', borderRadius: '16px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }
+                content: 'https://mmlaasesmed.dk/images/uploads/202509050523-55maincat_image_mmloqs_for_copy_mmloqs.webp',
+                style: { width: '80%', margin: '0 auto', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.3))' }
               }
             ]
           }
         ]
       },
       {
-        id: 'resp-features-1',
-        name: 'Funktioner & Fordele',
+        id: 'mmloqz-content-sec',
+        name: 'Brand Content & Product Collage',
         fullWidth: false,
         paddingY: 'lg',
         columns: [
           {
-            id: 'col-feat-1',
+            id: 'col-content-text',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'feat-title-1',
+                id: 'content-main-title',
                 type: 'heading',
-                content: '📱 100% Responsivt Design',
-                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+                content: 'High quality digital locks and components',
+                style: { fontSize: '32px', fontWeight: '800', color: '#0f172a', marginBottom: '20px' }
               },
               {
-                id: 'feat-desc-1',
+                id: 'content-p1',
                 type: 'text',
-                content: 'Fungerer perfekt og ser fantastisk ud på alle skærmstørrelser fra smartphone til desktop.',
-                style: { fontSize: '15px', color: '#64748b', lineHeight: '1.5' }
+                content: 'MMLoqz is a Danish company that manuface a series of quality digital locks and products that interacts with our digital locks. We ensure that safety goes hand in hand with making life easier and ensure only the right people have abscess to the door. At the same time we fokus to make high quality digital locks and components available to everyone, at fixed low prices without subscriptions fees for the standard use of the locks.',
+                style: { fontSize: '15px', color: '#334155', lineHeight: '1.7', marginBottom: '16px' }
+              },
+              {
+                id: 'content-p2',
+                type: 'text',
+                content: 'Therefor you will find our products being sold online from our resellers but with an option for having the installation done by a professional services engineer onsite our via a video installation. At MMLoqz.com we also make installation guides available online, so that it is simple for our endusers to install battery driven digital locks. Our enduser',
+                style: { fontSize: '15px', color: '#334155', lineHeight: '1.7', marginBottom: '20px' }
+              },
+              {
+                id: 'bullet-1',
+                type: 'text',
+                content: '•  Always have access to the door or make in possilbe to invite new users to the door. This can even be done remotely.',
+                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '12px' }
+              },
+              {
+                id: 'bullet-2',
+                type: 'text',
+                content: '•  Have total control over who has access to the doors and can change this using our simple APP.',
+                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '12px' }
+              },
+              {
+                id: 'bullet-3',
+                type: 'text',
+                content: '•  No limits on the number of APP users in our APP.',
+                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '12px' }
+              },
+              {
+                id: 'bullet-4',
+                type: 'text',
+                content: '•  Resellers who can support them.',
+                style: { fontSize: '15px', color: '#1e293b', fontWeight: '600', marginBottom: '20px' }
+              },
+              {
+                id: 'closing-statement',
+                type: 'heading',
+                content: 'MMLoqz makes digital locks easy to use and to install!',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginTop: '16px' }
               }
             ]
           },
           {
-            id: 'col-feat-2',
+            id: 'col-content-collage',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'feat-title-2',
-                type: 'heading',
-                content: '✏️ Visuel CMS Editor',
-                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
-              },
-              {
-                id: 'feat-desc-2',
-                type: 'text',
-                content: 'Rediger tekst, billeder og sektioner direkte på skærmen uden behov for kodning.',
-                style: { fontSize: '15px', color: '#64748b', lineHeight: '1.5' }
-              }
-            ]
-          },
-          {
-            id: 'col-feat-3',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'feat-title-3',
-                type: 'heading',
-                content: '🚀 Lynhurtig Ydeevne',
-                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
-              },
-              {
-                id: 'feat-desc-3',
-                type: 'text',
-                content: 'Bygget med moderne webteknologi for lynhurtig indlæsning og høj søgemaskineoptimering.',
-                style: { fontSize: '15px', color: '#64748b', lineHeight: '1.5' }
+                id: 'collage-image',
+                type: 'image',
+                content: 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80',
+                style: { width: '100%', borderRadius: '16px', filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.12))' }
               }
             ]
           }
         ]
       },
       {
-        id: 'resp-cta-sec',
-        name: 'Call to Action Banner',
-        fullWidth: true,
+        id: 'mmloqz-footer-sec',
+        name: 'MMLoqz Footer',
+        fullWidth: false,
         paddingY: 'md',
         columns: [
           {
-            id: 'col-cta-main',
+            id: 'col-foot-brand',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'cta-heading',
+                id: 'foot-logo',
                 type: 'heading',
-                content: 'Klar til at bygge din nye hjemmeside?',
-                style: { fontSize: '32px', fontWeight: '900', color: '#0f172a', textAlign: 'center', marginBottom: '16px' }
+                content: 'MM Loqz',
+                style: { fontSize: '26px', fontWeight: '900', color: '#0f172a', marginBottom: '8px' }
               },
               {
-                id: 'cta-button',
-                type: 'button',
-                content: 'Start Redigering Nu',
-                style: { backgroundColor: '#0f172a', color: '#ffffff', padding: '14px 36px', borderRadius: '10px', fontWeight: '800', margin: '0 auto', display: 'block' }
+                id: 'foot-sub',
+                type: 'text',
+                content: 'MMLoqz High quality products',
+                style: { fontSize: '14px', color: '#64748b', fontWeight: '600' }
               }
             ]
-          }
-        ]
-      },
-      {
-        id: 'resp-footer-1',
-        name: 'Footer',
-        fullWidth: true,
-        paddingY: 'md',
-        columns: [
+          },
           {
-            id: 'col-foot-main',
+            id: 'col-foot-addr',
             width: 'md:flex-1',
             elements: [
               {
-                id: 'footer-copyright',
+                id: 'foot-title-addr',
+                type: 'heading',
+                content: 'Adresse',
+                style: { fontSize: '18px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'foot-text-addr',
                 type: 'text',
-                content: '© 2026 MMLOQZ. Alle rettigheder forbeholdes. Designed and Powered by Visual CMS Builder.',
-                style: { fontSize: '14px', color: '#94a3b8', textAlign: 'center' }
+                content: 'Kulvej 10, 2 TV\n2450 København\nDenmark',
+                style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' }
+              }
+            ]
+          },
+          {
+            id: 'col-foot-info',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'foot-title-info',
+                type: 'heading',
+                content: 'Information',
+                style: { fontSize: '18px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'foot-text-info',
+                type: 'text',
+                content: 'info@mmlasesmed.dk\n+45 31 11 11 15',
+                style: { fontSize: '14px', color: '#475569', lineHeight: '1.6' }
               }
             ]
           }
@@ -330,7 +353,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-responsive-v5');
+    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-official-v9');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -343,7 +366,7 @@ export default function App() {
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-responsive-v5') || 'home';
+    return localStorage.getItem('visual-builder-active-page-id-mmloqz-official-v9') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
