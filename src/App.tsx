@@ -2037,7 +2037,7 @@ export default function App() {
   }
 
   const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
-  const isEditorPath = currentPath === 'admin-editor' || currentPath === '' || window.location.hash.includes('shop');
+  const isEditorPath = currentPath === 'admin-editor';
 
   if (!isEditorPath) {
     return (
