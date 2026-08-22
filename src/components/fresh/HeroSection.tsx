@@ -1,43 +1,371 @@
-import React from 'react';
-import { Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Upload, Sliders, RotateCcw, Check, X, Image as ImageIcon, Layers, MoveHorizontal } from 'lucide-react';
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  editable?: boolean;
+}
+
+export default function HeroSection({ editable = true }: HeroSectionProps) {
+  const [showControls, setShowControls] = useState(false);
+  const [activeTab, setActiveTab] = useState<'bg' | 'right'>('bg');
+
+  // 1. Background Shaded Image State
+  const [bgShadedSrc, setBgShadedSrc] = useState<string>(() => {
+    return localStorage.getItem('mmloqz-hero-bg-shaded-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
+  });
+  const [bgOpacity, setBgOpacity] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-bg-opacity');
+    return saved ? parseFloat(saved) : 0.22;
+  });
+  const [bgRotate, setBgRotate] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-bg-rotate');
+    return saved ? parseInt(saved, 10) : 30;
+  });
+  const [bgWidth, setBgWidth] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-bg-width');
+    return saved ? parseInt(saved, 10) : 320;
+  });
+
+  // 2. Right Product Image State
+  const [rightImgSrc, setRightImgSrc] = useState<string>(() => {
+    return localStorage.getItem('mmloqz-hero-right-img-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
+  });
+  const [rightImgHeight, setRightImgHeight] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-right-img-height');
+    return saved ? parseInt(saved, 10) : 340;
+  });
+  const [rightImgRotate, setRightImgRotate] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-right-img-rotate');
+    return saved ? parseInt(saved, 10) : 30;
+  });
+  const [rightImgOffsetX, setRightImgOffsetX] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-right-img-offset-x');
+    return saved ? parseInt(saved, 10) : 0;
+  });
+
+  const bgFileInputRef = useRef<HTMLInputElement>(null);
+  const rightFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Persistence Effects
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-shaded-src', bgShadedSrc); }, [bgShadedSrc]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-opacity', bgOpacity.toString()); }, [bgOpacity]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-rotate', bgRotate.toString()); }, [bgRotate]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-width', bgWidth.toString()); }, [bgWidth]);
+
+  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-src', rightImgSrc); }, [rightImgSrc]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-height', rightImgHeight.toString()); }, [rightImgHeight]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-rotate', rightImgRotate.toString()); }, [rightImgRotate]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-x', rightImgOffsetX.toString()); }, [rightImgOffsetX]);
+
+  // Upload Handlers
+  const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) setBgShadedSrc(ev.target.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRightUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) setRightImgSrc(ev.target.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const resetDefaults = () => {
+    setBgShadedSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
+    setBgOpacity(0.22);
+    setBgRotate(30);
+    setBgWidth(320);
+
+    setRightImgSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
+    setRightImgHeight(340);
+    setRightImgRotate(30);
+    setRightImgOffsetX(0);
+
+    localStorage.removeItem('mmloqz-hero-bg-shaded-src');
+    localStorage.removeItem('mmloqz-hero-bg-opacity');
+    localStorage.removeItem('mmloqz-hero-bg-rotate');
+    localStorage.removeItem('mmloqz-hero-bg-width');
+    localStorage.removeItem('mmloqz-hero-right-img-src');
+    localStorage.removeItem('mmloqz-hero-right-img-height');
+    localStorage.removeItem('mmloqz-hero-right-img-rotate');
+    localStorage.removeItem('mmloqz-hero-right-img-offset-x');
+  };
+
   return (
-    <section id="hero" className="relative overflow-hidden bg-[#15803d] text-white py-16 sm:py-20 lg:py-24">
-      {/* Background Subtle Gradient Overlay */}
+    <section id="hero" className="relative overflow-hidden bg-[#15803d] text-white py-16 sm:py-20 lg:py-24 group/hero">
+      {/* Background Subtle Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/30 via-transparent to-emerald-950/20 pointer-events-none" />
+
+      {/* Floating Customizer Badge */}
+      {editable && (
+        <div className="absolute top-4 right-4 z-40">
+          <button
+            onClick={() => setShowControls(!showControls)}
+            className="px-3 py-1.5 bg-white text-emerald-900 rounded-xl text-xs font-bold shadow-lg hover:bg-emerald-50 transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-200"
+          >
+            <Sliders className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Customize Hero Images</span>
+          </button>
+        </div>
+      )}
+
+      {/* Hero Control Drawer Popover */}
+      {editable && showControls && (
+        <div className="absolute top-16 right-4 z-50 w-96 bg-slate-900 text-white rounded-2xl p-5 shadow-2xl border border-slate-700 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+            <div className="flex items-center gap-2 font-bold text-sm text-emerald-400">
+              <ImageIcon className="w-4 h-4" />
+              <span>Hero Images Customizer</span>
+            </div>
+            <button
+              onClick={() => setShowControls(false)}
+              className="text-slate-400 hover:text-white p-1 rounded-md"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl mb-4">
+            <button
+              onClick={() => setActiveTab('bg')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
+                activeTab === 'bg' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Background Shaded Image
+            </button>
+            <button
+              onClick={() => setActiveTab('right')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${
+                activeTab === 'right' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Right Product Image
+            </button>
+          </div>
+
+          {/* Tab 1: Background Shaded Image Settings */}
+          {activeTab === 'bg' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Upload Shaded Background Image:
+                </label>
+                <input
+                  type="file"
+                  ref={bgFileInputRef}
+                  onChange={handleBgUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <button
+                  onClick={() => bgFileInputRef.current?.click()}
+                  className="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Upload Background Image</span>
+                </button>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">Shade Opacity:</span>
+                  <span className="text-emerald-400 font-mono">{Math.round(bgOpacity * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.05"
+                  max="0.6"
+                  step="0.01"
+                  value={bgOpacity}
+                  onChange={(e) => setBgOpacity(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">Rotation Angle:</span>
+                  <span className="text-emerald-400 font-mono">{bgRotate}°</span>
+                </div>
+                <input
+                  type="range"
+                  min="-90"
+                  max="90"
+                  value={bgRotate}
+                  onChange={(e) => setBgRotate(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">Image Width:</span>
+                  <span className="text-emerald-400 font-mono">{bgWidth}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="180"
+                  max="500"
+                  value={bgWidth}
+                  onChange={(e) => setBgWidth(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Tab 2: Right Product Image Settings */}
+          {activeTab === 'right' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Upload Right Product Image:
+                </label>
+                <input
+                  type="file"
+                  ref={rightFileInputRef}
+                  onChange={handleRightUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <button
+                  onClick={() => rightFileInputRef.current?.click()}
+                  className="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Upload Product Image</span>
+                </button>
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">Image Height:</span>
+                  <span className="text-emerald-400 font-mono">{rightImgHeight}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="180"
+                  max="550"
+                  value={rightImgHeight}
+                  onChange={(e) => setRightImgHeight(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">Rotation Angle:</span>
+                  <span className="text-emerald-400 font-mono">{rightImgRotate}°</span>
+                </div>
+                <input
+                  type="range"
+                  min="-90"
+                  max="90"
+                  value={rightImgRotate}
+                  onChange={(e) => setRightImgRotate(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">Move Left / Right:</span>
+                  <span className="text-emerald-400 font-mono">{rightImgOffsetX}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="-100"
+                  max="100"
+                  value={rightImgOffsetX}
+                  onChange={(e) => setRightImgOffsetX(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Control Footer Actions */}
+          <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between">
+            <button
+              onClick={resetDefaults}
+              className="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Defaults</span>
+            </button>
+            <button
+              onClick={() => setShowControls(false)}
+              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>Done</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Text Content */}
-          <div className="lg:col-span-7 text-center lg:text-left space-y-4 sm:space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-emerald-100 text-xs sm:text-sm font-medium border border-white/15">
-              <Sparkles className="w-4 h-4 text-emerald-200" />
-              <span>Next Generation Digital Locks</span>
-            </div>
+          {/* Left Text Content with Shaded Background Image behind text */}
+          <div className="lg:col-span-7 text-center lg:text-left space-y-4 sm:space-y-6 relative min-h-[220px] flex flex-col justify-center">
+            {/* 1. Shaded Background Image directly behind text */}
+            {bgShadedSrc && (
+              <img
+                src={bgShadedSrc}
+                alt="Shaded Background Lock"
+                className="absolute left-6 sm:left-12 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300 z-0"
+                style={{
+                  opacity: bgOpacity,
+                  transform: `translateY(-50%) rotate(${bgRotate}deg)`,
+                  width: `${bgWidth}px`,
+                  maxWidth: '100%',
+                  objectFit: 'contain'
+                }}
+              />
+            )}
 
-            <div className="space-y-2">
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-wide text-emerald-100">
+            {/* Headlines Text (rendered on top of shaded image) */}
+            <div className="relative z-10 space-y-2">
+              <p className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-wide text-white drop-shadow-sm">
                 SOON WE ARE
               </p>
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none text-white drop-shadow-sm">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none text-white drop-shadow-md">
                 LAUNCHING
               </h1>
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                OUR NEW BRAND SITE
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
+                OUR <span className="font-extrabold">NEW BRAND</span> SITE
               </h2>
             </div>
           </div>
 
-          {/* Right Floating Cylinder Lock Image */}
+          {/* Right Floating Product Image */}
           <div className="lg:col-span-5 flex justify-center items-center">
-            <div className="relative w-full max-w-md lg:max-w-none">
+            <div className="relative w-full max-w-md lg:max-w-none flex justify-center">
               <div className="absolute -inset-4 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-              <img
-                src="https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp"
-                alt="MMLoqz Digital Cylinder Lock"
-                className="relative z-10 w-4/5 sm:w-3/4 lg:w-full mx-auto object-contain transform rotate-[25deg] hover:rotate-[20deg] transition-transform duration-500 filter drop-shadow-(0_25px_35px_rgba(0,0,0,0.4))"
-              />
+              {rightImgSrc && (
+                <img
+                  src={rightImgSrc}
+                  alt="MMLoqz Digital Cylinder Lock"
+                  className="relative z-10 object-contain transition-all duration-300 filter drop-shadow-(0_25px_35px_rgba(0,0,0,0.4))"
+                  style={{
+                    height: `${rightImgHeight}px`,
+                    transform: `rotate(${rightImgRotate}deg) translateX(${rightImgOffsetX}px)`,
+                    maxWidth: '100%'
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
