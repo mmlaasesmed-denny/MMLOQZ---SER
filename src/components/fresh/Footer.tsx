@@ -1,13 +1,43 @@
-import React from 'react';
-import { MapPin, Mail, Phone, ArrowUp } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Mail, Phone, ArrowUp, Trash2 } from 'lucide-react';
 
-export default function Footer() {
+interface FooterProps {
+  editable?: boolean;
+  onDelete?: () => void;
+}
+
+export default function Footer({ editable = true, onDelete }: FooterProps) {
+  const [isDeleted, setIsDeleted] = useState(false);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete the Footer section?")) {
+      setIsDeleted(true);
+      if (onDelete) onDelete();
+    }
+  };
+
+  if (isDeleted) return null;
+
   return (
-    <footer id="contact" className="bg-slate-900 text-white pt-16 pb-12 border-t border-slate-800">
+    <footer id="contact" className="bg-slate-900 text-white pt-16 pb-12 border-t border-slate-800 relative group/footer">
+      {/* Delete Section Button Badge */}
+      {editable && (
+        <div className="absolute top-4 right-4 z-30 opacity-80 group-hover/footer:opacity-100 transition-opacity">
+          <button
+            onClick={handleDelete}
+            className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer border border-rose-500"
+            title="Delete Footer section"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete Section</span>
+          </button>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 pb-12 border-b border-slate-800">
           {/* Column 1: Brand & Logo */}

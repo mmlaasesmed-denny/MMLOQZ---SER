@@ -1,5 +1,10 @@
-import React from 'react';
-import { KeyRound, Smartphone, ShieldAlert } from 'lucide-react';
+import React, { useState } from 'react';
+import { KeyRound, Smartphone, ShieldAlert, Trash2 } from 'lucide-react';
+
+interface FeaturesSectionProps {
+  editable?: boolean;
+  onDelete?: () => void;
+}
 
 const FEATURES = [
   {
@@ -19,9 +24,34 @@ const FEATURES = [
   }
 ];
 
-export default function FeaturesSection() {
+export default function FeaturesSection({ editable = true, onDelete }: FeaturesSectionProps) {
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete the 3-Column Features Grid section?")) {
+      setIsDeleted(true);
+      if (onDelete) onDelete();
+    }
+  };
+
+  if (isDeleted) return null;
+
   return (
-    <section id="features" className="py-16 sm:py-20 bg-white border-b border-slate-100">
+    <section id="features" className="py-16 sm:py-20 bg-white border-b border-slate-100 relative group/sec">
+      {/* Delete Section Button Badge */}
+      {editable && (
+        <div className="absolute top-4 right-4 z-30 opacity-80 group-hover/sec:opacity-100 transition-opacity">
+          <button
+            onClick={handleDelete}
+            className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer border border-rose-500"
+            title="Delete 3-Column Features section"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete Section</span>
+          </button>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <h2 className="text-xs font-extrabold uppercase tracking-widest text-emerald-700 mb-3">

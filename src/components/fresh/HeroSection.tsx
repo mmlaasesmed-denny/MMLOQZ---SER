@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Upload, Sliders, RotateCcw, Check, X, Image as ImageIcon, MoveLeft, MoveRight, ArrowUp, ArrowDown } from 'lucide-react';
+import { Sparkles, Upload, Sliders, RotateCcw, Check, X, Image as ImageIcon, MoveLeft, MoveRight, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
 
 interface HeroSectionProps {
   editable?: boolean;
+  onDelete?: () => void;
 }
 
-export default function HeroSection({ editable = true }: HeroSectionProps) {
+export default function HeroSection({ editable = true, onDelete }: HeroSectionProps) {
   const [showControls, setShowControls] = useState(false);
   const [activeTab, setActiveTab] = useState<'bg' | 'right'>('bg');
+  const [isDeleted, setIsDeleted] = useState(false);
 
   // 1. Background Shaded Image State (6 Identical Options)
   const [bgShadedSrc, setBgShadedSrc] = useState<string>(() => {
@@ -100,6 +102,13 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
     }
   };
 
+  const handleDeleteSection = () => {
+    if (window.confirm("Are you sure you want to delete the Green Hero Banner section?")) {
+      setIsDeleted(true);
+      if (onDelete) onDelete();
+    }
+  };
+
   const resetDefaults = () => {
     setBgShadedSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
     setBgWidth(320);
@@ -130,20 +139,31 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
     localStorage.removeItem('mmloqz-hero-right-img-offset-y');
   };
 
+  if (isDeleted) return null;
+
   return (
     <section id="hero" className="relative overflow-hidden bg-[#15803d] text-white py-16 sm:py-20 lg:py-24 group/hero">
       {/* Background Subtle Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/30 via-transparent to-emerald-950/20 pointer-events-none" />
 
-      {/* Floating Customizer Badge */}
+      {/* Floating Section Action Badges */}
       {editable && (
-        <div className="absolute top-4 right-4 z-40">
+        <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
           <button
             onClick={() => setShowControls(!showControls)}
             className="px-3 py-1.5 bg-white text-emerald-900 rounded-xl text-xs font-bold shadow-lg hover:bg-emerald-50 transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-200"
           >
             <Sliders className="w-3.5 h-3.5 text-emerald-700" />
             <span>Customize Hero Images</span>
+          </button>
+
+          <button
+            onClick={handleDeleteSection}
+            className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-lg transition-all flex items-center gap-1.5 cursor-pointer border border-rose-500"
+            title="Delete this Green Hero section"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete Section</span>
           </button>
         </div>
       )}

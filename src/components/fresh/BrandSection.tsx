@@ -1,5 +1,10 @@
-import React from 'react';
-import { CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, Trash2 } from 'lucide-react';
+
+interface BrandSectionProps {
+  editable?: boolean;
+  onDelete?: () => void;
+}
 
 const BULLETS = [
   'Always have access to the door or make it possible to invite new users to the door. This can even be done remotely.',
@@ -8,9 +13,34 @@ const BULLETS = [
   'Resellers who can support them.'
 ];
 
-export default function BrandSection() {
+export default function BrandSection({ editable = true, onDelete }: BrandSectionProps) {
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const handleDelete = () => {
+    if (window.confirm("Are you sure you want to delete the Danish Brand Content section?")) {
+      setIsDeleted(true);
+      if (onDelete) onDelete();
+    }
+  };
+
+  if (isDeleted) return null;
+
   return (
-    <section id="about" className="py-16 sm:py-20 lg:py-24 bg-slate-50">
+    <section id="about" className="py-16 sm:py-20 lg:py-24 bg-slate-50 relative group/brand">
+      {/* Delete Section Button Badge */}
+      {editable && (
+        <div className="absolute top-4 right-4 z-30 opacity-80 group-hover/brand:opacity-100 transition-opacity">
+          <button
+            onClick={handleDelete}
+            className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer border border-rose-500"
+            title="Delete Brand Content section"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete Section</span>
+          </button>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Left Text Column */}
