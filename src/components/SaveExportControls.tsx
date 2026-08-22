@@ -4403,7 +4403,7 @@ export default function SaveExportControls({
                         <div className="space-y-0.5">
                           <p className="font-bold text-slate-900 dark:text-slate-100">{draft.title}</p>
                           <p className="text-[10px] text-slate-400 font-mono">
-                            Saved: {new Date(draft.updatedAt).toLocaleDateString()} at {new Date(draft.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            Saved: {draft.updatedAt ? new Date(draft.updatedAt).toLocaleDateString() : 'Today'}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -4441,7 +4441,7 @@ export default function SaveExportControls({
                 </label>
                 <div className="flex gap-3">
                   <button
-                    onClick={handleExportConfig}
+                    onClick={handleBackupExport}
                     className="flex-1 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -4453,7 +4453,7 @@ export default function SaveExportControls({
                     <input
                       type="file"
                       accept=".json"
-                      onChange={handleImportConfig}
+                      onChange={handleBackupImport}
                       className="hidden"
                     />
                   </label>
