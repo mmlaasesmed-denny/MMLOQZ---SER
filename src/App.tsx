@@ -876,18 +876,44 @@ export default function App() {
   });
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
 
-  // Hash route listener for #/admin-login
+  // Hash & Path route listener for #/admin-login and #/admin-editor
   useEffect(() => {
-    const checkHash = () => {
+    const handleHashAndPathChange = () => {
       const hash = window.location.hash;
-      if (hash === '#/admin-login' || hash === '#admin-login' || hash === '#/admin' || hash === '#admin') {
+      const path = window.location.pathname.replace(/^\/|\/$/g, '');
+
+      if (
+        hash === '#/admin-login' || 
+        hash === '#admin-login' || 
+        hash === '#/admin' || 
+        hash === '#admin' ||
+        path === 'admin-login' ||
+        path === 'admin'
+      ) {
         setShowAdminLoginModal(true);
+      } else if (
+        hash === '#/admin-editor' || 
+        hash === '#admin-editor' || 
+        path === 'admin-editor'
+      ) {
+        const loggedIn = localStorage.getItem('visual-builder-is-admin') === 'true';
+        if (!loggedIn) {
+          setShowAdminLoginModal(true);
+        } else {
+          setIsAdmin(true);
+          setIsPreviewMode(false);
+        }
       }
     };
-    checkHash();
-    window.addEventListener('hashchange', checkHash);
-    return () => window.removeEventListener('hashchange', checkHash);
-  }, []);
+
+    handleHashAndPathChange();
+    window.addEventListener('hashchange', handleHashAndPathChange);
+    window.addEventListener('popstate', handleHashAndPathChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashAndPathChange);
+      window.removeEventListener('popstate', handleHashAndPathChange);
+    };
+  }, [isAdmin]);
 
   // 4. Image Modal Configuration Tracking
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -2306,7 +2332,8 @@ export default function App() {
       )}
 
       {/* 1.5 CMS Page Selector Bar */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-2.5 flex flex-wrap items-center justify-between gap-4 z-20 shadow-xs" id="cms-page-selector-bar">
+      {isAdmin && (
+        <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-2.5 flex flex-wrap items-center justify-between gap-4 z-20 shadow-xs" id="cms-page-selector-bar">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/15 animate-pulse" />
@@ -2561,10 +2588,11 @@ export default function App() {
           </button>
         </div>
       </div>
+      )}
 
       <div className="flex-1 flex overflow-hidden">
-        {/* 2. Visual Wix Sidebar (Hidden in Preview) */}
-        {!isPreviewMode && (
+        {/* 2. Visual Wix Sidebar (Hidden in Preview or Non-Admin) */}
+        {isAdmin && !isPreviewMode && (
           <Sidebar
             sections={sections}
             theme={theme}

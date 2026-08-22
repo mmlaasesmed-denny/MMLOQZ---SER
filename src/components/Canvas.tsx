@@ -994,12 +994,14 @@ export default function Canvas({
     theme.fontFamily === 'display' ? 'font-display' :
     'font-sans';
 
+  const effectivePreview = isPreviewMode || !isAdmin;
+
   return (
     <div 
       className={`flex-1 ${
-        viewportMode === 'desktop' ? 'bg-slate-100 dark:bg-slate-950/40' : 'bg-transparent'
+        viewportMode === 'desktop' ? (effectivePreview ? 'bg-slate-50' : 'bg-slate-100 dark:bg-slate-950/40') : 'bg-transparent'
       } ${
-        viewportMode === 'desktop' ? (isPreviewMode ? 'md:p-0' : 'md:p-8 p-4') : 'p-0'
+        viewportMode === 'desktop' ? (effectivePreview ? 'p-0' : 'md:p-8 p-4') : 'p-0'
       } ${fontClass} transition-all duration-300 flex items-start justify-center ${
         viewportMode === 'desktop' ? 'overflow-y-auto' : 'overflow-y-visible'
       }`} 
@@ -1008,8 +1010,8 @@ export default function Canvas({
       <div 
         className={`w-full bg-white dark:bg-slate-900 transition-all overflow-hidden ${
           viewportMode === 'desktop'
-            ? (isPreviewMode 
-                ? 'max-w-full rounded-none shadow-none min-h-[85vh]' 
+            ? (effectivePreview 
+                ? 'max-w-full rounded-none shadow-none min-h-screen' 
                 : 'max-w-5xl rounded-xl shadow-2xl border border-slate-200/60 dark:border-slate-800 min-h-[85vh]')
             : 'max-w-full rounded-none shadow-none min-h-[85vh]'
         }`}
