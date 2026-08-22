@@ -11,7 +11,12 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
   const [activeTab, setActiveTab] = useState<'bg' | 'right'>('bg');
   const [isDeleted, setIsDeleted] = useState(false);
 
-  // 1. Background Shaded Image State (6 Identical Options)
+  // Text States with LocalStorage Persistence
+  const [heroLine1, setHeroLine1] = useState<string>(() => localStorage.getItem('mmloqz-hero-line1') || 'SOON WE ARE');
+  const [heroLine2, setHeroLine2] = useState<string>(() => localStorage.getItem('mmloqz-hero-line2') || 'LAUNCHING');
+  const [heroLine3, setHeroLine3] = useState<string>(() => localStorage.getItem('mmloqz-hero-line3') || 'OUR NEW BRAND SITE');
+
+  // 1. Background Shaded Image State
   const [bgShadedSrc, setBgShadedSrc] = useState<string>(() => {
     return localStorage.getItem('mmloqz-hero-bg-shaded-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
   });
@@ -36,7 +41,7 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
     return saved ? parseInt(saved, 10) : 0;
   });
 
-  // 2. Right Product Image State (6 Identical Options)
+  // 2. Right Product Image State
   const [rightImgSrc, setRightImgSrc] = useState<string>(() => {
     return localStorage.getItem('mmloqz-hero-right-img-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
   });
@@ -110,6 +115,13 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
   };
 
   const resetDefaults = () => {
+    setHeroLine1('SOON WE ARE');
+    setHeroLine2('LAUNCHING');
+    setHeroLine3('OUR NEW BRAND SITE');
+    localStorage.removeItem('mmloqz-hero-line1');
+    localStorage.removeItem('mmloqz-hero-line2');
+    localStorage.removeItem('mmloqz-hero-line3');
+
     setBgShadedSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
     setBgWidth(320);
     setBgRotate(30);
@@ -207,7 +219,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
           {/* Tab 1: Background Shaded Image Settings (Identical 6 Options) */}
           {activeTab === 'bg' && (
             <div className="space-y-4">
-              {/* 1. Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   1. Upload Custom Image:
@@ -228,7 +239,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 </button>
               </div>
 
-              {/* 2. Width */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
                   <span className="text-slate-300">2. Width (Size):</span>
@@ -244,7 +254,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 3. Rotation */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
                   <span className="text-slate-300">3. Rotation Angle:</span>
@@ -260,7 +269,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 4. Opacity */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
                   <span className="text-slate-300">4. Shade Opacity:</span>
@@ -277,7 +285,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 5. Move Left / Right (X) */}
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-slate-300">5. Move Left / Right (X):</span>
@@ -293,7 +300,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 6. Move Up / Down (Y) */}
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-slate-300">6. Move Up / Down (Y):</span>
@@ -309,7 +315,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* Directional Nudge Pad */}
               <div className="grid grid-cols-4 gap-1.5 pt-2">
                 <button
                   onClick={() => setBgOffsetX(prev => prev - 20)}
@@ -343,10 +348,9 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
             </div>
           )}
 
-          {/* Tab 2: Right Product Image Settings (Identical 6 Options) */}
+          {/* Tab 2: Right Product Image Settings */}
           {activeTab === 'right' && (
             <div className="space-y-4">
-              {/* 1. Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                   1. Upload Custom Image:
@@ -367,7 +371,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 </button>
               </div>
 
-              {/* 2. Width */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
                   <span className="text-slate-300">2. Width (Size):</span>
@@ -383,7 +386,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 3. Rotation */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
                   <span className="text-slate-300">3. Rotation Angle:</span>
@@ -399,7 +401,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 4. Opacity */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
                   <span className="text-slate-300">4. Shade Opacity:</span>
@@ -416,7 +417,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 5. Move Left / Right (X) */}
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-slate-300">5. Move Left / Right (X):</span>
@@ -432,7 +432,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* 6. Move Up / Down (Y) */}
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-slate-300">6. Move Up / Down (Y):</span>
@@ -448,7 +447,6 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
                 />
               </div>
 
-              {/* Directional Nudge Pad */}
               <div className="grid grid-cols-4 gap-1.5 pt-2">
                 <button
                   onClick={() => setRightImgOffsetX(prev => prev - 20)}
@@ -504,7 +502,7 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Text Content with Shaded Background Image behind text */}
+          {/* Left Text Content with 100% Inline Editable Letters */}
           <div className="lg:col-span-7 text-center lg:text-left space-y-4 sm:space-y-6 relative min-h-[220px] flex flex-col justify-center">
             {/* 1. Shaded Background Image directly behind text with X and Y movement */}
             {bgShadedSrc && (
@@ -522,16 +520,46 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
               />
             )}
 
-            {/* Headlines Text (rendered on top of shaded image) */}
+            {/* Headlines Text (100% Inline Editable letter by letter) */}
             <div className="relative z-10 space-y-2">
-              <p className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-wide text-white drop-shadow-sm">
-                SOON WE ARE
+              <p
+                contentEditable={editable}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => {
+                  const val = e.currentTarget.innerText;
+                  setHeroLine1(val);
+                  localStorage.setItem('mmloqz-hero-line1', val);
+                }}
+                className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-wide text-white drop-shadow-sm outline-none focus:ring-2 focus:ring-emerald-300 rounded px-1"
+                title="Click to edit text"
+              >
+                {heroLine1}
               </p>
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none text-white drop-shadow-md">
-                LAUNCHING
+              <h1
+                contentEditable={editable}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => {
+                  const val = e.currentTarget.innerText;
+                  setHeroLine2(val);
+                  localStorage.setItem('mmloqz-hero-line2', val);
+                }}
+                className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-none text-white drop-shadow-md outline-none focus:ring-2 focus:ring-emerald-300 rounded px-1"
+                title="Click to edit text"
+              >
+                {heroLine2}
               </h1>
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
-                OUR <span className="font-extrabold">NEW BRAND</span> SITE
+              <h2
+                contentEditable={editable}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => {
+                  const val = e.currentTarget.innerText;
+                  setHeroLine3(val);
+                  localStorage.setItem('mmloqz-hero-line3', val);
+                }}
+                className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md outline-none focus:ring-2 focus:ring-emerald-300 rounded px-1"
+                title="Click to edit text"
+              >
+                {heroLine3}
               </h2>
             </div>
           </div>
