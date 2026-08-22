@@ -180,6 +180,69 @@ export const TEMPLATES: { id: string; name: string; description: string; section
         ]
       },
       {
+        id: 'mmloqz-features-grid-sec-tpl',
+        name: '3-Column Features Grid',
+        fullWidth: false,
+        paddingY: 'lg',
+        bgColor: '#ffffff',
+        columns: [
+          {
+            id: 'col-feat-1-tpl',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-1-title-tpl',
+                type: 'heading',
+                content: '🔑 Keyless Remote Access',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-1-desc-tpl',
+                type: 'text',
+                content: 'Always have instant access to your door or invite new users remotely without needing physical keys.',
+                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          },
+          {
+            id: 'col-feat-2-tpl',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-2-title-tpl',
+                type: 'heading',
+                content: '📱 Simple Mobile App',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-2-desc-tpl',
+                type: 'text',
+                content: 'Total control over door permissions with unlimited users and real-time activity tracking in our mobile app.',
+                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          },
+          {
+            id: 'col-feat-3-tpl',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-3-title-tpl',
+                type: 'heading',
+                content: '⚡ No Subscription Fees',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-3-desc-tpl',
+                type: 'text',
+                content: 'Fixed low prices with zero mandatory monthly subscription fees for standard battery-driven digital lock usage.',
+                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          }
+        ]
+      },
+      {
         id: 'mmloqz-content-sec-tpl',
         name: 'Brand Content & Products Collage',
         fullWidth: false,
