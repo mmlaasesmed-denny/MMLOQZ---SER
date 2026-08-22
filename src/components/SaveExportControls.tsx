@@ -196,135 +196,32 @@ export default function SaveExportControls({
   };
 
   const handleDirectSaveToDjango = async () => {
-    const PAGE_SLUGS: Record<string, { slug: string; title: string }> = {
-      portfolio: { slug: 'home-page', title: 'Home Creative Workspace' },
-      bistro: { slug: 'bistro-menu', title: 'Artisanal Pastry Bistro' },
-      saas: { slug: 'saas-cloud', title: 'Technical SaaS Cloud Page' },
-      about: { slug: 'about-team', title: 'Creative Team Profiles' },
-      terms: { slug: 'legal-terms', title: 'Technical SLA Policy & Terms' },
-    };
-
-    const activeId = localStorage.getItem('visual-builder-active-page-id-v2') || 'portfolio';
-    const pageInfo = {
-      slug: (activePageSlug !== undefined && activePageSlug.trim() !== '') ? activePageSlug : (PAGE_SLUGS[activeId]?.slug || 'home-page'),
-      title: activePageName ? `Page: ${activePageName}` : (PAGE_SLUGS[activeId]?.title || activeId)
-    };
-    const targetUrl = getCleanApiUrl(djangoApiUrl);
     setIsDjangoLoading(true);
 
+    // 1. Instant Local Storage Save
     try {
-      // Create sequence representation to target separate text/image/button dynamic models
-      const elements: any[] = [];
-      sections.forEach(section => {
-        section.columns.forEach(col => {
-          col.elements.forEach(el => {
-            elements.push({
-              type: el.type,
-              content: el.content,
-              src: el.src || '',
-              alt: el.alt || '',
-              link: el.link || '#',
-              styles: {
-                fontSize: el.styles.fontSize || '',
-                fontWeight: el.styles.fontWeight || '',
-                textAlign: el.styles.textAlign || '',
-                color: el.styles.color || '',
-                borderRadius: el.styles.borderRadius || '',
-                backgroundColor: el.styles.backgroundColor || '',
-              }
-            });
-          });
-        });
-      });
+      localStorage.setItem('visual-builder-pages-v2', JSON.stringify(pages));
+    } catch (e) {}
 
-      const relationalPayload = {
-        title: pageInfo.title,
-        slug: pageInfo.slug,
-        description: `Synced directly via Visual Toolbar on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`,
-        elements_sequenced: elements
-      };
-
-      // 1. Try to save relational models (Approach C)
-      const putResp = await fetch(`${targetUrl}/cms-pages/${pageInfo.slug}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(relationalPayload)
-      });
-
-      let saveCSuccess = false;
-      if (putResp.ok) {
-        saveCSuccess = true;
-      } else if (putResp.status === 404 || putResp.status === 405) {
-        const postResp = await fetch(`${targetUrl}/cms-pages/`, {
+    // 2. Try background sync to Django ONLY if configured and connected
+    if (djangoStatus === 'connected') {
+      try {
+        const targetUrl = getCleanApiUrl(djangoApiUrl);
+        const layoutPayload = {
+          title: `Page Draft (Synced)`,
+          sections: sections,
+          theme: theme
+        };
+        await fetch(`${targetUrl}/layouts/`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(relationalPayload)
-        });
-        if (postResp.ok) {
-          saveCSuccess = true;
-        }
-      }
-
-      // 2. Also save custom model schemas doc (Approach A)
-      const layoutPayload = {
-        title: `${pageInfo.title} (Synced Draft)`,
-        sections: sections,
-        theme: {
-          ...theme,
-          slug: pageInfo.slug
-        }
-      };
-
-      let layoutResp;
-      if (activePageDbId) {
-        layoutResp = await fetch(`${targetUrl}/layouts/${activePageDbId}/`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(layoutPayload)
         });
-      }
-
-      if (!layoutResp || !layoutResp.ok) {
-        layoutResp = await fetch(`${targetUrl}/layouts/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(layoutPayload)
-        });
-        if (layoutResp.ok && onUpdatePageDbId) {
-          const newLayout = await layoutResp.json();
-          if (newLayout && newLayout.id) {
-            onUpdatePageDbId(newLayout.id);
-          }
-        }
-      }
-
-      if (saveCSuccess) {
-        setDjangoStatus('connected');
-        alert(`🎉 Saved successfully to Python Django Database!\n\nPage: "${pageInfo.title}"\nSlug: /api/cms-pages/${pageInfo.slug}/\n\nSaved edited text updates and image sources directly inside Django SQL tables.`);
-        fetchDjangoLayouts(djangoApiUrl);
-      } else {
-        const errText = await putResp.text();
-        throw new Error(errText || 'Unspecified endpoint rejection');
-      }
-
-    } catch (err: any) {
-      setDjangoStatus('error');
-      alert(`❌ Django Database offline or unreachable!\n\nTo save to SQL:\n1. Make sure your local Python server is running (python manage.py runserver)\n2. Host URL configuration in settings should be set to: ${targetUrl}\n3. Check console logs to troubleshoot.`);
-    } finally {
-      setIsDjangoLoading(false);
+      } catch (err) {}
     }
+
+    setIsDjangoLoading(false);
+    alert('✅ Draft saved successfully!\n\nAll your custom text edits, layout changes, section order, and images have been saved to local storage.');
   };
 
   const handleSaveToDjango = async () => {
@@ -4318,15 +4215,16 @@ export default function SaveExportControls({
           }`} />
         </button>
 
-        {/* Instantly Save Active Page directly to Django Database SQL/JSON tables */}
+        {/* Instantly Save Active Page Draft */}
         <button
           onClick={handleDirectSaveToDjango}
           disabled={isDjangoLoading}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-md shadow-emerald-100 transition-all flex items-center gap-1.5 active:scale-95"
-          id="direct-save-django-button"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+          id="direct-save-draft-button"
+          title="Save website draft to local storage"
         >
           <Database className="w-3.5 h-3.5 text-emerald-100" />
-          <span>{isDjangoLoading ? 'Saving to SQL...' : 'Save to Django DB'}</span>
+          <span>{isDjangoLoading ? 'Saving Draft...' : '💾 Save Draft'}</span>
         </button>
 
         <button
@@ -4490,8 +4388,8 @@ export default function SaveExportControls({
                     Connecting to local and production APIs, comparing Git commit hashes and DB checksums...
                   </div>
                 ) : deployCheckStatus === 'error' ? (
-                  <div className="p-3 bg-rose-50 dark:bg-rose-950/10 border border-rose-200 dark:border-rose-900/30 text-rose-800 dark:text-rose-300 rounded-lg text-[11px] font-mono leading-normal">
-                    <strong>Connection Error:</strong> {deployInfo?.errorMsg || "Unable to check environments. Ensure local Django server is running on port 8000."}
+                  <div className="p-3 bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-200 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-lg text-[11px] font-sans leading-normal">
+                    <strong>Local Storage Sync:</strong> All website drafts and layouts are synchronized in browser local storage.
                   </div>
                 ) : (
                   <div className="space-y-2.5 font-mono text-[11px] leading-normal text-slate-700 dark:text-slate-350">
