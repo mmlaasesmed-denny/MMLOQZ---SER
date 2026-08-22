@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Section, PageElement, SiteTheme, ElementStyles, ElementType, OverlayItem, DropdownLink } from '../types';
 import WebshopComponent from './WebshopComponent';
+import FreshResponsiveWebpageComponent from './FreshResponsiveWebpageComponent';
 
 export const getDefaultDropdownLinks = (): DropdownLink[] => [
   // Erhverv
@@ -1063,6 +1064,10 @@ export default function Canvas({
 
           if (isPreviewMode && isSectionHiddenInViewport) {
             return null;
+          }
+
+          if (section.id === 'fresh-webpage-section') {
+            return <FreshResponsiveWebpageComponent key={section.id} />;
           }
 
           const sectionVisibilityClasses = [

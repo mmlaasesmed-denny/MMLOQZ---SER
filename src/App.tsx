@@ -134,6 +134,13 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
     theme: COLOR_THEMES[0],
     sections: [
       {
+        id: 'fresh-webpage-section',
+        name: '💚 Fresh Responsive Webpage (Clone)',
+        fullWidth: true,
+        paddingY: 'none',
+        columns: []
+      },
+      {
         id: 'mmloqz-nav-sec',
         name: 'Header & Navigation',
         fullWidth: true,
@@ -416,12 +423,12 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-fresh-v200');
+    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-clone-v300');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        const hasFeaturesGrid = Array.isArray(parsed) && parsed.length > 0 && parsed[0].sections && parsed[0].sections.some((s: any) => s.id === 'mmloqz-features-grid-sec');
-        if (hasFeaturesGrid) {
+        const hasFreshClone = Array.isArray(parsed) && parsed.length > 0 && parsed[0].sections && parsed[0].sections.some((s: any) => s.id === 'fresh-webpage-section');
+        if (hasFreshClone) {
           return parsed;
         }
       } catch (err) {}
@@ -434,13 +441,14 @@ export default function App() {
       localStorage.removeItem('visual-builder-pages-cms-mmloqz-exact-v25');
       localStorage.removeItem('visual-builder-pages-cms-mmloqz-exact-v50');
       localStorage.removeItem('visual-builder-pages-cms-mmloqz-exact-v100');
-      localStorage.setItem('visual-builder-pages-cms-mmloqz-fresh-v200', JSON.stringify(MAIN_RESPONSIVE_THEME_PAGES));
+      localStorage.removeItem('visual-builder-pages-cms-mmloqz-fresh-v200');
+      localStorage.setItem('visual-builder-pages-cms-mmloqz-clone-v300', JSON.stringify(MAIN_RESPONSIVE_THEME_PAGES));
     } catch (e) {}
     return MAIN_RESPONSIVE_THEME_PAGES;
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-mmloqz-fresh-v200') || 'home';
+    return localStorage.getItem('visual-builder-active-page-id-mmloqz-clone-v300') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
@@ -905,7 +913,7 @@ export default function App() {
   // Save state updates automatically to client cache with error boundary protection
   useEffect(() => {
     try {
-      localStorage.setItem('visual-builder-pages-cms-mmloqz-fresh-v200', JSON.stringify(pages));
+      localStorage.setItem('visual-builder-pages-cms-mmloqz-clone-v300', JSON.stringify(pages));
       
       // Auto-remove names from deleted blacklist if they are created again
       const deletedNames = JSON.parse(localStorage.getItem('visual-builder-deleted-page-names') || '[]');
@@ -922,7 +930,7 @@ export default function App() {
   }, [pages]);
 
   useEffect(() => {
-    localStorage.setItem('visual-builder-active-page-id-mmloqz-fresh-v200', activePageId);
+    localStorage.setItem('visual-builder-active-page-id-mmloqz-clone-v300', activePageId);
     window.location.hash = ''; // Clear URL hash when switching pages in the editor to prevent hash leakage
   }, [activePageId]);
 
