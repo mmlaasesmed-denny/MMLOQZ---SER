@@ -63,9 +63,19 @@ export default function Footer({ editable = true, onDelete }: FooterProps) {
   };
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
+
+    const scrollContainers = document.querySelectorAll('.overflow-y-auto, .overflow-auto');
+    scrollContainers.forEach(el => {
+      el.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    const heroEl = document.getElementById('hero');
+    if (heroEl) {
+      heroEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleDelete = () => {
@@ -165,7 +175,7 @@ export default function Footer({ editable = true, onDelete }: FooterProps) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 pb-12 border-b border-slate-200">
-          {/* Column 1: Brand & Logo (With Upload & Customize option) */}
+          {/* Column 1: Brand & Logo */}
           <div className="space-y-4 relative group/logoCard">
             <div className="inline-flex items-center gap-3 relative">
               <img
@@ -337,8 +347,8 @@ export default function Footer({ editable = true, onDelete }: FooterProps) {
           </div>
         </div>
 
-        {/* Bottom Bar: Centered Copyright Line + Working Back to Top button */}
-        <div className="pt-8 flex flex-col items-center justify-center text-center space-y-4">
+        {/* Bottom Bar: Copyright on Left + Back to Top button on Far Right */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p
             contentEditable={editable}
             suppressContentEditableWarning={true}
@@ -347,7 +357,7 @@ export default function Footer({ editable = true, onDelete }: FooterProps) {
               setCopyrightText(val);
               localStorage.setItem('mmloqz-footer-copy', val);
             }}
-            className="text-slate-500 text-sm font-semibold text-center outline-none focus:ring-2 focus:ring-emerald-500 rounded px-2"
+            className="text-slate-500 text-sm font-semibold outline-none focus:ring-2 focus:ring-emerald-500 rounded px-2"
             title="Click to edit text"
           >
             {copyrightText}
@@ -355,7 +365,7 @@ export default function Footer({ editable = true, onDelete }: FooterProps) {
 
           <button
             onClick={scrollToTop}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-xl transition-all font-bold text-xs shadow-xs border border-slate-200 hover:border-emerald-300 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 rounded-xl transition-all font-bold text-xs shadow-xs border border-slate-200 hover:border-emerald-300 cursor-pointer sm:ml-auto"
           >
             Back to Top
             <ArrowUp className="w-3.5 h-3.5 text-emerald-700" />
