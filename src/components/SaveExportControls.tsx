@@ -4245,34 +4245,20 @@ export default function SaveExportControls({
         <span className="h-4 w-[1px] bg-slate-200"></span>
 
         {/* Python Django Sync Status Button */}
+        {/* Saved Layouts & Backup Manager Button */}
         <button
-          onClick={() => {
-            setShowDjangoModal(true);
-            handleCheckDjangoConnection();
-          }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all border ${
-            djangoStatus === 'connected'
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-250 hover:bg-emerald-100/70'
-              : djangoStatus === 'checking'
-                ? 'bg-amber-50 text-amber-700 border-amber-200 animate-pulse'
-                : djangoStatus === 'error'
-                  ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100/70'
-                  : 'bg-slate-50 text-slate-700 border-slate-250 hover:bg-slate-100'
-          }`}
-          title="Configure Django & Passcode Settings"
-          id="django-sync-trigger"
+          onClick={() => setShowDjangoModal(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full hover:bg-emerald-100 transition-all cursor-pointer"
+          title="Saved Layouts & Backup Manager"
+          id="saved-layouts-trigger"
         >
-          <Server className="w-3.5 h-3.5 text-slate-400" />
-          <span className="hidden sm:inline">Settings & Sync</span>
-          <span className={`w-1.5 h-1.5 rounded-full ${
-            djangoStatus === 'connected'
-              ? 'bg-emerald-500'
-              : djangoStatus === 'checking'
-                ? 'bg-amber-500'
-                : djangoStatus === 'error'
-                  ? 'bg-rose-500'
-                  : 'bg-slate-400'
-          }`} />
+          <Database className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span className="hidden sm:inline">Saved Layouts</span>
+          {localSavedDrafts.length > 0 && (
+            <span className="bg-emerald-600 text-white text-[10px] font-extrabold px-1.5 py-0.2 rounded-full">
+              {localSavedDrafts.length}
+            </span>
+          )}
         </button>
 
         {/* Instantly Save Active Page Draft */}
