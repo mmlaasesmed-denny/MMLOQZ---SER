@@ -2596,6 +2596,7 @@ export default function App() {
             <div 
               style={{
                 width: viewportMode === 'mobile' ? '375px' : '768px',
+                maxWidth: viewportMode === 'mobile' ? '375px' : '768px',
                 minHeight: '100%',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.05)',
@@ -2604,7 +2605,7 @@ export default function App() {
                 backgroundColor: theme.background,
                 position: 'relative'
               }}
-              className="h-fit w-full flex flex-col"
+              className="min-h-full w-full flex flex-col shrink-0"
             >
               <Canvas
                 sections={sections}

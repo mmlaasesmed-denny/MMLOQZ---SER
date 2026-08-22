@@ -1009,7 +1009,7 @@ export default function Canvas({
             ? (isPreviewMode 
                 ? 'max-w-full rounded-none shadow-none min-h-[85vh]' 
                 : 'max-w-5xl rounded-xl shadow-2xl border border-slate-200/60 dark:border-slate-800 min-h-[85vh]')
-            : 'max-w-full rounded-none shadow-none min-h-0'
+            : 'max-w-full rounded-none shadow-none min-h-[85vh]'
         }`}
         style={{ 
           backgroundColor: theme.background, 
