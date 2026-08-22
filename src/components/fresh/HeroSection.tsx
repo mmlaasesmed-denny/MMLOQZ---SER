@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Upload, Sliders, RotateCcw, Check, X, Image as ImageIcon, Layers, MoveHorizontal } from 'lucide-react';
+import { Sparkles, Upload, Sliders, RotateCcw, Check, X, Image as ImageIcon, MoveLeft, MoveRight, ArrowUp, ArrowDown } from 'lucide-react';
 
 interface HeroSectionProps {
   editable?: boolean;
@@ -25,6 +25,14 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
     const saved = localStorage.getItem('mmloqz-hero-bg-width');
     return saved ? parseInt(saved, 10) : 320;
   });
+  const [bgOffsetX, setBgOffsetX] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-bg-offset-x');
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const [bgOffsetY, setBgOffsetY] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-bg-offset-y');
+    return saved ? parseInt(saved, 10) : 0;
+  });
 
   // 2. Right Product Image State
   const [rightImgSrc, setRightImgSrc] = useState<string>(() => {
@@ -42,6 +50,10 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
     const saved = localStorage.getItem('mmloqz-hero-right-img-offset-x');
     return saved ? parseInt(saved, 10) : 0;
   });
+  const [rightImgOffsetY, setRightImgOffsetY] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-right-img-offset-y');
+    return saved ? parseInt(saved, 10) : 0;
+  });
 
   const bgFileInputRef = useRef<HTMLInputElement>(null);
   const rightFileInputRef = useRef<HTMLInputElement>(null);
@@ -51,11 +63,14 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
   useEffect(() => { localStorage.setItem('mmloqz-hero-bg-opacity', bgOpacity.toString()); }, [bgOpacity]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-bg-rotate', bgRotate.toString()); }, [bgRotate]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-bg-width', bgWidth.toString()); }, [bgWidth]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-offset-x', bgOffsetX.toString()); }, [bgOffsetX]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-offset-y', bgOffsetY.toString()); }, [bgOffsetY]);
 
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-src', rightImgSrc); }, [rightImgSrc]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-height', rightImgHeight.toString()); }, [rightImgHeight]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-rotate', rightImgRotate.toString()); }, [rightImgRotate]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-x', rightImgOffsetX.toString()); }, [rightImgOffsetX]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-y', rightImgOffsetY.toString()); }, [rightImgOffsetY]);
 
   // Upload Handlers
   const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,20 +100,27 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
     setBgOpacity(0.22);
     setBgRotate(30);
     setBgWidth(320);
+    setBgOffsetX(0);
+    setBgOffsetY(0);
 
     setRightImgSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
     setRightImgHeight(340);
     setRightImgRotate(30);
     setRightImgOffsetX(0);
+    setRightImgOffsetY(0);
 
     localStorage.removeItem('mmloqz-hero-bg-shaded-src');
     localStorage.removeItem('mmloqz-hero-bg-opacity');
     localStorage.removeItem('mmloqz-hero-bg-rotate');
     localStorage.removeItem('mmloqz-hero-bg-width');
+    localStorage.removeItem('mmloqz-hero-bg-offset-x');
+    localStorage.removeItem('mmloqz-hero-bg-offset-y');
+
     localStorage.removeItem('mmloqz-hero-right-img-src');
     localStorage.removeItem('mmloqz-hero-right-img-height');
     localStorage.removeItem('mmloqz-hero-right-img-rotate');
     localStorage.removeItem('mmloqz-hero-right-img-offset-x');
+    localStorage.removeItem('mmloqz-hero-right-img-offset-y');
   };
 
   return (
@@ -121,15 +143,15 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
 
       {/* Hero Control Drawer Popover */}
       {editable && showControls && (
-        <div className="absolute top-16 right-4 z-50 w-96 bg-slate-900 text-white rounded-2xl p-5 shadow-2xl border border-slate-700 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+        <div className="absolute top-16 right-4 z-50 w-96 bg-slate-900 text-white rounded-2xl p-5 shadow-2xl border border-slate-700 animate-in fade-in slide-in-from-top-2 duration-200 max-h-[85vh] overflow-y-auto">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4 sticky top-0 bg-slate-900 z-10">
             <div className="flex items-center gap-2 font-bold text-sm text-emerald-400">
               <ImageIcon className="w-4 h-4" />
               <span>Hero Images Customizer</span>
             </div>
             <button
               onClick={() => setShowControls(false)}
-              className="text-slate-400 hover:text-white p-1 rounded-md"
+              className="text-slate-400 hover:text-white p-1 rounded-md cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -217,11 +239,75 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                 <input
                   type="range"
                   min="180"
-                  max="500"
+                  max="550"
                   value={bgWidth}
                   onChange={(e) => setBgWidth(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                 />
+              </div>
+
+              {/* Move Left / Right Slider & Nudge Buttons */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-300">Move Left / Right (X):</span>
+                  <span className="text-emerald-400 font-mono">{bgOffsetX}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="-200"
+                  max="300"
+                  value={bgOffsetX}
+                  onChange={(e) => setBgOffsetX(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              {/* Move Up / Down Slider & Nudge Buttons */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-300">Move Up / Down (Y):</span>
+                  <span className="text-emerald-400 font-mono">{bgOffsetY}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="-150"
+                  max="150"
+                  value={bgOffsetY}
+                  onChange={(e) => setBgOffsetY(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              {/* Directional Nudge Pad */}
+              <div className="grid grid-cols-4 gap-1.5 pt-2">
+                <button
+                  onClick={() => setBgOffsetX(prev => prev - 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <MoveLeft className="w-3 h-3" />
+                  <span>Left</span>
+                </button>
+                <button
+                  onClick={() => setBgOffsetX(prev => prev + 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>Right</span>
+                  <MoveRight className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => setBgOffsetY(prev => prev - 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <ArrowUp className="w-3 h-3" />
+                  <span>Up</span>
+                </button>
+                <button
+                  onClick={() => setBgOffsetY(prev => prev + 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <ArrowDown className="w-3 h-3" />
+                  <span>Down</span>
+                </button>
               </div>
             </div>
           )}
@@ -279,25 +365,74 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                 />
               </div>
 
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-300">Move Left / Right:</span>
+              {/* Move Left / Right Slider & Buttons */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-300">Move Left / Right (X):</span>
                   <span className="text-emerald-400 font-mono">{rightImgOffsetX}px</span>
                 </div>
                 <input
                   type="range"
-                  min="-100"
-                  max="100"
+                  min="-200"
+                  max="200"
                   value={rightImgOffsetX}
                   onChange={(e) => setRightImgOffsetX(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                 />
               </div>
+
+              {/* Move Up / Down Slider & Buttons */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex justify-between text-xs font-semibold">
+                  <span className="text-slate-300">Move Up / Down (Y):</span>
+                  <span className="text-emerald-400 font-mono">{rightImgOffsetY}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="-150"
+                  max="150"
+                  value={rightImgOffsetY}
+                  onChange={(e) => setRightImgOffsetY(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              {/* Directional Nudge Pad */}
+              <div className="grid grid-cols-4 gap-1.5 pt-2">
+                <button
+                  onClick={() => setRightImgOffsetX(prev => prev - 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <MoveLeft className="w-3 h-3" />
+                  <span>Left</span>
+                </button>
+                <button
+                  onClick={() => setRightImgOffsetX(prev => prev + 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>Right</span>
+                  <MoveRight className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => setRightImgOffsetY(prev => prev - 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <ArrowUp className="w-3 h-3" />
+                  <span>Up</span>
+                </button>
+                <button
+                  onClick={() => setRightImgOffsetY(prev => prev + 20)}
+                  className="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <ArrowDown className="w-3 h-3" />
+                  <span>Down</span>
+                </button>
+              </div>
             </div>
           )}
 
           {/* Control Footer Actions */}
-          <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between">
+          <div className="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between sticky bottom-0 bg-slate-900">
             <button
               onClick={resetDefaults}
               className="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer"
@@ -320,15 +455,15 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Text Content with Shaded Background Image behind text */}
           <div className="lg:col-span-7 text-center lg:text-left space-y-4 sm:space-y-6 relative min-h-[220px] flex flex-col justify-center">
-            {/* 1. Shaded Background Image directly behind text */}
+            {/* 1. Shaded Background Image directly behind text with X and Y movement */}
             {bgShadedSrc && (
               <img
                 src={bgShadedSrc}
                 alt="Shaded Background Lock"
-                className="absolute left-6 sm:left-12 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-300 z-0"
+                className="absolute left-6 sm:left-12 top-1/2 pointer-events-none transition-all duration-200 z-0"
                 style={{
                   opacity: bgOpacity,
-                  transform: `translateY(-50%) rotate(${bgRotate}deg)`,
+                  transform: `translate(${bgOffsetX}px, calc(-50% + ${bgOffsetY}px)) rotate(${bgRotate}deg)`,
                   width: `${bgWidth}px`,
                   maxWidth: '100%',
                   objectFit: 'contain'
@@ -350,7 +485,7 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
             </div>
           </div>
 
-          {/* Right Floating Product Image */}
+          {/* Right Floating Product Image with X and Y movement */}
           <div className="lg:col-span-5 flex justify-center items-center">
             <div className="relative w-full max-w-md lg:max-w-none flex justify-center">
               <div className="absolute -inset-4 bg-white/10 rounded-full blur-3xl pointer-events-none" />
@@ -358,10 +493,10 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                 <img
                   src={rightImgSrc}
                   alt="MMLoqz Digital Cylinder Lock"
-                  className="relative z-10 object-contain transition-all duration-300 filter drop-shadow-(0_25px_35px_rgba(0,0,0,0.4))"
+                  className="relative z-10 object-contain transition-all duration-200 filter drop-shadow-(0_25px_35px_rgba(0,0,0,0.4))"
                   style={{
                     height: `${rightImgHeight}px`,
-                    transform: `rotate(${rightImgRotate}deg) translateX(${rightImgOffsetX}px)`,
+                    transform: `translate(${rightImgOffsetX}px, ${rightImgOffsetY}px) rotate(${rightImgRotate}deg)`,
                     maxWidth: '100%'
                   }}
                 />
