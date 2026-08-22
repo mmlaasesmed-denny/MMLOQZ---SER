@@ -645,8 +645,27 @@ export default function App() {
     }
   };
 
-  // 2. Derive Current Page Sections and Theme (Downstream friendly)
-  const activePage = pages.find(p => p.id === activePageId) || pages[0];
+  // 2. Derive Current Page Sections and Theme (Guaranteed non-empty with fresh-webpage-section)
+  const rawActivePage = pages.find(p => p.id === activePageId) || pages[0] || MAIN_RESPONSIVE_THEME_PAGES[0];
+  const activePageSections = Array.isArray(rawActivePage.sections) && rawActivePage.sections.length > 0 
+    ? rawActivePage.sections 
+    : MAIN_RESPONSIVE_THEME_PAGES[0].sections;
+
+  const activePage = {
+    ...rawActivePage,
+    sections: (rawActivePage.id === 'home' || rawActivePage.slug === '') && !activePageSections.some(s => s && s.id === 'fresh-webpage-section')
+      ? [
+          {
+            id: 'fresh-webpage-section',
+            name: '💚 Fresh Responsive Webpage (Clone)',
+            fullWidth: true,
+            paddingY: 'none',
+            columns: []
+          },
+          ...activePageSections
+        ]
+      : activePageSections
+  };
 
   // Load pages state from Django backend on startup to keep users in sync
   useEffect(() => {

@@ -1057,6 +1057,10 @@ export default function Canvas({
                 ? 'px-6 md:px-12' 
                 : (viewportMode === 'mobile' ? 'px-4' : 'px-6'));
 
+          if (section.id === 'fresh-webpage-section') {
+            return <FreshResponsiveWebpageComponent key={section.id} />;
+          }
+
           const isSectionHiddenInViewport = 
             (viewportMode === 'mobile' && section.visibleOnMobile === false) ||
             (viewportMode === 'tablet' && section.visibleOnTablet === false) ||
@@ -1064,10 +1068,6 @@ export default function Canvas({
 
           if (isPreviewMode && isSectionHiddenInViewport) {
             return null;
-          }
-
-          if (section.id === 'fresh-webpage-section') {
-            return <FreshResponsiveWebpageComponent key={section.id} />;
           }
 
           const sectionVisibilityClasses = [
