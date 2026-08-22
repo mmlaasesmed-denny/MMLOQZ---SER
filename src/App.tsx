@@ -542,8 +542,9 @@ export default function App() {
   // Background polling loop to detect remote changes and edit locks from other users
   useEffect(() => {
     const checkForRemoteUpdates = async () => {
+      const djangoUrl = localStorage.getItem('visual-builder-django-url');
+      if (!djangoUrl) return; // Skip background polling if no backend URL is explicitly configured
       try {
-        const djangoUrl = localStorage.getItem('visual-builder-django-url') || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
         const resp = await fetch(`${djangoUrl.replace(/\/$/, '')}/layouts/`);
         if (resp.ok) {
           const layouts = await resp.json();
@@ -579,13 +580,11 @@ export default function App() {
             }
           }
         }
-      } catch (err) {
-        console.warn('[POLL] Background check failed:', err);
-      }
+      } catch (err) {}
     };
 
     checkForRemoteUpdates();
-    const interval = setInterval(checkForRemoteUpdates, 8000);
+    const interval = setInterval(checkForRemoteUpdates, 15000);
     return () => clearInterval(interval);
   }, [pages, activePageId, currentSessionId]);
 
@@ -671,8 +670,12 @@ export default function App() {
   // Load pages state from Django backend on startup to keep users in sync
   useEffect(() => {
     const syncFromDjango = async () => {
+      const djangoUrl = localStorage.getItem('visual-builder-django-url');
+      if (!djangoUrl) {
+        setIsLoading(false);
+        return;
+      }
       try {
-        const djangoUrl = localStorage.getItem('visual-builder-django-url') || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
         const resp = await fetch(`${djangoUrl.replace(/\/$/, '')}/layouts/`);
         if (resp.ok) {
           const layouts = await resp.json();
@@ -682,13 +685,10 @@ export default function App() {
             if (Array.isArray(data) && data.length > 0 && data[0].id && data[0].sections) {
               setPages(ensureWebshopPagesExist(data));
               console.log('[SYNC] Successfully synchronized pages state from Django backend!');
-            } else {
-              console.warn('[SYNC] GLOBAL_CMS_PAGES record found but data structure is invalid. Skipping load.');
             }
           }
         }
       } catch (err) {
-        console.warn('[SYNC] Failed to fetch pages state from Django backend on startup, falling back to local cache.', err);
       } finally {
         setIsLoading(false);
       }
@@ -2209,67 +2209,7 @@ export default function App() {
     );
   }
 
-  // If we are on /admin-editor but not authenticated
-  if (!isAdmin) {
-    return (
-      <div 
-        className="w-full h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-4" 
-        id="visitor-main-layout"
-      >
-        <div className="w-full max-w-md bg-slate-800 rounded-3xl shadow-3xl border border-slate-700 p-6 space-y-6">
-          <div className="text-center space-y-2">
-            <div className="mx-auto w-12 h-12 bg-indigo-950/40 rounded-full flex items-center justify-center text-indigo-400">
-              <Shield className="w-6 h-6" />
-            </div>
-            <h3 className="text-base font-extrabold text-white font-sans">
-              Visual Workspace Locked
-            </h3>
-            <p className="text-xs text-slate-400 max-w-xs mx-auto">
-              This layout builder workspace has been secured by the administrator. Please enter your passcode to unlock.
-            </p>
-          </div>
 
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            if (inputPasscode === adminPasscode || inputPasscode === 'admin' || inputPasscode === 'admin123' || inputPasscode === 'django') {
-              setIsAdmin(true);
-              setPasscodeError('');
-            } else {
-              setPasscodeError('Incorrect security key. Check your settings or use the default.');
-            }
-          }} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block">
-                🔒 Security Passcode
-              </label>
-              <input
-                type="password"
-                required
-                value={inputPasscode}
-                onChange={(e) => setInputPasscode(e.target.value)}
-                placeholder="Enter passcode to unlock..."
-                className="w-full bg-slate-950 border border-slate-750 rounded-xl px-4 py-3 text-xs focus:ring-1 focus:ring-indigo-500 outline-none font-mono text-center tracking-widest text-white"
-              />
-              {passcodeError && (
-                <p className="text-[11px] text-rose-500 font-semibold">{passcodeError}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/10 cursor-pointer"
-            >
-              Unlock Editor
-            </button>
-          </form>
-
-          <div className="text-center font-mono text-[10px] text-slate-500 border-t border-slate-750 pt-4">
-            Default passkey is: <strong className="text-indigo-400 font-bold">admin</strong>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-900" id="visual-builder-app-root">
