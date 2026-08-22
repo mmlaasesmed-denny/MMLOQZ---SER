@@ -159,30 +159,25 @@ export default function SaveExportControls({
         setDjangoMsg(data.message || 'CORS connection working perfectly!');
         localStorage.setItem('visual-builder-django-url', rawUrl);
         fetchDjangoLayouts(rawUrl);
-      } else {
-        throw new Error(`Server returned HTTP status ${resp.status}`);
+        return;
       }
-    } catch (err: any) {
-      console.warn("Django offline:", err);
-      // Fallback: check standard layouts end point listing directly
-      try {
-        const respList = await fetch(`${targetUrl}/layouts/`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
-        if (respList.ok) {
-          setDjangoStatus('connected');
-          setDjangoMsg('Connected directly to Django layouts DB!');
-          localStorage.setItem('visual-builder-django-url', rawUrl);
-          const data = await respList.json();
-          setDjangoLayouts(Array.isArray(data) ? data : []);
-          return;
-        }
-      } catch (innerErr) {}
       
-      setDjangoStatus('error');
-      setDjangoMsg(err.message || 'Could not connect. Ensure python manage.py runserver is running at this host.');
-    }
+      const respList = await fetch(`${targetUrl}/layouts/`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (respList.ok) {
+        setDjangoStatus('connected');
+        setDjangoMsg('Connected directly to Django layouts DB!');
+        localStorage.setItem('visual-builder-django-url', rawUrl);
+        const data = await respList.json();
+        setDjangoLayouts(Array.isArray(data) ? data : []);
+        return;
+      }
+    } catch (err: any) {}
+
+    setDjangoStatus('disconnected');
+    setDjangoMsg('Running in Standalone Mode (All website edits, text, colors, and images auto-save locally).');
   };
 
   const fetchDjangoLayouts = async (urlStr: string) => {
@@ -4441,26 +4436,26 @@ export default function SaveExportControls({
                 </div>
 
                 {/* Connection Alert bar */}
-                <div className={`p-3 rounded-lg text-xs flex items-center gap-2.5 border ${
+                <div className={`p-3.5 rounded-xl text-xs flex items-center gap-3 border ${
                   djangoStatus === 'connected'
-                    ? 'bg-emerald-50/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 bg-emerald-950/10'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-300'
                     : djangoStatus === 'checking'
-                      ? 'bg-amber-50/60 text-amber-800 border-amber-200 dark:text-amber-300'
-                      : djangoStatus === 'error'
-                        ? 'bg-rose-50/60 text-rose-800 border-rose-200 dark:text-rose-300 bg-rose-950/10'
-                        : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900'
+                      ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/20 dark:text-amber-300'
+                      : 'bg-emerald-50/70 text-emerald-900 border-emerald-200 dark:bg-slate-900 dark:text-slate-200'
                 }`}>
                   <div className="shrink-0">
                     {djangoStatus === 'connected' ? (
                       <Wifi className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     ) : (
-                      <WifiOff className="w-4 h-4 text-rose-500" />
+                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     )}
                   </div>
-                  <div className="flex-1 leading-relaxed font-mono text-[11px]">
-                    <strong>Status: </strong>
-                    {djangoStatus === 'connected' ? 'CONNECTED' : djangoStatus === 'checking' ? 'ESTABLISHING HANDSHAKE' : djangoStatus === 'error' ? 'OFFLINE' : 'NOT INITIALIZED'}
-                    {djangoMsg && <span className="opacity-80 block mt-0.5">{djangoMsg}</span>}
+                  <div className="flex-1 leading-relaxed text-xs">
+                    <strong className="font-bold">System Storage Mode: </strong>
+                    <span>{djangoStatus === 'connected' ? 'CONNECTED TO DJANGO BACKEND' : 'STANDALONE LOCAL STORAGE (Auto-Saving Enabled)'}</span>
+                    <p className="opacity-80 mt-1 font-normal text-[11px]">
+                      {djangoMsg || 'Your website edits, custom text, colors, and images are saved automatically in your browser in real-time.'}
+                    </p>
                   </div>
                 </div>
               </div>
