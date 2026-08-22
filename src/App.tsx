@@ -478,6 +478,32 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Load published site layout for public visitors
+  useEffect(() => {
+    const syncPublishedSite = async () => {
+      try {
+        const isLocalAdmin = localStorage.getItem('visual-builder-is-admin') === 'true';
+        const savedPublished = localStorage.getItem('mmloqz_public_published_site_v1');
+        if (savedPublished) {
+          const parsed = JSON.parse(savedPublished);
+          if (Array.isArray(parsed) && parsed.length > 0 && !isLocalAdmin) {
+            setPages(parsed);
+            return;
+          }
+        }
+
+        const resp = await fetch('/published_site.json');
+        if (resp.ok) {
+          const data = await resp.json();
+          if (Array.isArray(data) && data.length > 0 && !isLocalAdmin) {
+            setPages(data);
+          }
+        }
+      } catch (err) {}
+    };
+    syncPublishedSite();
+  }, []);
+
   const [isLoading, setIsLoading] = useState(true);
   const [hasRemoteChanges, setHasRemoteChanges] = useState(false);
   const [remotePagesData, setRemotePagesData] = useState<SinglePageCMS[] | null>(null);

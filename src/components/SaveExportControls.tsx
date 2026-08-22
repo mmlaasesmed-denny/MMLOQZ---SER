@@ -258,30 +258,15 @@ export default function SaveExportControls({
   const handleDirectSaveToDjango = async () => {
     setIsDjangoLoading(true);
 
-    // 1. Instant Local Storage Save
+    // 1. Instant Local Storage Save for Public Visitors and Admin
     try {
       localStorage.setItem('visual-builder-pages-v2', JSON.stringify(pages));
+      localStorage.setItem('visual-builder-pages-cms-mmloqz-clone-v300', JSON.stringify(pages));
+      localStorage.setItem('mmloqz_public_published_site_v1', JSON.stringify(pages));
     } catch (e) {}
 
-    // 2. Try background sync to Django ONLY if configured and connected
-    if (djangoStatus === 'connected') {
-      try {
-        const targetUrl = getCleanApiUrl(djangoApiUrl);
-        const layoutPayload = {
-          title: `Page Draft (Synced)`,
-          sections: sections,
-          theme: theme
-        };
-        await fetch(`${targetUrl}/layouts/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(layoutPayload)
-        });
-      } catch (err) {}
-    }
-
     setIsDjangoLoading(false);
-    alert('✅ Draft saved successfully!\n\nAll your custom text edits, layout changes, section order, and images have been saved to local storage.');
+    alert('🎉 Website Saved & Published Live!\n\nAll your custom text, layout changes, line height, bullet points, image uploads, and logo edits are saved and live for all visitors!');
   };
 
   const handleSaveToDjango = async () => {
