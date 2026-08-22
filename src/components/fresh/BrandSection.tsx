@@ -204,76 +204,61 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
               {p2}
             </p>
 
-            {/* 4 Bullet Points */}
-            <div className="space-y-3 pt-2">
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-slate-200/70 shadow-2xs">
-                <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
-                <span
-                  contentEditable={editable}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => {
-                    const val = e.currentTarget.innerText;
-                    setBullet1(val);
-                    localStorage.setItem('mmloqz-brand-bullet1', val);
-                  }}
-                  className="text-slate-800 font-medium text-sm sm:text-base leading-snug outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1 flex-1"
-                  title="Click to edit text"
-                >
-                  {bullet1}
-                </span>
-              </div>
-
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-slate-200/70 shadow-2xs">
-                <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
-                <span
-                  contentEditable={editable}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => {
-                    const val = e.currentTarget.innerText;
-                    setBullet2(val);
-                    localStorage.setItem('mmloqz-brand-bullet2', val);
-                  }}
-                  className="text-slate-800 font-medium text-sm sm:text-base leading-snug outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1 flex-1"
-                  title="Click to edit text"
-                >
-                  {bullet2}
-                </span>
-              </div>
-
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-slate-200/70 shadow-2xs">
-                <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
-                <span
-                  contentEditable={editable}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => {
-                    const val = e.currentTarget.innerText;
-                    setBullet3(val);
-                    localStorage.setItem('mmloqz-brand-bullet3', val);
-                  }}
-                  className="text-slate-800 font-medium text-sm sm:text-base leading-snug outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1 flex-1"
-                  title="Click to edit text"
-                >
-                  {bullet3}
-                </span>
-              </div>
-
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-white border border-slate-200/70 shadow-2xs">
-                <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
-                <span
-                  contentEditable={editable}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => {
-                    const val = e.currentTarget.innerText;
-                    setBullet4(val);
-                    localStorage.setItem('mmloqz-brand-bullet4', val);
-                  }}
-                  className="text-slate-800 font-medium text-sm sm:text-base leading-snug outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1 flex-1"
-                  title="Click to edit text"
-                >
-                  {bullet4}
-                </span>
-              </div>
-            </div>
+            {/* 4 Simple Bullet Points (No shadow, no card box, no tick icon) */}
+            <ul className="space-y-3 pt-2 list-disc pl-5 text-slate-800 font-medium text-sm sm:text-base leading-relaxed">
+              <li
+                contentEditable={editable}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => {
+                  const val = e.currentTarget.innerText;
+                  setBullet1(val);
+                  localStorage.setItem('mmloqz-brand-bullet1', val);
+                }}
+                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                title="Click to edit text"
+              >
+                {bullet1}
+              </li>
+              <li
+                contentEditable={editable}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => {
+                  const val = e.currentTarget.innerText;
+                  setBullet2(val);
+                  localStorage.setItem('mmloqz-brand-bullet2', val);
+                }}
+                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                title="Click to edit text"
+              >
+                {bullet2}
+              </li>
+              <li
+                contentEditable={editable}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => {
+                  const val = e.currentTarget.innerText;
+                  setBullet3(val);
+                  localStorage.setItem('mmloqz-brand-bullet3', val);
+                }}
+                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                title="Click to edit text"
+              >
+                {bullet3}
+              </li>
+              <li
+                contentEditable={editable}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => {
+                  const val = e.currentTarget.innerText;
+                  setBullet4(val);
+                  localStorage.setItem('mmloqz-brand-bullet4', val);
+                }}
+                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                title="Click to edit text"
+              >
+                {bullet4}
+              </li>
+            </ul>
 
             <div className="pt-4 border-t border-slate-200">
               <p
