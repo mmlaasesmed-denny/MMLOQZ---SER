@@ -4148,26 +4148,7 @@ export default function SaveExportControls({
   };
 
   if (!isAdmin) {
-    return (
-      <div className="bg-slate-900 text-white px-6 h-14 flex items-center justify-between z-40 border-b border-slate-800 shadow-sm" id="public-header-bar">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-extrabold text-xs shadow-md">
-            MM
-          </div>
-          <span className="font-extrabold text-sm tracking-tight">MMLoqz Official Brand Site</span>
-        </div>
-
-        <button
-          onClick={() => {
-            window.location.hash = '#/admin-login';
-          }}
-          className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
-        >
-          <Lock className="w-3.5 h-3.5" />
-          <span>Admin Login</span>
-        </button>
-      </div>
-    );
+    return null;
   }
 
   return (
