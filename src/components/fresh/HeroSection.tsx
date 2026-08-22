@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function HeroSection() {
   return (
@@ -26,26 +26,6 @@ export default function HeroSection() {
               <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
                 OUR NEW BRAND SITE
               </h2>
-            </div>
-
-            <p className="text-emerald-100/90 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal pt-2">
-              High quality, keyless battery-driven digital cylinder locks designed in Denmark. Safety goes hand in hand with making life easier.
-            </p>
-
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <a
-                href="#about"
-                className="w-full sm:w-auto px-8 py-3.5 bg-white text-emerald-900 font-bold rounded-xl shadow-lg hover:bg-emerald-50 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
-              >
-                Explore Products
-                <ArrowRight className="w-4 h-4 text-emerald-800" />
-              </a>
-              <a
-                href="#contact"
-                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-800/60 hover:bg-emerald-800 text-white font-semibold rounded-xl border border-white/20 transition-all text-center"
-              >
-                Contact Reseller
-              </a>
             </div>
           </div>
 
