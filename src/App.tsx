@@ -211,6 +211,69 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
         ]
       },
       {
+        id: 'mmloqz-features-grid-sec',
+        name: '3-Column Features Grid',
+        fullWidth: false,
+        paddingY: 'lg',
+        bgColor: '#ffffff',
+        columns: [
+          {
+            id: 'col-feat-1',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-1-title',
+                type: 'heading',
+                content: '🔑 Keyless Remote Access',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-1-desc',
+                type: 'text',
+                content: 'Always have instant access to your door or invite new users remotely without needing physical keys.',
+                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          },
+          {
+            id: 'col-feat-2',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-2-title',
+                type: 'heading',
+                content: '📱 Simple Mobile App',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-2-desc',
+                type: 'text',
+                content: 'Total control over door permissions with unlimited users and real-time activity tracking in our mobile app.',
+                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          },
+          {
+            id: 'col-feat-3',
+            width: 'md:flex-1',
+            elements: [
+              {
+                id: 'feat-3-title',
+                type: 'heading',
+                content: '⚡ No Subscription Fees',
+                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
+              },
+              {
+                id: 'feat-3-desc',
+                type: 'text',
+                content: 'Fixed low prices with zero mandatory monthly subscription fees for standard battery-driven digital lock usage.',
+                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
+              }
+            ]
+          }
+        ]
+      },
+      {
         id: 'mmloqz-content-sec',
         name: 'Brand Content & Products Collage',
         fullWidth: false,
@@ -353,7 +416,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-exact-v50');
+    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-exact-v100');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -369,13 +432,14 @@ export default function App() {
       localStorage.removeItem('visual-builder-pages-cms-mmloqz-theme-v12');
       localStorage.removeItem('visual-builder-pages-cms-mmloqz-exact-v20');
       localStorage.removeItem('visual-builder-pages-cms-mmloqz-exact-v25');
-      localStorage.setItem('visual-builder-pages-cms-mmloqz-exact-v50', JSON.stringify(MAIN_RESPONSIVE_THEME_PAGES));
+      localStorage.removeItem('visual-builder-pages-cms-mmloqz-exact-v50');
+      localStorage.setItem('visual-builder-pages-cms-mmloqz-exact-v100', JSON.stringify(MAIN_RESPONSIVE_THEME_PAGES));
     } catch (e) {}
     return MAIN_RESPONSIVE_THEME_PAGES;
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-mmloqz-exact-v50') || 'home';
+    return localStorage.getItem('visual-builder-active-page-id-mmloqz-exact-v100') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
@@ -840,7 +904,7 @@ export default function App() {
   // Save state updates automatically to client cache with error boundary protection
   useEffect(() => {
     try {
-      localStorage.setItem('visual-builder-pages-cms-mmloqz-exact-v50', JSON.stringify(pages));
+      localStorage.setItem('visual-builder-pages-cms-mmloqz-exact-v100', JSON.stringify(pages));
       
       // Auto-remove names from deleted blacklist if they are created again
       const deletedNames = JSON.parse(localStorage.getItem('visual-builder-deleted-page-names') || '[]');
@@ -857,7 +921,7 @@ export default function App() {
   }, [pages]);
 
   useEffect(() => {
-    localStorage.setItem('visual-builder-active-page-id-mmloqz-exact-v50', activePageId);
+    localStorage.setItem('visual-builder-active-page-id-mmloqz-exact-v100', activePageId);
     window.location.hash = ''; // Clear URL hash when switching pages in the editor to prevent hash leakage
   }, [activePageId]);
 
