@@ -483,20 +483,18 @@ export default function App() {
     const syncPublishedSite = async () => {
       try {
         const isLocalAdmin = localStorage.getItem('visual-builder-is-admin') === 'true';
-        const savedPublished = localStorage.getItem('mmloqz_public_published_site_v1');
-        if (savedPublished) {
-          const parsed = JSON.parse(savedPublished);
-          if (Array.isArray(parsed) && parsed.length > 0 && !isLocalAdmin) {
-            setPages(parsed);
-            return;
-          }
-        }
+        if (isLocalAdmin) return;
 
         const resp = await fetch('/published_site.json');
         if (resp.ok) {
           const data = await resp.json();
-          if (Array.isArray(data) && data.length > 0 && !isLocalAdmin) {
-            setPages(data);
+          if (Array.isArray(data) && data.length > 0) {
+            const isFullCMS = data.every(p => p && p.id && p.name && Array.isArray(p.sections));
+            if (isFullCMS) {
+              setPages(data);
+            } else if (data[0] && Array.isArray(data[0].sections)) {
+              setPages(prev => prev.map(p => p.id === 'home' ? { ...p, sections: data[0].sections, theme: data[0].theme || p.theme } : p));
+            }
           }
         }
       } catch (err) {}
@@ -725,7 +723,8 @@ export default function App() {
   // Dynamically update the browser tab title and SEO metadata based on the active page name/title/seo
   useEffect(() => {
     // 1. Title
-    const seoTitle = activePage.seoMetadata?.metaTitle || activePage.title || activePage.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+    const rawName = activePage?.name || activePage?.title || 'Home';
+    const seoTitle = activePage?.seoMetadata?.metaTitle || activePage?.title || rawName.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
     document.title = seoTitle ? `${seoTitle} | MM Låsesmed` : "MM Låsesmed";
 
     // Helper to set standard meta tags
