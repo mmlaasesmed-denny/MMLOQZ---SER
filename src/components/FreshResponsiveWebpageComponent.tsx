@@ -15,7 +15,6 @@ export default function FreshResponsiveWebpageComponent({ editable = false }: Fr
       <Navbar editable={editable} />
       <main className="flex-1">
         <HeroSection editable={editable} />
-        <FeaturesSection editable={editable} />
         <BrandSection editable={editable} />
       </main>
       <Footer editable={editable} />

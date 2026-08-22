@@ -8,7 +8,7 @@ interface FeaturesSectionProps {
 }
 
 export default function FeaturesSection({ editable = true, onDelete }: FeaturesSectionProps) {
-  const [isDeleted, setIsDeleted] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(true);
   const [showTextInspector, setShowTextInspector] = useState(false);
 
   // Editable Text States
