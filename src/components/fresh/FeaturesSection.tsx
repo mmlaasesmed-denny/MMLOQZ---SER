@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { KeyRound, Smartphone, ShieldAlert, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { KeyRound, Smartphone, ShieldAlert, Trash2, Type } from 'lucide-react';
+import RichTextInspector from '../RichTextInspector';
 
 interface FeaturesSectionProps {
   editable?: boolean;
@@ -8,6 +9,7 @@ interface FeaturesSectionProps {
 
 export default function FeaturesSection({ editable = true, onDelete }: FeaturesSectionProps) {
   const [isDeleted, setIsDeleted] = useState(false);
+  const [showTextInspector, setShowTextInspector] = useState(false);
 
   // Editable Text States
   const [eyebrow, setEyebrow] = useState(() => localStorage.getItem('mmloqz-feat-eyebrow') || 'WHY CHOOSE MMLOQZ');
@@ -22,6 +24,19 @@ export default function FeaturesSection({ editable = true, onDelete }: FeaturesS
   const [f3Title, setF3Title] = useState(() => localStorage.getItem('mmloqz-feat-f3-title') || 'No Subscription Fees');
   const [f3Desc, setF3Desc] = useState(() => localStorage.getItem('mmloqz-feat-f3-desc') || 'Fixed low prices with zero mandatory monthly subscription fees for standard battery-driven digital lock usage.');
 
+  // Rich Inspector Style States
+  const [textColor, setTextColor] = useState(() => localStorage.getItem('mmloqz-feat-text-color') || '#0f172a');
+  const [lineHeightVal, setLineHeightVal] = useState(() => localStorage.getItem('mmloqz-feat-line-height') || '1.5');
+  const [letterSpacingVal, setLetterSpacingVal] = useState(() => localStorage.getItem('mmloqz-feat-letter-spacing') || '0px');
+  const [fontFamilyVal, setFontFamilyVal] = useState(() => localStorage.getItem('mmloqz-feat-font-family') || 'inherit');
+  const [textAlignVal, setTextAlignVal] = useState(() => localStorage.getItem('mmloqz-feat-text-align') || 'center');
+
+  useEffect(() => { localStorage.setItem('mmloqz-feat-text-color', textColor); }, [textColor]);
+  useEffect(() => { localStorage.setItem('mmloqz-feat-line-height', lineHeightVal); }, [lineHeightVal]);
+  useEffect(() => { localStorage.setItem('mmloqz-feat-letter-spacing', letterSpacingVal); }, [letterSpacingVal]);
+  useEffect(() => { localStorage.setItem('mmloqz-feat-font-family', fontFamilyVal); }, [fontFamilyVal]);
+  useEffect(() => { localStorage.setItem('mmloqz-feat-text-align', textAlignVal); }, [textAlignVal]);
+
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete the 3-Column Features Grid section?")) {
       setIsDeleted(true);
@@ -33,9 +48,18 @@ export default function FeaturesSection({ editable = true, onDelete }: FeaturesS
 
   return (
     <section id="features" className="py-16 sm:py-20 bg-white border-b border-slate-100 relative group/sec">
-      {/* Delete Section Button Badge */}
+      {/* Action Toolbar Badges */}
       {editable && (
-        <div className="absolute top-4 right-4 z-30 opacity-80 group-hover/sec:opacity-100 transition-opacity">
+        <div className="absolute top-4 right-4 z-30 flex items-center gap-2 opacity-80 group-hover/sec:opacity-100 transition-opacity">
+          <button
+            onClick={() => setShowTextInspector(!showTextInspector)}
+            className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-600"
+            title="Inspect Text Formatting, Colors, Line Spacing & Fonts"
+          >
+            <Type className="w-3.5 h-3.5" />
+            <span>Text & Inspector</span>
+          </button>
+
           <button
             onClick={handleDelete}
             className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer border border-rose-500"
@@ -47,7 +71,32 @@ export default function FeaturesSection({ editable = true, onDelete }: FeaturesS
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Floating Rich Text Inspector Drawer */}
+      {editable && showTextInspector && (
+        <div className="absolute top-16 right-4 z-50">
+          <RichTextInspector
+            targetName="Features Section Text"
+            onClose={() => setShowTextInspector(false)}
+            onApplyStyles={(styles) => {
+              if (styles.color) setTextColor(styles.color);
+              if (styles.lineHeight) setLineHeightVal(styles.lineHeight);
+              if (styles.letterSpacing) setLetterSpacingVal(styles.letterSpacing);
+              if (styles.fontFamily) setFontFamilyVal(styles.fontFamily);
+              if (styles.textAlign) setTextAlignVal(styles.textAlign);
+            }}
+          />
+        </div>
+      )}
+
+      <div 
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        style={{
+          color: textColor,
+          lineHeight: lineHeightVal,
+          letterSpacing: letterSpacingVal,
+          fontFamily: fontFamilyVal
+        }}
+      >
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <h2
             contentEditable={editable}
@@ -70,7 +119,7 @@ export default function FeaturesSection({ editable = true, onDelete }: FeaturesS
               setTitle(val);
               localStorage.setItem('mmloqz-feat-title', val);
             }}
-            className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+            className="text-3xl sm:text-4xl font-extrabold tracking-tight outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
             title="Click to edit text"
           >
             {title}
@@ -91,7 +140,7 @@ export default function FeaturesSection({ editable = true, onDelete }: FeaturesS
                 setF1Title(val);
                 localStorage.setItem('mmloqz-feat-f1-title', val);
               }}
-              className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-800 transition-colors outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+              className="text-xl font-bold mb-3 group-hover:text-emerald-800 transition-colors outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
               title="Click to edit text"
             >
               {f1Title}
@@ -124,7 +173,7 @@ export default function FeaturesSection({ editable = true, onDelete }: FeaturesS
                 setF2Title(val);
                 localStorage.setItem('mmloqz-feat-f2-title', val);
               }}
-              className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-800 transition-colors outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+              className="text-xl font-bold mb-3 group-hover:text-emerald-800 transition-colors outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
               title="Click to edit text"
             >
               {f2Title}
@@ -157,7 +206,7 @@ export default function FeaturesSection({ editable = true, onDelete }: FeaturesS
                 setF3Title(val);
                 localStorage.setItem('mmloqz-feat-f3-title', val);
               }}
-              className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-800 transition-colors outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+              className="text-xl font-bold mb-3 group-hover:text-emerald-800 transition-colors outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
               title="Click to edit text"
             >
               {f3Title}

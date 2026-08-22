@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle2, Trash2, Upload, Sliders, Image as ImageIcon, RotateCcw, Check, X } from 'lucide-react';
+import { CheckCircle2, Trash2, Upload, Sliders, Image as ImageIcon, RotateCcw, Check, X, Type } from 'lucide-react';
+import RichTextInspector from '../RichTextInspector';
 
 interface BrandSectionProps {
   editable?: boolean;
@@ -9,6 +10,7 @@ interface BrandSectionProps {
 export default function BrandSection({ editable = true, onDelete }: BrandSectionProps) {
   const [isDeleted, setIsDeleted] = useState(false);
   const [showImageControls, setShowImageControls] = useState(false);
+  const [showTextInspector, setShowTextInspector] = useState(false);
 
   // Editable Text States with LocalStorage Persistence
   const [heading, setHeading] = useState(() => localStorage.getItem('mmloqz-brand-heading') || 'High quality digital locks and components');
@@ -21,6 +23,14 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
   const [bullet4, setBullet4] = useState(() => localStorage.getItem('mmloqz-brand-bullet4') || 'Resellers who can support them.');
 
   const [bottomHighlight, setBottomHighlight] = useState(() => localStorage.getItem('mmloqz-brand-bottom-hl') || 'MMLoqz makes digital locks easy to use and to install!');
+
+  // Rich Text Formatting Inspector state
+  const [textColor, setTextColor] = useState(() => localStorage.getItem('mmloqz-brand-text-color') || '#1e293b');
+  const [lineHeightVal, setLineHeightVal] = useState(() => localStorage.getItem('mmloqz-brand-line-height') || '1.6');
+  const [letterSpacingVal, setLetterSpacingVal] = useState(() => localStorage.getItem('mmloqz-brand-letter-spacing') || '0px');
+  const [listType, setListType] = useState<'disc' | 'decimal' | 'none'>(() => (localStorage.getItem('mmloqz-brand-list-type') as any) || 'disc');
+  const [fontFamilyVal, setFontFamilyVal] = useState(() => localStorage.getItem('mmloqz-brand-font-family') || 'inherit');
+  const [textAlignVal, setTextAlignVal] = useState(() => localStorage.getItem('mmloqz-brand-text-align') || 'left');
 
   // Image State
   const [imageSrc, setImageSrc] = useState<string>(() => {
@@ -36,6 +46,13 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
 
   useEffect(() => { localStorage.setItem('mmloqz-brand-section-img-src', imageSrc); }, [imageSrc]);
   useEffect(() => { localStorage.setItem('mmloqz-brand-section-img-width', imageWidth.toString()); }, [imageWidth]);
+
+  useEffect(() => { localStorage.setItem('mmloqz-brand-text-color', textColor); }, [textColor]);
+  useEffect(() => { localStorage.setItem('mmloqz-brand-line-height', lineHeightVal); }, [lineHeightVal]);
+  useEffect(() => { localStorage.setItem('mmloqz-brand-letter-spacing', letterSpacingVal); }, [letterSpacingVal]);
+  useEffect(() => { localStorage.setItem('mmloqz-brand-list-type', listType); }, [listType]);
+  useEffect(() => { localStorage.setItem('mmloqz-brand-font-family', fontFamilyVal); }, [fontFamilyVal]);
+  useEffect(() => { localStorage.setItem('mmloqz-brand-text-align', textAlignVal); }, [textAlignVal]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -70,6 +87,15 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
       {editable && (
         <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
           <button
+            onClick={() => setShowTextInspector(!showTextInspector)}
+            className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-600"
+            title="Inspect Text Formatting, Colors, Line Spacing & Bullet Points"
+          >
+            <Type className="w-3.5 h-3.5" />
+            <span>Text & Inspector</span>
+          </button>
+
+          <button
             onClick={() => setShowImageControls(!showImageControls)}
             className="px-3 py-1.5 bg-white text-emerald-800 rounded-xl text-xs font-bold shadow-md hover:bg-emerald-50 transition-all flex items-center gap-1.5 cursor-pointer border border-emerald-200"
           >
@@ -85,6 +111,24 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
             <Trash2 className="w-3.5 h-3.5" />
             <span>Delete Section</span>
           </button>
+        </div>
+      )}
+
+      {/* Floating Text Inspector Drawer */}
+      {editable && showTextInspector && (
+        <div className="absolute top-16 right-4 z-50">
+          <RichTextInspector
+            targetName="Brand Section Text"
+            onClose={() => setShowTextInspector(false)}
+            onApplyStyles={(styles) => {
+              if (styles.color) setTextColor(styles.color);
+              if (styles.lineHeight) setLineHeightVal(styles.lineHeight);
+              if (styles.letterSpacing) setLetterSpacingVal(styles.letterSpacing);
+              if (styles.listStyle) setListType(styles.listStyle);
+              if (styles.fontFamily) setFontFamilyVal(styles.fontFamily);
+              if (styles.textAlign) setTextAlignVal(styles.textAlign);
+            }}
+          />
         </div>
       )}
 
@@ -160,8 +204,17 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left Text Column with 100% Inline Editable Letters */}
-          <div className="lg:col-span-7 space-y-6">
+          {/* Left Text Column with Rich Inspector Styles */}
+          <div 
+            className="lg:col-span-7 space-y-6"
+            style={{
+              color: textColor,
+              lineHeight: lineHeightVal,
+              letterSpacing: letterSpacingVal,
+              fontFamily: fontFamilyVal,
+              textAlign: textAlignVal as any
+            }}
+          >
             <h2
               contentEditable={editable}
               suppressContentEditableWarning={true}
@@ -170,7 +223,7 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
                 setHeading(val);
                 localStorage.setItem('mmloqz-brand-heading', val);
               }}
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
               title="Click to edit text"
             >
               {heading}
@@ -184,7 +237,7 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
                 setP1(val);
                 localStorage.setItem('mmloqz-brand-p1', val);
               }}
-              className="text-slate-700 text-base sm:text-lg leading-relaxed font-normal outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+              className="text-base sm:text-lg leading-relaxed font-normal outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
               title="Click to edit text"
             >
               {p1}
@@ -198,67 +251,122 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
                 setP2(val);
                 localStorage.setItem('mmloqz-brand-p2', val);
               }}
-              className="text-slate-700 text-base sm:text-lg leading-relaxed font-normal outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+              className="text-base sm:text-lg leading-relaxed font-normal outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
               title="Click to edit text"
             >
               {p2}
             </p>
 
-            {/* 4 Simple Bullet Points (No shadow, no card box, no tick icon) */}
-            <ul className="space-y-3 pt-2 list-disc pl-5 text-slate-800 font-medium text-sm sm:text-base leading-relaxed">
-              <li
-                contentEditable={editable}
-                suppressContentEditableWarning={true}
-                onBlur={(e) => {
-                  const val = e.currentTarget.innerText;
-                  setBullet1(val);
-                  localStorage.setItem('mmloqz-brand-bullet1', val);
-                }}
-                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
-                title="Click to edit text"
-              >
-                {bullet1}
-              </li>
-              <li
-                contentEditable={editable}
-                suppressContentEditableWarning={true}
-                onBlur={(e) => {
-                  const val = e.currentTarget.innerText;
-                  setBullet2(val);
-                  localStorage.setItem('mmloqz-brand-bullet2', val);
-                }}
-                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
-                title="Click to edit text"
-              >
-                {bullet2}
-              </li>
-              <li
-                contentEditable={editable}
-                suppressContentEditableWarning={true}
-                onBlur={(e) => {
-                  const val = e.currentTarget.innerText;
-                  setBullet3(val);
-                  localStorage.setItem('mmloqz-brand-bullet3', val);
-                }}
-                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
-                title="Click to edit text"
-              >
-                {bullet3}
-              </li>
-              <li
-                contentEditable={editable}
-                suppressContentEditableWarning={true}
-                onBlur={(e) => {
-                  const val = e.currentTarget.innerText;
-                  setBullet4(val);
-                  localStorage.setItem('mmloqz-brand-bullet4', val);
-                }}
-                className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
-                title="Click to edit text"
-              >
-                {bullet4}
-              </li>
-            </ul>
+            {/* 4 Bullet / List Items (Convertible to disc, decimal, or none) */}
+            {listType === 'none' ? (
+              <div className="space-y-3 pt-2">
+                <p
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet1(val);
+                    localStorage.setItem('mmloqz-brand-bullet1', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                >
+                  {bullet1}
+                </p>
+                <p
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet2(val);
+                    localStorage.setItem('mmloqz-brand-bullet2', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                >
+                  {bullet2}
+                </p>
+                <p
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet3(val);
+                    localStorage.setItem('mmloqz-brand-bullet3', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                >
+                  {bullet3}
+                </p>
+                <p
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet4(val);
+                    localStorage.setItem('mmloqz-brand-bullet4', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                >
+                  {bullet4}
+                </p>
+              </div>
+            ) : (
+              <ul className={`space-y-3 pt-2 pl-5 font-medium text-sm sm:text-base leading-relaxed ${
+                listType === 'decimal' ? 'list-decimal' : 'list-disc'
+              }`}>
+                <li
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet1(val);
+                    localStorage.setItem('mmloqz-brand-bullet1', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                  title="Click to edit text"
+                >
+                  {bullet1}
+                </li>
+                <li
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet2(val);
+                    localStorage.setItem('mmloqz-brand-bullet2', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                  title="Click to edit text"
+                >
+                  {bullet2}
+                </li>
+                <li
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet3(val);
+                    localStorage.setItem('mmloqz-brand-bullet3', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                  title="Click to edit text"
+                >
+                  {bullet3}
+                </li>
+                <li
+                  contentEditable={editable}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => {
+                    const val = e.currentTarget.innerText;
+                    setBullet4(val);
+                    localStorage.setItem('mmloqz-brand-bullet4', val);
+                  }}
+                  className="outline-none focus:ring-2 focus:ring-emerald-500 rounded px-1"
+                  title="Click to edit text"
+                >
+                  {bullet4}
+                </li>
+              </ul>
+            )}
 
             <div className="pt-4 border-t border-slate-200">
               <p
