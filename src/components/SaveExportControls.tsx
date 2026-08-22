@@ -66,10 +66,70 @@ export default function SaveExportControls({
   const [djangoStatus, setDjangoStatus] = useState<'disconnected' | 'connected' | 'checking' | 'error'>('disconnected');
   const [djangoMsg, setDjangoMsg] = useState('');
   const [djangoLayouts, setDjangoLayouts] = useState<any[]>([]);
-  const [newLayoutTitle, setNewLayoutTitle] = useState('My Custom Website Draft');
   const [isDjangoLoading, setIsDjangoLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
   const [showChangePassModal, setShowChangePassModal] = useState(false);
+  const [newLayoutTitle, setNewLayoutTitle] = useState('My Custom Website Draft');
+
+  const [localSavedDrafts, setLocalSavedDrafts] = useState<Array<{
+    id: string;
+    title: string;
+    updatedAt: number;
+    sections: Section[];
+    theme: SiteTheme;
+  }>>(() => {
+    try {
+      const saved = localStorage.getItem('visual-builder-local-saved-drafts');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const handleSaveLocalDraft = () => {
+    if (!newLayoutTitle.trim()) {
+      alert('Please enter a descriptive draft name (e.g. Summer Campaign, Home V2).');
+      return;
+    }
+    const newDraft = {
+      id: 'draft_' + Date.now(),
+      title: newLayoutTitle.trim(),
+      updatedAt: Date.now(),
+      sections: sections,
+      theme: theme
+    };
+    const updated = [newDraft, ...localSavedDrafts];
+    setLocalSavedDrafts(updated);
+    localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(updated));
+    setNewLayoutTitle('');
+    alert(`🎉 Saved layout draft "${newDraft.title}" successfully! You can reload or edit it anytime from your saved layouts list.`);
+  };
+
+  const handleLoadLocalDraft = (draft: { id: string; title: string; sections: Section[]; theme: SiteTheme }) => {
+    if (confirm(`Load layout draft "${draft.title}" into your workspace? Unsaved changes in your current view will be replaced.`)) {
+      onImport(draft.sections, draft.theme);
+      alert(`✅ Loaded draft "${draft.title}" onto your canvas!`);
+    }
+  };
+
+  const handleOverwriteLocalDraft = (draftId: string, title: string) => {
+    if (confirm(`Overwrite saved draft "${title}" with your current canvas design?`)) {
+      const updated = localSavedDrafts.map(d => 
+        d.id === draftId ? { ...d, sections, theme, updatedAt: Date.now() } : d
+      );
+      setLocalSavedDrafts(updated);
+      localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(updated));
+      alert(`✅ Saved draft "${title}" updated with your latest canvas design!`);
+    }
+  };
+
+  const handleDeleteLocalDraft = (draftId: string) => {
+    if (confirm('Delete this saved layout draft?')) {
+      const updated = localSavedDrafts.filter(d => d.id !== draftId);
+      setLocalSavedDrafts(updated);
+      localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(updated));
+    }
+  };
 
   const toggleDarkMode = () => {
     setIsDarkMode(prev => {
@@ -4290,18 +4350,18 @@ export default function SaveExportControls({
         }}
       />
 
-      {/* Python Django Integration Console Modal Overlay */}
+      {/* Saved Layouts & Backup Manager Overlay */}
       {showDjangoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 text-slate-800 dark:text-slate-100">
-          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800">
+          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
               <h3 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <Database className="w-5 h-5 text-indigo-600" /> Django Backend DB Console
+                <Database className="w-5 h-5 text-emerald-600" /> Saved Layouts & Backup Manager
               </h3>
               <button
                 onClick={() => setShowDjangoModal(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -4309,246 +4369,77 @@ export default function SaveExportControls({
 
             {/* Content Area */}
             <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-800 dark:text-slate-200">
-              {/* Host Settings config */}
-              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
-                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block">
-                  Django Server Host URL
-                </label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Server className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={djangoApiUrl}
-                      onChange={(e) => setDjangoApiUrl(e.target.value)}
-                      placeholder="e.g. http://localhost:8000"
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-lg py-2 pl-9 pr-4 text-xs focus:ring-2 focus:ring-indigo-500 outline-none font-mono"
-                    />
-                  </div>
-                  <button
-                    onClick={() => handleCheckDjangoConnection()}
-                    className="px-4 py-2 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-semibold rounded-lg text-xs transition-colors flex items-center gap-1.5"
-                  >
-                    {djangoStatus === 'checking' ? 'Checking...' : 'Check Server'}
-                  </button>
-                </div>
-
-                {/* Connection Alert bar */}
-                <div className={`p-3.5 rounded-xl text-xs flex items-center gap-3 border ${
-                  djangoStatus === 'connected'
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-300'
-                    : djangoStatus === 'checking'
-                      ? 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/20 dark:text-amber-300'
-                      : 'bg-emerald-50/70 text-emerald-900 border-emerald-200 dark:bg-slate-900 dark:text-slate-200'
-                }`}>
-                  <div className="shrink-0">
-                    {djangoStatus === 'connected' ? (
-                      <Wifi className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    )}
-                  </div>
-                  <div className="flex-1 leading-relaxed text-xs">
-                    <strong className="font-bold">System Storage Mode: </strong>
-                    <span>{djangoStatus === 'connected' ? 'CONNECTED TO DJANGO BACKEND' : 'STANDALONE LOCAL STORAGE (Auto-Saving Enabled)'}</span>
-                    <p className="opacity-80 mt-1 font-normal text-[11px]">
-                      {djangoMsg || 'Your website edits, custom text, colors, and images are saved automatically in your browser in real-time.'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Deployment Synchronization Status Check (Admin only) */}
-              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 mt-4">
-                <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <Database className="w-3.5 h-3.5 text-indigo-500" /> Deployment Sync Status
-                  </label>
-                  {(window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) && (
-                    <button
-                      onClick={handleVerifyDeploymentSync}
-                      disabled={deployCheckStatus === 'checking'}
-                      className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline hover:font-bold lowercase pointer-events-auto cursor-pointer border-none bg-transparent animate-none"
-                    >
-                      {deployCheckStatus === 'checking' ? 'verifying...' : 'verify production sync'}
-                    </button>
-                  )}
-                </div>
-                
-                {!(window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) ? (
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Viewing from <strong>Production</strong> server. To verify if this environment matches your local development files and SQLite database exactly, open the app on your local computer to run the verification console.
-                  </p>
-                ) : deployCheckStatus === 'idle' ? (
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Verify whether your local codebase and SQLite database match the production server in real-time.
-                  </p>
-                ) : deployCheckStatus === 'checking' ? (
-                  <div className="text-[11px] text-slate-400 animate-pulse">
-                    Connecting to local and production APIs, comparing Git commit hashes and DB checksums...
-                  </div>
-                ) : deployCheckStatus === 'error' ? (
-                  <div className="p-3 bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-200 dark:border-emerald-900/30 text-emerald-800 dark:text-emerald-300 rounded-lg text-[11px] font-sans leading-normal">
-                    <strong>Local Storage Sync:</strong> All website drafts and layouts are synchronized in browser local storage.
-                  </div>
-                ) : (
-                  <div className="space-y-2.5 font-mono text-[11px] leading-normal text-slate-700 dark:text-slate-350">
-                    <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
-                      <span className="text-[10px] uppercase font-extrabold text-slate-500 w-24 shrink-0">Git Commits:</span>
-                      <div className="flex-1 flex flex-col gap-0.5">
-                        <span className="truncate">Local: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.localCommit?.substring(0, 10)}...</code></span>
-                        <span className="truncate">Server: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.remoteCommit?.substring(0, 10)}...</code></span>
-                      </div>
-                      {deployInfo?.localCommit === deployInfo?.remoteCommit ? (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓ SYNCED</span>
-                      ) : (
-                        <span className="text-rose-500 font-bold shrink-0">✗ MISMATCH</span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
-                      <span className="text-[10px] uppercase font-extrabold text-slate-500 w-24 shrink-0">Database MD5:</span>
-                      <div className="flex-1 flex flex-col gap-0.5">
-                        <span className="truncate">Local: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.localDbMd5?.substring(0, 12)}...</code></span>
-                        <span className="truncate">Server: <code className="text-slate-450 dark:text-slate-400 font-bold">{deployInfo?.remoteDbMd5?.substring(0, 12)}...</code></span>
-                      </div>
-                      {deployInfo?.localDbMd5 === deployInfo?.remoteDbMd5 ? (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">✓ SYNCED</span>
-                      ) : (
-                        <span className="text-rose-500 font-bold shrink-0">✗ MISMATCH</span>
-                      )}
-                    </div>
-
-                    {deployCheckStatus === 'success' ? (
-                      <div className="p-2 bg-emerald-50 dark:bg-emerald-950/15 border border-emerald-250 dark:border-emerald-900/35 text-emerald-800 dark:text-emerald-400 rounded-lg text-center font-bold font-sans text-[10px] uppercase tracking-wider">
-                        🎉 Code and Database match 100%!
-                      </div>
-                    ) : (
-                      <div className="p-2 bg-rose-50 dark:bg-rose-950/15 border border-rose-250 dark:border-rose-900/35 text-rose-800 dark:text-rose-450 rounded-lg text-center font-bold font-sans text-[10px] uppercase tracking-wider">
-                        ⚠️ Warning: Environments differ. Deploy or replicate data.
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Administrator Passcode Configuration */}
-              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3 mt-4">
-                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-indigo-500" /> Editor Passcode Settings
-                </label>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Customize the security passcode required to access your page visual builder.
+              
+              {/* Save New Layout Draft Box */}
+              <div className="space-y-3 bg-emerald-50/50 dark:bg-emerald-950/20 p-5 rounded-2xl border border-emerald-200/80 dark:border-emerald-900/40">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
+                  <Database className="w-4 h-4 text-emerald-600" />
+                  <span>💾 Save New Layout Draft</span>
+                </h4>
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">
+                  Give your active website design a custom name to save it as a layout draft. You can load, update, or restore it anytime!
                 </p>
                 <div className="flex gap-2">
                   <input
-                    type="password"
-                    value={adminPasscode}
-                    onChange={(e) => onUpdatePasscode && onUpdatePasscode(e.target.value)}
-                    placeholder="Enter new admin passcode..."
-                    className="flex-1 bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-lg py-2 px-3 text-xs focus:ring-2 focus:ring-indigo-500 outline-none font-mono"
+                    type="text"
+                    value={newLayoutTitle}
+                    onChange={(e) => setNewLayoutTitle(e.target.value)}
+                    placeholder="e.g. Summer Campaign V1, Coffee Landing..."
+                    className="flex-1 bg-white dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 font-sans"
                   />
-                </div>
-                
-                {setIsAdmin && (
                   <button
-                    onClick={() => {
-                      if (confirm('Lock the visual workspace immediately? You will need your passcode to re-enter.')) {
-                        setIsAdmin(false);
-                        setShowDjangoModal(false);
-                      }
-                    }}
-                    className="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer shadow-sm shadow-rose-100"
+                    onClick={handleSaveLocalDraft}
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-emerald-600/20 cursor-pointer shrink-0"
                   >
-                    <Lock className="w-3.5 h-3.5" />
-                    <span>Lock Layout Workspace</span>
+                    Save New Draft
                   </button>
-                )}
+                </div>
               </div>
 
-              {/* Save layout block (Active if connected) */}
-              {djangoStatus === 'connected' && (
-                <div className="space-y-3 bg-indigo-50/20 dark:bg-indigo-950/10 p-5 rounded-xl border border-indigo-100 dark:border-indigo-900/30">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-800 dark:text-indigo-400">
-                    💾 Save Active Design to Django DB
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal">
-                    This will serialize the grid sections and theme setting dictionaries, committing them to your `WebsiteLayout` Django database model table.
-                  </p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newLayoutTitle}
-                      onChange={(e) => setNewLayoutTitle(e.target.value)}
-                      placeholder="e.g. Portfolio Draft, Coffee Landing..."
-                      className="flex-1 bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-lg px-3 py-2 text-xs outline-none focus:ring-1.5 focus:ring-indigo-500"
-                    />
-                    <button
-                      onClick={handleSaveToDjango}
-                      disabled={isDjangoLoading}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-xs transition-colors flex items-center gap-1 shrink-0"
-                    >
-                      {isDjangoLoading ? 'Saving...' : 'Save Draft'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* List of retrieved database layouts */}
+              {/* Saved Layout Drafts List */}
               <div className="space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                  <span>📂 Saved Layouts on your server ({djangoLayouts.length})</span>
-                  {djangoStatus === 'connected' && (
-                    <button
-                      onClick={() => fetchDjangoLayouts(djangoApiUrl)}
-                      className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline hover:font-bold lowercase"
-                    >
-                      Refresh list
-                    </button>
-                  )}
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                  <span>📂 Saved Layout Drafts ({localSavedDrafts.length})</span>
                 </h4>
 
-                {djangoStatus !== 'connected' ? (
-                  <div className="py-8 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-xl text-center text-xs text-slate-450 leading-relaxed px-6">
-                    ⚠️ Connection status is currently offline. Open your terminal, startup your Python Django development server on port 8000 (with cors headers enabled), then verify host above to synchronize layout states in real-time.
-                  </div>
-                ) : djangoLayouts.length === 0 ? (
-                  <div className="py-8 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-center text-xs text-slate-400 leading-relaxed px-6">
-                    Connected! No layout records exist in the Django database model table yet. Type a name above and click <strong>"Save Draft"</strong> to persist your first designed website!
+                {localSavedDrafts.length === 0 ? (
+                  <div className="py-8 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-center text-xs text-slate-400 leading-relaxed px-6 space-y-1">
+                    <p className="font-bold text-slate-600 dark:text-slate-300">No saved layout drafts yet.</p>
+                    <p>Type a name above and click <strong>"Save New Draft"</strong> to save your first website layout draft!</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-slate-800 border border-slate-150 dark:border-slate-800 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
-                    {djangoLayouts.map((layout) => (
+                  <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-white dark:bg-slate-950">
+                    {localSavedDrafts.map((draft) => (
                       <div
-                        key={layout.id}
-                        className="p-3.5 flex items-center justify-between text-xs hover:bg-slate-50 dark:hover:bg-slate-850/50 transition-colors pointer-events-auto"
+                        key={draft.id}
+                        className="p-4 flex items-center justify-between text-xs hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                       >
                         <div className="space-y-0.5">
-                          <p className="font-semibold text-slate-800 dark:text-slate-150">{layout.title}</p>
+                          <p className="font-bold text-slate-900 dark:text-slate-100">{draft.title}</p>
                           <p className="text-[10px] text-slate-400 font-mono">
-                            ID: {layout.id} • Synced: {new Date(layout.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            Saved: {new Date(draft.updatedAt).toLocaleDateString()} at {new Date(draft.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => handleLoadFromDjango(layout)}
-                            className="px-2.5 py-1 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-400 hover:bg-indigo-100 text-[11px] font-bold rounded-md transition-colors"
+                            onClick={() => handleLoadLocalDraft(draft)}
+                            className="px-3 py-1.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 hover:bg-indigo-100 text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
                           >
-                            Load layout
+                            Load Layout
                           </button>
                           <button
-                            onClick={() => handleUpdateInDjango(layout.id, layout.title)}
-                            className="px-2.5 py-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-450 hover:bg-emerald-100 text-[11px] font-bold rounded-md transition-colors"
-                            title="Overskriv dette layout på serveren med dit nuværende canvas design"
+                            onClick={() => handleOverwriteLocalDraft(draft.id, draft.title)}
+                            className="px-3 py-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 hover:bg-emerald-100 text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
+                            title="Overwrite this saved draft with current canvas design"
                           >
-                            Overskriv design
+                            Overwrite Design
                           </button>
                           <button
-                            onClick={(e) => handleDeleteFromDjango(layout.id, e)}
-                            className="p-1 px-2.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-450 hover:bg-rose-50/20 dark:hover:bg-rose-950/20 rounded transition-colors text-[11px]"
-                            title="Delete draft in Django"
+                            onClick={() => handleDeleteLocalDraft(draft.id)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer"
+                            title="Delete draft"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
@@ -4557,27 +4448,41 @@ export default function SaveExportControls({
                 )}
               </div>
 
-              {/* Fast reference docs inside UI */}
-              <div className="bg-amber-50/40 dark:bg-amber-950/10 border border-amber-100 dark:border-amber-900/30 rounded-xl p-4 space-y-2 text-xs">
-                <p className="font-bold text-amber-900 dark:text-amber-400 flex items-center gap-1.5">
-                  💡 Running a Local Django App?
-                </p>
-                <div className="text-slate-650 dark:text-slate-300 space-y-1 leading-normal font-sans">
-                  <p>1. Copy the customized python backend code generated in the <strong>`/django_backend`</strong> folder into your Django app.</p>
-                  <p>2. Register <code>path('api/', include('your_app.urls'))</code> in your root urls configuration.</p>
-                  <p>3. Remember to register <code>'corsheaders'</code> in settings for seamless local developer testing.</p>
-                  <p>4. Run <code>python seed_database.py</code> locally to automatically seed your 5 pre-cooked pages inside your SQL database!</p>
+              {/* Export / Import Backup Files */}
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block">
+                  Export & Import Backup (.JSON)
+                </label>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleExportConfig}
+                    className="flex-1 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Export Backup (.JSON)</span>
+                  </button>
+                  <label className="flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Import Backup (.JSON)</span>
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={handleImportConfig}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
               </div>
+
             </div>
 
             {/* Footer */}
             <div className="p-4 bg-slate-50 dark:bg-slate-850 border-t border-slate-100 dark:border-slate-800 flex justify-end">
               <button
                 onClick={() => setShowDjangoModal(false)}
-                className="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-900 text-white rounded-lg"
+                className="px-5 py-2 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl cursor-pointer"
               >
-                Done
+                Close
               </button>
             </div>
           </div>
