@@ -86,23 +86,78 @@ export default function SaveExportControls({
     }
   });
 
-  const handleSaveLocalDraft = () => {
+  const fetchDjangoLayouts = async (urlStr?: string) => {
+    const rawUrl = urlStr || djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+    const targetUrl = getCleanApiUrl(rawUrl);
+    try {
+      const resp = await fetch(`${targetUrl}/layouts/`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (Array.isArray(data)) {
+          const apiDrafts = data.map((item: any) => ({
+            id: String(item.id),
+            dbId: item.id,
+            title: item.title || 'Untitled Draft',
+            updatedAt: item.updated_at ? new Date(item.updated_at).getTime() : Date.now(),
+            sections: item.sections || [],
+            theme: item.theme || {}
+          }));
+
+          setLocalSavedDrafts(prev => {
+            const map = new Map();
+            prev.forEach(d => map.set(d.id, d));
+            apiDrafts.forEach(d => map.set(d.id, d));
+            const merged = Array.from(map.values());
+            localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(merged));
+            return merged;
+          });
+        }
+      }
+    } catch (err) {}
+  };
+
+  React.useEffect(() => {
+    if (showDjangoModal) {
+      fetchDjangoLayouts();
+    }
+  }, [showDjangoModal]);
+
+  const handleSaveLocalDraft = async () => {
     if (!newLayoutTitle.trim()) {
-      alert('Please enter a descriptive draft name (e.g. Summer Campaign, Home V2).');
+      alert('Please enter a descriptive draft name (e.g. Gem Layout, Summer Campaign).');
       return;
     }
+    const title = newLayoutTitle.trim();
     const newDraft = {
       id: 'draft_' + Date.now(),
-      title: newLayoutTitle.trim(),
+      title: title,
       updatedAt: Date.now(),
       sections: sections,
       theme: theme
     };
+
     const updated = [newDraft, ...localSavedDrafts];
     setLocalSavedDrafts(updated);
     localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(updated));
     setNewLayoutTitle('');
-    alert(`🎉 Saved layout draft "${newDraft.title}" successfully! You can reload or edit it anytime from your saved layouts list.`);
+
+    try {
+      const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+      const targetUrl = getCleanApiUrl(rawUrl);
+      await fetch(`${targetUrl}/layouts/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          title: title,
+          sections: sections,
+          theme: theme
+        })
+      });
+    } catch (e) {}
+
+    alert(`🎉 Saved layout draft "${title}" successfully! You can reload or edit it anytime from your saved layouts list.`);
   };
 
   const handleLoadLocalDraft = (draft: { id: string; title: string; sections: Section[]; theme: SiteTheme }) => {
@@ -112,22 +167,45 @@ export default function SaveExportControls({
     }
   };
 
-  const handleOverwriteLocalDraft = (draftId: string, title: string) => {
+  const handleOverwriteLocalDraft = async (draftId: string, title: string) => {
     if (confirm(`Overwrite saved draft "${title}" with your current canvas design?`)) {
       const updated = localSavedDrafts.map(d => 
         d.id === draftId ? { ...d, sections, theme, updatedAt: Date.now() } : d
       );
       setLocalSavedDrafts(updated);
       localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(updated));
+
+      try {
+        const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+        const targetUrl = getCleanApiUrl(rawUrl);
+        await fetch(`${targetUrl}/layouts/${draftId}/`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            title: title,
+            sections: sections,
+            theme: theme
+          })
+        });
+      } catch (e) {}
+
       alert(`✅ Saved draft "${title}" updated with your latest canvas design!`);
     }
   };
 
-  const handleDeleteLocalDraft = (draftId: string) => {
+  const handleDeleteLocalDraft = async (draftId: string) => {
     if (confirm('Delete this saved layout draft?')) {
       const updated = localSavedDrafts.filter(d => d.id !== draftId);
       setLocalSavedDrafts(updated);
       localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(updated));
+
+      try {
+        const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+        const targetUrl = getCleanApiUrl(rawUrl);
+        await fetch(`${targetUrl}/layouts/${draftId}/`, {
+          method: 'DELETE'
+        });
+      } catch (e) {}
     }
   };
 
@@ -238,21 +316,6 @@ export default function SaveExportControls({
 
     setDjangoStatus('disconnected');
     setDjangoMsg('Running in Standalone Mode (All website edits, text, colors, and images auto-save locally).');
-  };
-
-  const fetchDjangoLayouts = async (urlStr: string) => {
-    const targetUrl = getCleanApiUrl(urlStr);
-    try {
-      const resp = await fetch(`${targetUrl}/layouts/`, {
-        headers: { 'Accept': 'application/json' }
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        setDjangoLayouts(Array.isArray(data) ? data : []);
-      }
-    } catch (err) {
-      console.error("Layout fetch failure:", err);
-    }
   };
 
   const handleDirectSaveToDjango = async () => {
