@@ -5,16 +5,20 @@ import FeaturesSection from './fresh/FeaturesSection';
 import BrandSection from './fresh/BrandSection';
 import Footer from './fresh/Footer';
 
-export default function FreshResponsiveWebpageComponent() {
+interface FreshResponsiveWebpageComponentProps {
+  editable?: boolean;
+}
+
+export default function FreshResponsiveWebpageComponent({ editable = false }: FreshResponsiveWebpageComponentProps) {
   return (
     <div className="w-full min-h-screen bg-slate-50 flex flex-col font-['Poppins',sans-serif] text-slate-900">
-      <Navbar />
+      <Navbar editable={editable} />
       <main className="flex-1">
-        <HeroSection />
-        <FeaturesSection />
-        <BrandSection />
+        <HeroSection editable={editable} />
+        <FeaturesSection editable={editable} />
+        <BrandSection editable={editable} />
       </main>
-      <Footer />
+      <Footer editable={editable} />
     </div>
   );
 }

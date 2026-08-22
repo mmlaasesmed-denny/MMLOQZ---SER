@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import SaveExportControls from './components/SaveExportControls';
 import ImageSelectorModal from './components/ImageSelectorModal';
 import { Lock, Unlock, LogOut, Shield, Globe, Sparkles, Plus, Code } from 'lucide-react';
+import AdminLoginModal from './components/AdminLoginModal';
 
 interface SEOMetadata {
   metaTitle?: string;
@@ -868,14 +869,25 @@ export default function App() {
   // 3.5 Admin Secure Gateway States - Defaulted to false (Visitor Mode by default)
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     const saved = localStorage.getItem('visual-builder-is-admin');
-    return saved ? saved === 'true' : true;
+    return saved === 'true';
   });
   const [adminPasscode, setAdminPasscode] = useState<string>(() => {
     return localStorage.getItem('visual-builder-admin-passcode') || 'admin';
   });
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
-  const [inputPasscode, setInputPasscode] = useState('');
-  const [passcodeError, setPasscodeError] = useState('');
+
+  // Hash route listener for #/admin-login
+  useEffect(() => {
+    const checkHash = () => {
+      const hash = window.location.hash;
+      if (hash === '#/admin-login' || hash === '#admin-login' || hash === '#/admin' || hash === '#admin') {
+        setShowAdminLoginModal(true);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
 
   // 4. Image Modal Configuration Tracking
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -2592,6 +2604,7 @@ export default function App() {
             selectedElementId={selectedElementId}
             selectedSectionId={selectedSectionId}
             isPreviewMode={isPreviewMode}
+            isAdmin={isAdmin}
             onSelectElement={handleSelectElement}
             onSelectSection={handleSelectSection}
             onUpdateElement={handleUpdateElement}
@@ -2632,6 +2645,7 @@ export default function App() {
                 selectedElementId={selectedElementId}
                 selectedSectionId={selectedSectionId}
                 isPreviewMode={isPreviewMode}
+                isAdmin={isAdmin}
                 onSelectElement={handleSelectElement}
                 onSelectSection={handleSelectSection}
                 onUpdateElement={handleUpdateElement}
@@ -2653,6 +2667,18 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* Admin Login Authentication Modal */}
+        <AdminLoginModal
+          isOpen={showAdminLoginModal}
+          onClose={() => setShowAdminLoginModal(false)}
+          onLoginSuccess={() => {
+            setIsAdmin(true);
+            localStorage.setItem('visual-builder-is-admin', 'true');
+            window.location.hash = '';
+          }}
+          adminPasscode={adminPasscode}
+        />
       </div>
 
       {/* 4. Elegant Picture Picker Overlay Popup */}

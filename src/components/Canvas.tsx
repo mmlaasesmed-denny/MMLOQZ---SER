@@ -180,6 +180,7 @@ interface CanvasProps {
   selectedSectionId: string | null;
   isPreviewMode: boolean;
   viewportMode: 'desktop' | 'tablet' | 'mobile';
+  isAdmin?: boolean;
   onSelectElement: (elementId: string) => void;
   onSelectSection: (sectionId: string) => void;
   onUpdateElement: (
@@ -593,6 +594,7 @@ export default function Canvas({
   selectedSectionId,
   isPreviewMode,
   viewportMode,
+  isAdmin = false,
   onSelectElement,
   onSelectSection,
   onUpdateElement,
@@ -1058,7 +1060,7 @@ export default function Canvas({
                 : (viewportMode === 'mobile' ? 'px-4' : 'px-6'));
 
           if (section.id === 'fresh-webpage-section') {
-            return <FreshResponsiveWebpageComponent key={section.id} />;
+            return <FreshResponsiveWebpageComponent key={section.id} editable={!isPreviewMode && isAdmin} />;
           }
 
           const isSectionHiddenInViewport = 
