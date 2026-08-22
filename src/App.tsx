@@ -353,7 +353,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
 export default function App() {
   // 1. Unified 5-Page LocalStorage CMS State
   const [pages, setPages] = useState<SinglePageCMS[]>(() => {
-    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-exact-v20');
+    const saved = localStorage.getItem('visual-builder-pages-cms-mmloqz-exact-v25');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -372,7 +372,7 @@ export default function App() {
   });
 
   const [activePageId, setActivePageId] = useState<string>(() => {
-    return localStorage.getItem('visual-builder-active-page-id-mmloqz-exact-v20') || 'home';
+    return localStorage.getItem('visual-builder-active-page-id-mmloqz-exact-v25') || 'home';
   });
 
   const [baseDomain, setBaseDomain] = useState<string>(() => {
@@ -837,7 +837,7 @@ export default function App() {
   // Save state updates automatically to client cache with error boundary protection
   useEffect(() => {
     try {
-      localStorage.setItem('visual-builder-pages-cms-mmloqz-exact-v20', JSON.stringify(pages));
+      localStorage.setItem('visual-builder-pages-cms-mmloqz-exact-v25', JSON.stringify(pages));
       
       // Auto-remove names from deleted blacklist if they are created again
       const deletedNames = JSON.parse(localStorage.getItem('visual-builder-deleted-page-names') || '[]');
@@ -854,7 +854,7 @@ export default function App() {
   }, [pages]);
 
   useEffect(() => {
-    localStorage.setItem('visual-builder-active-page-id-mmloqz-exact-v20', activePageId);
+    localStorage.setItem('visual-builder-active-page-id-mmloqz-exact-v25', activePageId);
     window.location.hash = ''; // Clear URL hash when switching pages in the editor to prevent hash leakage
   }, [activePageId]);
 
