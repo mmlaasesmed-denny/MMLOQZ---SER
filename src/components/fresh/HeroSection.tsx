@@ -9,21 +9,21 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
   const [showControls, setShowControls] = useState(false);
   const [activeTab, setActiveTab] = useState<'bg' | 'right'>('bg');
 
-  // 1. Background Shaded Image State
+  // 1. Background Shaded Image State (6 Identical Options)
   const [bgShadedSrc, setBgShadedSrc] = useState<string>(() => {
     return localStorage.getItem('mmloqz-hero-bg-shaded-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
   });
-  const [bgOpacity, setBgOpacity] = useState<number>(() => {
-    const saved = localStorage.getItem('mmloqz-hero-bg-opacity');
-    return saved ? parseFloat(saved) : 0.22;
+  const [bgWidth, setBgWidth] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-bg-width');
+    return saved ? parseInt(saved, 10) : 320;
   });
   const [bgRotate, setBgRotate] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-hero-bg-rotate');
     return saved ? parseInt(saved, 10) : 30;
   });
-  const [bgWidth, setBgWidth] = useState<number>(() => {
-    const saved = localStorage.getItem('mmloqz-hero-bg-width');
-    return saved ? parseInt(saved, 10) : 320;
+  const [bgOpacity, setBgOpacity] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-bg-opacity');
+    return saved ? parseFloat(saved) : 0.22;
   });
   const [bgOffsetX, setBgOffsetX] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-hero-bg-offset-x');
@@ -34,17 +34,21 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
     return saved ? parseInt(saved, 10) : 0;
   });
 
-  // 2. Right Product Image State
+  // 2. Right Product Image State (6 Identical Options)
   const [rightImgSrc, setRightImgSrc] = useState<string>(() => {
     return localStorage.getItem('mmloqz-hero-right-img-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
   });
-  const [rightImgHeight, setRightImgHeight] = useState<number>(() => {
-    const saved = localStorage.getItem('mmloqz-hero-right-img-height');
+  const [rightImgWidth, setRightImgWidth] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-right-img-width');
     return saved ? parseInt(saved, 10) : 340;
   });
   const [rightImgRotate, setRightImgRotate] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-hero-right-img-rotate');
     return saved ? parseInt(saved, 10) : 30;
+  });
+  const [rightImgOpacity, setRightImgOpacity] = useState<number>(() => {
+    const saved = localStorage.getItem('mmloqz-hero-right-img-opacity');
+    return saved ? parseFloat(saved) : 1.0;
   });
   const [rightImgOffsetX, setRightImgOffsetX] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-hero-right-img-offset-x');
@@ -60,15 +64,16 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
 
   // Persistence Effects
   useEffect(() => { localStorage.setItem('mmloqz-hero-bg-shaded-src', bgShadedSrc); }, [bgShadedSrc]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-opacity', bgOpacity.toString()); }, [bgOpacity]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-rotate', bgRotate.toString()); }, [bgRotate]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-bg-width', bgWidth.toString()); }, [bgWidth]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-rotate', bgRotate.toString()); }, [bgRotate]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-opacity', bgOpacity.toString()); }, [bgOpacity]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-bg-offset-x', bgOffsetX.toString()); }, [bgOffsetX]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-bg-offset-y', bgOffsetY.toString()); }, [bgOffsetY]);
 
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-src', rightImgSrc); }, [rightImgSrc]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-height', rightImgHeight.toString()); }, [rightImgHeight]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-width', rightImgWidth.toString()); }, [rightImgWidth]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-rotate', rightImgRotate.toString()); }, [rightImgRotate]);
+  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-opacity', rightImgOpacity.toString()); }, [rightImgOpacity]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-x', rightImgOffsetX.toString()); }, [rightImgOffsetX]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-y', rightImgOffsetY.toString()); }, [rightImgOffsetY]);
 
@@ -97,28 +102,30 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
 
   const resetDefaults = () => {
     setBgShadedSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
-    setBgOpacity(0.22);
-    setBgRotate(30);
     setBgWidth(320);
+    setBgRotate(30);
+    setBgOpacity(0.22);
     setBgOffsetX(0);
     setBgOffsetY(0);
 
     setRightImgSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
-    setRightImgHeight(340);
+    setRightImgWidth(340);
     setRightImgRotate(30);
+    setRightImgOpacity(1.0);
     setRightImgOffsetX(0);
     setRightImgOffsetY(0);
 
     localStorage.removeItem('mmloqz-hero-bg-shaded-src');
-    localStorage.removeItem('mmloqz-hero-bg-opacity');
-    localStorage.removeItem('mmloqz-hero-bg-rotate');
     localStorage.removeItem('mmloqz-hero-bg-width');
+    localStorage.removeItem('mmloqz-hero-bg-rotate');
+    localStorage.removeItem('mmloqz-hero-bg-opacity');
     localStorage.removeItem('mmloqz-hero-bg-offset-x');
     localStorage.removeItem('mmloqz-hero-bg-offset-y');
 
     localStorage.removeItem('mmloqz-hero-right-img-src');
-    localStorage.removeItem('mmloqz-hero-right-img-height');
+    localStorage.removeItem('mmloqz-hero-right-img-width');
     localStorage.removeItem('mmloqz-hero-right-img-rotate');
+    localStorage.removeItem('mmloqz-hero-right-img-opacity');
     localStorage.removeItem('mmloqz-hero-right-img-offset-x');
     localStorage.removeItem('mmloqz-hero-right-img-offset-y');
   };
@@ -177,12 +184,13 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
             </button>
           </div>
 
-          {/* Tab 1: Background Shaded Image Settings */}
+          {/* Tab 1: Background Shaded Image Settings (Identical 6 Options) */}
           {activeTab === 'bg' && (
             <div className="space-y-4">
+              {/* 1. Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Upload Shaded Background Image:
+                  1. Upload Custom Image:
                 </label>
                 <input
                   type="file"
@@ -200,15 +208,48 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                 </button>
               </div>
 
+              {/* 2. Width */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-300">Shade Opacity:</span>
+                  <span className="text-slate-300">2. Width (Size):</span>
+                  <span className="text-emerald-400 font-mono">{bgWidth}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="100"
+                  max="600"
+                  value={bgWidth}
+                  onChange={(e) => setBgWidth(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              {/* 3. Rotation */}
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">3. Rotation Angle:</span>
+                  <span className="text-emerald-400 font-mono">{bgRotate}°</span>
+                </div>
+                <input
+                  type="range"
+                  min="-180"
+                  max="180"
+                  value={bgRotate}
+                  onChange={(e) => setBgRotate(Number(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              {/* 4. Opacity */}
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">4. Shade Opacity:</span>
                   <span className="text-emerald-400 font-mono">{Math.round(bgOpacity * 100)}%</span>
                 </div>
                 <input
                   type="range"
-                  min="0.05"
-                  max="0.6"
+                  min="0.0"
+                  max="1.0"
                   step="0.01"
                   value={bgOpacity}
                   onChange={(e) => setBgOpacity(parseFloat(e.target.value))}
@@ -216,45 +257,15 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                 />
               </div>
 
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-300">Rotation Angle:</span>
-                  <span className="text-emerald-400 font-mono">{bgRotate}°</span>
-                </div>
-                <input
-                  type="range"
-                  min="-90"
-                  max="90"
-                  value={bgRotate}
-                  onChange={(e) => setBgRotate(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-300">Image Width:</span>
-                  <span className="text-emerald-400 font-mono">{bgWidth}px</span>
-                </div>
-                <input
-                  type="range"
-                  min="180"
-                  max="550"
-                  value={bgWidth}
-                  onChange={(e) => setBgWidth(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-                />
-              </div>
-
-              {/* Move Left / Right Slider & Nudge Buttons */}
-              <div className="space-y-1.5 pt-1">
+              {/* 5. Move Left / Right (X) */}
+              <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
-                  <span className="text-slate-300">Move Left / Right (X):</span>
+                  <span className="text-slate-300">5. Move Left / Right (X):</span>
                   <span className="text-emerald-400 font-mono">{bgOffsetX}px</span>
                 </div>
                 <input
                   type="range"
-                  min="-200"
+                  min="-300"
                   max="300"
                   value={bgOffsetX}
                   onChange={(e) => setBgOffsetX(Number(e.target.value))}
@@ -262,16 +273,16 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                 />
               </div>
 
-              {/* Move Up / Down Slider & Nudge Buttons */}
-              <div className="space-y-1.5 pt-1">
+              {/* 6. Move Up / Down (Y) */}
+              <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
-                  <span className="text-slate-300">Move Up / Down (Y):</span>
+                  <span className="text-slate-300">6. Move Up / Down (Y):</span>
                   <span className="text-emerald-400 font-mono">{bgOffsetY}px</span>
                 </div>
                 <input
                   type="range"
-                  min="-150"
-                  max="150"
+                  min="-200"
+                  max="200"
                   value={bgOffsetY}
                   onChange={(e) => setBgOffsetY(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
@@ -312,12 +323,13 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
             </div>
           )}
 
-          {/* Tab 2: Right Product Image Settings */}
+          {/* Tab 2: Right Product Image Settings (Identical 6 Options) */}
           {activeTab === 'right' && (
             <div className="space-y-4">
+              {/* 1. Upload */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Upload Right Product Image:
+                  1. Upload Custom Image:
                 </label>
                 <input
                   type="file"
@@ -335,62 +347,81 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                 </button>
               </div>
 
+              {/* 2. Width */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-300">Image Height:</span>
-                  <span className="text-emerald-400 font-mono">{rightImgHeight}px</span>
+                  <span className="text-slate-300">2. Width (Size):</span>
+                  <span className="text-emerald-400 font-mono">{rightImgWidth}px</span>
                 </div>
                 <input
                   type="range"
-                  min="180"
-                  max="550"
-                  value={rightImgHeight}
-                  onChange={(e) => setRightImgHeight(Number(e.target.value))}
+                  min="100"
+                  max="600"
+                  value={rightImgWidth}
+                  onChange={(e) => setRightImgWidth(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                 />
               </div>
 
+              {/* 3. Rotation */}
               <div>
                 <div className="flex justify-between text-xs font-semibold mb-1">
-                  <span className="text-slate-300">Rotation Angle:</span>
+                  <span className="text-slate-300">3. Rotation Angle:</span>
                   <span className="text-emerald-400 font-mono">{rightImgRotate}°</span>
                 </div>
                 <input
                   type="range"
-                  min="-90"
-                  max="90"
+                  min="-180"
+                  max="180"
                   value={rightImgRotate}
                   onChange={(e) => setRightImgRotate(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                 />
               </div>
 
-              {/* Move Left / Right Slider & Buttons */}
-              <div className="space-y-1.5 pt-1">
+              {/* 4. Opacity */}
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-1">
+                  <span className="text-slate-300">4. Shade Opacity:</span>
+                  <span className="text-emerald-400 font-mono">{Math.round(rightImgOpacity * 100)}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.0"
+                  max="1.0"
+                  step="0.01"
+                  value={rightImgOpacity}
+                  onChange={(e) => setRightImgOpacity(parseFloat(e.target.value))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              {/* 5. Move Left / Right (X) */}
+              <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
-                  <span className="text-slate-300">Move Left / Right (X):</span>
+                  <span className="text-slate-300">5. Move Left / Right (X):</span>
                   <span className="text-emerald-400 font-mono">{rightImgOffsetX}px</span>
                 </div>
                 <input
                   type="range"
-                  min="-200"
-                  max="200"
+                  min="-300"
+                  max="300"
                   value={rightImgOffsetX}
                   onChange={(e) => setRightImgOffsetX(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                 />
               </div>
 
-              {/* Move Up / Down Slider & Buttons */}
-              <div className="space-y-1.5 pt-1">
+              {/* 6. Move Up / Down (Y) */}
+              <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
-                  <span className="text-slate-300">Move Up / Down (Y):</span>
+                  <span className="text-slate-300">6. Move Up / Down (Y):</span>
                   <span className="text-emerald-400 font-mono">{rightImgOffsetY}px</span>
                 </div>
                 <input
                   type="range"
-                  min="-150"
-                  max="150"
+                  min="-200"
+                  max="200"
                   value={rightImgOffsetY}
                   onChange={(e) => setRightImgOffsetY(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
@@ -485,7 +516,7 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
             </div>
           </div>
 
-          {/* Right Floating Product Image with X and Y movement */}
+          {/* Right Floating Product Image with X and Y movement & Opacity */}
           <div className="lg:col-span-5 flex justify-center items-center">
             <div className="relative w-full max-w-md lg:max-w-none flex justify-center">
               <div className="absolute -inset-4 bg-white/10 rounded-full blur-3xl pointer-events-none" />
@@ -495,7 +526,8 @@ export default function HeroSection({ editable = true }: HeroSectionProps) {
                   alt="MMLoqz Digital Cylinder Lock"
                   className="relative z-10 object-contain transition-all duration-200 filter drop-shadow-(0_25px_35px_rgba(0,0,0,0.4))"
                   style={{
-                    height: `${rightImgHeight}px`,
+                    width: `${rightImgWidth}px`,
+                    opacity: rightImgOpacity,
                     transform: `translate(${rightImgOffsetX}px, ${rightImgOffsetY}px) rotate(${rightImgRotate}deg)`,
                     maxWidth: '100%'
                   }}
