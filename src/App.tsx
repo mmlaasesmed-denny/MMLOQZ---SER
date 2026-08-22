@@ -2678,6 +2678,10 @@ export default function App() {
             window.location.hash = '';
           }}
           adminPasscode={adminPasscode}
+          onUpdatePasscode={(newPass) => {
+            setAdminPasscode(newPass);
+            localStorage.setItem('visual-builder-admin-passcode', newPass);
+          }}
         />
       </div>
 

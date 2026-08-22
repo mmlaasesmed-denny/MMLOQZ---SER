@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Code, Download, RefreshCw, Upload, Check, Database, Wifi, WifiOff, Server, Trash2, LogOut, Lock, Monitor, Tablet, Smartphone, Moon, Sun, Globe } from 'lucide-react';
+import { Eye, EyeOff, Code, Download, RefreshCw, Upload, Check, Database, Wifi, WifiOff, Server, Trash2, LogOut, Lock, Monitor, Tablet, Smartphone, Moon, Sun, Globe, KeyRound } from 'lucide-react';
 import { Section, SiteTheme } from '../types';
 import CodeImporterModal from './CodeImporterModal';
+import ChangePasswordModal from './ChangePasswordModal';
 import { WEBSHOP_CATEGORIES as WEBSHOP_CATEGORIES_ORIG, WEBSHOP_SUBCATEGORIES as WEBSHOP_SUBCATEGORIES_ORIG, WEBSHOP_BRANDS, WEBSHOP_PRODUCTS as WEBSHOP_PRODUCTS_ORIG } from '../webshopData';
 import { useLanguage } from '../i18n';
 
@@ -68,6 +69,7 @@ export default function SaveExportControls({
   const [newLayoutTitle, setNewLayoutTitle] = useState('My Custom Website Draft');
   const [isDjangoLoading, setIsDjangoLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
+  const [showChangePassModal, setShowChangePassModal] = useState(false);
 
   const toggleDarkMode = () => {
     setIsDarkMode(prev => {
@@ -4374,22 +4376,45 @@ export default function SaveExportControls({
         </button>
 
         {setIsAdmin && (
-          <button
-            onClick={() => {
-              if (confirm('Lock the visual workspace immediately? You will need your passcode to re-enter.')) {
-                setIsAdmin(false);
-              }
-            }}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-black bg-rose-600 hover:bg-rose-750 text-white rounded-full transition-all shadow-md shadow-rose-100 active:scale-95 cursor-pointer"
-            id="admin-header-log-out"
-            title="Lock layout tools & sign out as administrator"
-          >
-            <Lock className="w-3.5 h-3.5" />
-            <span>Lock Workspace</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowChangePassModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-full transition-all shadow-sm cursor-pointer border border-slate-700"
+              title="Change Admin Password"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Change Password</span>
+            </button>
+
+            <button
+              onClick={() => {
+                if (confirm('Sign out as Administrator? All editing features will be hidden for public visitors.')) {
+                  setIsAdmin(false);
+                  localStorage.removeItem('visual-builder-is-admin');
+                  window.location.hash = '';
+                }
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-full transition-all shadow-md active:scale-95 cursor-pointer"
+              id="admin-header-log-out"
+              title="Sign out as administrator"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Logout Admin</span>
+            </button>
+          </div>
         )}
 
       </div>
+
+      <ChangePasswordModal
+        isOpen={showChangePassModal}
+        onClose={() => setShowChangePassModal(false)}
+        currentPasscode={adminPasscode}
+        onUpdatePasscode={(newPass) => {
+          if (onUpdatePasscode) onUpdatePasscode(newPass);
+          localStorage.setItem('visual-builder-admin-passcode', newPass);
+        }}
+      />
 
       {/* Python Django Integration Console Modal Overlay */}
       {showDjangoModal && (
