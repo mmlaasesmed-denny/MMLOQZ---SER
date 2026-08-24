@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "7f2dcc1",
-  "message": "Add automatic HTML5 canvas image compressor and safeSetItem to eliminate DOMException quota exceeded and speed up API responses",
+  "commit": "ed42d00",
+  "message": "Add cleanStorageOnStartup and aggressive quota purge for giant legacy base64 keys",
   "branch": "main",
-  "deployedAt": "2026-08-24 19:14:36 UTC",
+  "deployedAt": "2026-08-24 19:36:06 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }

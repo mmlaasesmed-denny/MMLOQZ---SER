@@ -507,12 +507,14 @@ export default function App() {
             if (latestLayout && Array.isArray(latestLayout.sections)) {
               if (latestLayout.theme?.freshPageConfig && typeof latestLayout.theme.freshPageConfig === 'object') {
                 const cfg = latestLayout.theme.freshPageConfig;
-                Object.entries(cfg).forEach(([k, v]) => {
-                  if (typeof v === 'string') {
-                    localStorage.setItem(k, v);
-                  }
-                });
-                window.dispatchEvent(new CustomEvent('mmloqz-fresh-page-updated', { detail: cfg }));
+                if (localStorage.getItem('mmloqz-has-unsaved-user-edits') !== 'true') {
+                  Object.entries(cfg).forEach(([k, v]) => {
+                    if (typeof v === 'string') {
+                      localStorage.setItem(k, v);
+                    }
+                  });
+                  window.dispatchEvent(new CustomEvent('mmloqz-fresh-page-updated', { detail: { source: 'server-sync', cfg } }));
+                }
               }
 
               if (latestLayout.theme?.customLogoSrc && localStorage.getItem('mmloqz-logo-has-user-edit') !== 'true') {

@@ -459,7 +459,9 @@ export default function SaveExportControls({
       });
       if (resp.ok) {
         localStorage.removeItem('mmloqz-logo-has-user-edit');
+        localStorage.removeItem('mmloqz-has-unsaved-user-edits');
         window.dispatchEvent(new CustomEvent('mmloqz-logo-updated', { detail: { source: 'saved-to-server' } }));
+        window.dispatchEvent(new CustomEvent('mmloqz-fresh-page-updated', { detail: { source: 'saved-to-server', cfg: freshPageConfig } }));
         window.dispatchEvent(new CustomEvent('visual-builder-log', {
           detail: { action: 'Draft Saved & Synced', details: `Saved layout draft "${titleStr}" to server DB API (200 OK)` }
         }));

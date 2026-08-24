@@ -55,10 +55,18 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
   useEffect(() => { safeSetItem('mmloqz-brand-font-family', fontFamilyVal); }, [fontFamilyVal]);
   useEffect(() => { safeSetItem('mmloqz-brand-text-align', textAlignVal); }, [textAlignVal]);
 
+  const isLocalUserEdit = useRef<boolean>(false);
+
   useEffect(() => {
     const handleFreshPageSync = (e: any) => {
       if (e.detail) {
-        const d = e.detail;
+        if (e.detail.source === 'server-sync' && (isLocalUserEdit.current || localStorage.getItem('mmloqz-has-unsaved-user-edits') === 'true')) {
+          return;
+        }
+        if (e.detail.source === 'saved-to-server') {
+          isLocalUserEdit.current = false;
+        }
+        const d = e.detail.cfg || e.detail;
         if (d['mmloqz-brand-heading']) setHeading(d['mmloqz-brand-heading']);
         if (d['mmloqz-brand-p1']) setP1(d['mmloqz-brand-p1']);
         if (d['mmloqz-brand-p2']) setP2(d['mmloqz-brand-p2']);
@@ -88,7 +96,9 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
       reader.onload = async (ev) => {
         if (ev.target?.result) {
           const raw = ev.target.result as string;
-          const compressed = await compressImage(raw, 1200, 0.8);
+          const compressed = await compressImage(raw, 800, 0.7);
+          isLocalUserEdit.current = true;
+          safeSetItem('mmloqz-has-unsaved-user-edits', 'true');
           setImageSrc(compressed);
         }
       };

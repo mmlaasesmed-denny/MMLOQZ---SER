@@ -85,10 +85,18 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
   useEffect(() => { safeSetItem('mmloqz-hero-right-img-offset-x', rightImgOffsetX.toString()); }, [rightImgOffsetX]);
   useEffect(() => { safeSetItem('mmloqz-hero-right-img-offset-y', rightImgOffsetY.toString()); }, [rightImgOffsetY]);
 
+  const isLocalUserEdit = useRef<boolean>(false);
+
   useEffect(() => {
     const handleFreshPageSync = (e: any) => {
       if (e.detail) {
-        const d = e.detail;
+        if (e.detail.source === 'server-sync' && (isLocalUserEdit.current || localStorage.getItem('mmloqz-has-unsaved-user-edits') === 'true')) {
+          return;
+        }
+        if (e.detail.source === 'saved-to-server') {
+          isLocalUserEdit.current = false;
+        }
+        const d = e.detail.cfg || e.detail;
         if (d['mmloqz-hero-line1']) setHeroLine1(d['mmloqz-hero-line1']);
         if (d['mmloqz-hero-line2']) setHeroLine2(d['mmloqz-hero-line2']);
         if (d['mmloqz-hero-line3']) setHeroLine3(d['mmloqz-hero-line3']);
@@ -118,7 +126,9 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
       reader.onload = async (ev) => {
         if (ev.target?.result) {
           const raw = ev.target.result as string;
-          const compressed = await compressImage(raw, 1200, 0.8);
+          const compressed = await compressImage(raw, 800, 0.7);
+          isLocalUserEdit.current = true;
+          safeSetItem('mmloqz-has-unsaved-user-edits', 'true');
           setBgShadedSrc(compressed);
         }
       };
@@ -133,7 +143,9 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
       reader.onload = async (ev) => {
         if (ev.target?.result) {
           const raw = ev.target.result as string;
-          const compressed = await compressImage(raw, 1200, 0.8);
+          const compressed = await compressImage(raw, 800, 0.7);
+          isLocalUserEdit.current = true;
+          safeSetItem('mmloqz-has-unsaved-user-edits', 'true');
           setRightImgSrc(compressed);
         }
       };
