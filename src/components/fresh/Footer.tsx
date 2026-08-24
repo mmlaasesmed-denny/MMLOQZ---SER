@@ -12,7 +12,7 @@ export default function Footer({ editable = true, onDelete }: FooterProps) {
 
   // Logo Customizer State
   const [footerLogoSrc, setFooterLogoSrc] = useState<string>(() => {
-    return localStorage.getItem('mmloqz-footer-logo-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png';
+    return localStorage.getItem('mmloqz-footer-logo-src') || '/images/logo.png';
   });
   const [footerLogoHeight, setFooterLogoHeight] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-footer-logo-height');
@@ -56,7 +56,7 @@ export default function Footer({ editable = true, onDelete }: FooterProps) {
   };
 
   const resetFooterLogo = () => {
-    setFooterLogoSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png');
+    setFooterLogoSrc('/images/logo.png');
     setFooterLogoHeight(56);
     localStorage.removeItem('mmloqz-footer-logo-src');
     localStorage.removeItem('mmloqz-footer-logo-height');

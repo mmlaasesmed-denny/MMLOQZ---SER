@@ -19,7 +19,7 @@ const PRESET_SNIPPETS = [
       <h2 style="font-size: 42px; font-weight: 800; line-height: 1.1;">OUR NEW BRAND SITE</h2>
     </div>
     <div style="flex: 1; text-align: center;">
-      <img src="https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp" alt="MMLoqz Digital Lock Cylinder" style="width: 80%; max-width: 400px; transform: rotate(25deg);" />
+      <img src="/images/Hero.webp" alt="MMLoqz Digital Lock Cylinder" style="width: 80%; max-width: 400px; transform: rotate(25deg);" />
     </div>
   </div>
 </section>`

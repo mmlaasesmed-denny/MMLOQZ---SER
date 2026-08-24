@@ -11,7 +11,7 @@ export default function Navbar({ editable = true }: NavbarProps) {
 
   // Logo Settings state with localStorage persistence
   const [logoSrc, setLogoSrc] = useState<string>(() => {
-    return localStorage.getItem('mmloqz-custom-logo-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png';
+    return localStorage.getItem('mmloqz-custom-logo-src') || '/images/logo.png';
   });
   const [logoHeight, setLogoHeight] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-custom-logo-height');
@@ -51,7 +51,7 @@ export default function Navbar({ editable = true }: NavbarProps) {
   };
 
   const resetLogo = () => {
-    setLogoSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png');
+    setLogoSrc('/images/logo.png');
     setLogoHeight(48);
     setLogoOffsetX(0);
     localStorage.removeItem('mmloqz-custom-logo-src');

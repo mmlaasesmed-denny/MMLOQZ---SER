@@ -48,7 +48,7 @@
               {
                 "id": "mmloqz-logo-img",
                 "type": "image",
-                "content": "https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png",
+                "content": "/images/logo.png",
                 "style": {
                   "height": "64px",
                   "width": "auto",
@@ -131,7 +131,7 @@
               {
                 "id": "hero-lock-img",
                 "type": "image",
-                "content": "https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp",
+                "content": "/images/Hero.webp",
                 "style": {
                   "width": "80%",
                   "margin": "0 auto",
@@ -340,7 +340,7 @@
               {
                 "id": "collage-image",
                 "type": "image",
-                "content": "https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/MMloqz%20products%20image.webp",
+                "content": "/images/MMloqz%20products%20image.webp",
                 "style": {
                   "width": "100%",
                   "objectFit": "contain"
@@ -363,7 +363,7 @@
               {
                 "id": "foot-logo-img",
                 "type": "image",
-                "content": "https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png",
+                "content": "/images/logo.png",
                 "style": {
                   "height": "64px",
                   "width": "auto",

@@ -34,7 +34,7 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
 
   // Image State
   const [imageSrc, setImageSrc] = useState<string>(() => {
-    return localStorage.getItem('mmloqz-brand-section-img-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/MMloqz%20products%20image.webp';
+    return localStorage.getItem('mmloqz-brand-section-img-src') || '/images/MMloqz%20products%20image.webp';
   });
 
   const [imageWidth, setImageWidth] = useState<number>(() => {
@@ -66,7 +66,7 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
   };
 
   const resetImage = () => {
-    setImageSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/MMloqz%20products%20image.webp');
+    setImageSrc('/images/MMloqz%20products%20image.webp');
     setImageWidth(512);
     localStorage.removeItem('mmloqz-brand-section-img-src');
     localStorage.removeItem('mmloqz-brand-section-img-width');

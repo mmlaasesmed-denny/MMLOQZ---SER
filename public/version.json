@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "eb79421",
-  "message": "Fix ReferenceError activePageTitle in handleDirectSaveToDjango in SaveExportControls.tsx",
+  "commit": "33dd095",
+  "message": "Fix ReferenceError pages in handleDirectSaveToDjango using component props sections and activePageName",
   "branch": "main",
-  "deployedAt": "2026-08-24 14:13:14 UTC",
+  "deployedAt": "2026-08-24 15:57:37 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }

@@ -18,7 +18,7 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
 
   // 1. Background Shaded Image State
   const [bgShadedSrc, setBgShadedSrc] = useState<string>(() => {
-    return localStorage.getItem('mmloqz-hero-bg-shaded-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
+    return localStorage.getItem('mmloqz-hero-bg-shaded-src') || '/images/Hero.webp';
   });
   const [bgWidth, setBgWidth] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-hero-bg-width');
@@ -43,7 +43,7 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
 
   // 2. Right Product Image State
   const [rightImgSrc, setRightImgSrc] = useState<string>(() => {
-    return localStorage.getItem('mmloqz-hero-right-img-src') || 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp';
+    return localStorage.getItem('mmloqz-hero-right-img-src') || '/images/Hero.webp';
   });
   const [rightImgWidth, setRightImgWidth] = useState<number>(() => {
     const saved = localStorage.getItem('mmloqz-hero-right-img-width');
@@ -122,14 +122,14 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
     localStorage.removeItem('mmloqz-hero-line2');
     localStorage.removeItem('mmloqz-hero-line3');
 
-    setBgShadedSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
+    setBgShadedSrc('/images/Hero.webp');
     setBgWidth(320);
     setBgRotate(30);
     setBgOpacity(0.22);
     setBgOffsetX(0);
     setBgOffsetY(0);
 
-    setRightImgSrc('https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp');
+    setRightImgSrc('/images/Hero.webp');
     setRightImgWidth(340);
     setRightImgRotate(30);
     setRightImgOpacity(1.0);

@@ -154,7 +154,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'mmloqz-logo-img',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png',
+                content: '/images/logo.png',
                 style: { height: '64px', width: 'auto', objectFit: 'contain' }
               }
             ]
@@ -211,7 +211,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'hero-lock-img',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp',
+                content: '/images/Hero.webp',
                 style: { width: '80%', margin: '0 auto', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.3))', transform: 'rotate(25deg)' }
               }
             ]
@@ -348,7 +348,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'collage-image',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/MMloqz%20products%20image.webp',
+                content: '/images/MMloqz%20products%20image.webp',
                 style: { width: '100%', objectFit: 'contain' }
               }
             ]
@@ -368,7 +368,7 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
               {
                 id: 'foot-logo-img',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png',
+                content: '/images/logo.png',
                 style: { height: '64px', width: 'auto', objectFit: 'contain', marginBottom: '8px' }
               },
               {

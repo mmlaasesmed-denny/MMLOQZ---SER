@@ -115,7 +115,7 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'mmloqz-logo-img-tpl',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png',
+                content: '/images/logo.png',
                 style: { height: '64px', width: 'auto', objectFit: 'contain' }
               }
             ]
@@ -172,7 +172,7 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'hero-lock-img-tpl',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/Hero.webp',
+                content: '/images/Hero.webp',
                 style: { width: '80%', margin: '0 auto', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.3))', transform: 'rotate(25deg)' }
               }
             ]
@@ -309,7 +309,7 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'collage-image-tpl',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/MMloqz%20products%20image.webp',
+                content: '/images/MMloqz%20products%20image.webp',
                 style: { width: '100%', objectFit: 'contain' }
               }
             ]
@@ -329,7 +329,7 @@ export const TEMPLATES: { id: string; name: string; description: string; section
               {
                 id: 'foot-logo-img-tpl',
                 type: 'image',
-                content: 'https://raw.githubusercontent.com/MMLoqz-ApS/MMLoqz/main/src/assets/images/logo.png',
+                content: '/images/logo.png',
                 style: { height: '64px', width: 'auto', objectFit: 'contain', marginBottom: '8px' }
               },
               {
