@@ -89,9 +89,15 @@ export default function SaveExportControls({
   const fetchDjangoLayouts = async (urlStr?: string) => {
     const rawUrl = urlStr || djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
     const targetUrl = getCleanApiUrl(rawUrl);
+    const cacheBuster = `?t=${Date.now()}`;
     try {
-      const resp = await fetch(`${targetUrl}/layouts/`, {
-        headers: { 'Accept': 'application/json' }
+      const resp = await fetch(`${targetUrl}/layouts/${cacheBuster}`, {
+        cache: 'no-store',
+        headers: { 
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
       });
       if (resp.ok) {
         const data = await resp.json();

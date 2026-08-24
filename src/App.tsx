@@ -478,14 +478,20 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Load published site layout for public visitors & cross-browser sync
+  // Load published site layout for public visitors & real-time cross-device sync
   useEffect(() => {
     const syncPublishedSite = async () => {
       try {
         const origin = window.location.origin;
         const backendBase = origin.includes('localhost') || origin.includes('127.0.0.1') ? 'http://localhost:8000' : origin;
-        const resp = await fetch(`${backendBase}/api/layouts/`, {
-          headers: { 'Accept': 'application/json' }
+        const cacheBuster = `?t=${Date.now()}`;
+        const resp = await fetch(`${backendBase}/api/layouts/${cacheBuster}`, {
+          cache: 'no-store',
+          headers: { 
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
         });
         if (resp.ok) {
           const dbLayouts = await resp.json();
@@ -498,7 +504,10 @@ export default function App() {
         }
       } catch (err) {}
     };
+
     syncPublishedSite();
+    const interval = setInterval(syncPublishedSite, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const [isLoading, setIsLoading] = useState(true);
