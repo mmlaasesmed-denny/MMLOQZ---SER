@@ -1315,6 +1315,25 @@ export default function App() {
       });
     });
 
+    // Log change event for Activity Tracker
+    try {
+      if (updatedSrc !== undefined) {
+        const shortSrc = updatedSrc.startsWith('data:') ? '[Uploaded Local Image]' : updatedSrc;
+        window.dispatchEvent(new CustomEvent('visual-builder-log', {
+          detail: { action: 'Image Uploaded/Changed', details: `Updated image for ${elementId} (${shortSrc.substring(0, 35)})` }
+        }));
+      } else if (updatedContent !== undefined) {
+        const cleanTxt = updatedContent.replace(/<[^>]*>/g, '').trim();
+        window.dispatchEvent(new CustomEvent('visual-builder-log', {
+          detail: { action: 'Text Content Edited', details: `Updated text for ${elementId}: "${cleanTxt.substring(0, 35)}${cleanTxt.length > 35 ? '...' : ''}"` }
+        }));
+      } else if (Object.keys(updatedStyles).length > 0) {
+        window.dispatchEvent(new CustomEvent('visual-builder-log', {
+          detail: { action: 'Style/Theme Edited', details: `Updated styling for element ${elementId}` }
+        }));
+      }
+    } catch (e) {}
+
     // Sync logo updates globally across all pages
     const isDirectLogo = elementId.toLowerCase().includes('logo');
     const logoOverlay = updatedFields?.overlays?.find(o => o.type === 'logo');

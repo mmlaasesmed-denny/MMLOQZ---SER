@@ -72,9 +72,34 @@ export default function SaveExportControls({
   const [newLayoutTitle, setNewLayoutTitle] = useState('My Custom Website Draft');
 
   const [versionInfo, setVersionInfo] = useState<{ commit: string; deployedAt: string; status: string; message?: string } | null>(null);
-  const [syncLogs, setSyncLogs] = useState<Array<{ time: string; action: string; status: 'ok' | 'error'; details: string }>>([
-    { time: new Date().toLocaleTimeString(), action: 'System Startup', status: 'ok', details: 'Zero-cache real-time tracker active' }
-  ]);
+  const [syncLogs, setSyncLogs] = useState<Array<{ time: string; action: string; status: 'ok' | 'error'; details: string }>>(() => {
+    try {
+      const saved = localStorage.getItem('visual-builder-activity-log');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [
+      { time: new Date().toLocaleTimeString(), action: 'System Startup', status: 'ok', details: 'Zero-cache real-time tracker active' }
+    ];
+  });
+
+  const addActivityLog = (action: string, details: string, status: 'ok' | 'error' = 'ok') => {
+    const entry = { time: new Date().toLocaleTimeString(), action, status, details };
+    setSyncLogs(prev => {
+      const updated = [entry, ...prev].slice(0, 30);
+      try { localStorage.setItem('visual-builder-activity-log', JSON.stringify(updated)); } catch (e) {}
+      return updated;
+    });
+  };
+
+  React.useEffect(() => {
+    const handleLogEvent = (e: any) => {
+      if (e.detail && e.detail.action && e.detail.details) {
+        addActivityLog(e.detail.action, e.detail.details, e.detail.status || 'ok');
+      }
+    };
+    window.addEventListener('visual-builder-log', handleLogEvent);
+    return () => window.removeEventListener('visual-builder-log', handleLogEvent);
+  }, []);
 
   const fetchVersionInfo = async () => {
     try {
