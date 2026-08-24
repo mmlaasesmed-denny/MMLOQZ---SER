@@ -408,24 +408,22 @@ export default function SaveExportControls({
 
     // 1. Instant Local Storage Save
     try {
-      localStorage.setItem('visual-builder-pages-v2', JSON.stringify(pages));
-      localStorage.setItem('visual-builder-pages-cms-mmloqz-clone-v300', JSON.stringify(pages));
-      localStorage.setItem('mmloqz_public_published_site_v1', JSON.stringify(pages));
+      localStorage.setItem('visual-builder-sections-v1', JSON.stringify(sections));
+      localStorage.setItem('visual-builder-theme-v1', JSON.stringify(theme));
     } catch (e) {}
 
     // 2. Sync to Server Database API (/api/layouts/)
     try {
       const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
       const targetUrl = getCleanApiUrl(rawUrl);
-      const currentPage = pages.find(p => p.id === activePageId) || pages[0];
-      const titleStr = currentPage ? `Page: ${currentPage.name || currentPage.title || 'Home'} (Synced Draft)` : 'MMLOQZ-WEBSITE-LAYOUT-DRAFT';
+      const titleStr = activePageName ? `Page: ${activePageName} (Synced Draft)` : 'MMLOQZ-WEBSITE-LAYOUT-DRAFT';
       const payload = {
         title: titleStr,
         sections: sections,
         theme: theme,
         is_published: true
       };
-      await fetch(`${targetUrl}/layouts/`, {
+      const resp = await fetch(`${targetUrl}/layouts/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -433,9 +431,17 @@ export default function SaveExportControls({
         },
         body: JSON.stringify(payload)
       });
+      if (resp.ok) {
+        window.dispatchEvent(new CustomEvent('visual-builder-log', {
+          detail: { action: 'Draft Saved & Synced', details: `Saved layout draft "${titleStr}" to server DB API (200 OK)` }
+        }));
+      }
       fetchDjangoLayouts(rawUrl);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Backend draft sync error:", err);
+      window.dispatchEvent(new CustomEvent('visual-builder-log', {
+        detail: { action: 'Backend Sync Error', details: err.message || 'Failed to sync with server DB', status: 'error' }
+      }));
     }
 
     setIsDjangoLoading(false);
