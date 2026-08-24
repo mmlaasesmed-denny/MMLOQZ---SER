@@ -105,23 +105,15 @@ export default function SaveExportControls({
             theme: item.theme || {}
           }));
 
-          setLocalSavedDrafts(prev => {
-            const map = new Map();
-            prev.forEach(d => map.set(d.id, d));
-            apiDrafts.forEach(d => map.set(d.id, d));
-            const merged = Array.from(map.values());
-            localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(merged));
-            return merged;
-          });
+          setLocalSavedDrafts(apiDrafts);
+          localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(apiDrafts));
         }
       }
     } catch (err) {}
   };
 
   React.useEffect(() => {
-    if (showDjangoModal) {
-      fetchDjangoLayouts();
-    }
+    fetchDjangoLayouts();
   }, [showDjangoModal]);
 
   const handleSaveLocalDraft = async () => {

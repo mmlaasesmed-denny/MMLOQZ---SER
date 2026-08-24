@@ -478,22 +478,21 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Load published site layout for public visitors
+  // Load published site layout for public visitors & cross-browser sync
   useEffect(() => {
     const syncPublishedSite = async () => {
       try {
-        const isLocalAdmin = localStorage.getItem('visual-builder-is-admin') === 'true';
-        if (isLocalAdmin) return;
-
-        const resp = await fetch('/published_site.json');
+        const origin = window.location.origin;
+        const backendBase = origin.includes('localhost') || origin.includes('127.0.0.1') ? 'http://localhost:8000' : origin;
+        const resp = await fetch(`${backendBase}/api/layouts/`, {
+          headers: { 'Accept': 'application/json' }
+        });
         if (resp.ok) {
-          const data = await resp.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const isFullCMS = data.every(p => p && p.id && p.name && Array.isArray(p.sections));
-            if (isFullCMS) {
-              setPages(data);
-            } else if (data[0] && Array.isArray(data[0].sections)) {
-              setPages(prev => prev.map(p => p.id === 'home' ? { ...p, sections: data[0].sections, theme: data[0].theme || p.theme } : p));
+          const dbLayouts = await resp.json();
+          if (Array.isArray(dbLayouts) && dbLayouts.length > 0) {
+            const latestLayout = [...dbLayouts].reverse().find((l: any) => l && l.sections && Array.isArray(l.sections));
+            if (latestLayout && Array.isArray(latestLayout.sections)) {
+              setPages(prev => prev.map(p => p.id === 'home' ? { ...p, sections: latestLayout.sections, theme: latestLayout.theme || p.theme } : p));
             }
           }
         }
