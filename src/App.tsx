@@ -478,7 +478,7 @@ export default function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Load published site layout for public visitors & real-time cross-device sync
+  // Load published site layout for public visitors & cross-device sync
   useEffect(() => {
     const syncPublishedSite = async () => {
       try {
@@ -498,7 +498,13 @@ export default function App() {
           if (Array.isArray(dbLayouts) && dbLayouts.length > 0) {
             const latestLayout = [...dbLayouts].reverse().find((l: any) => l && l.sections && Array.isArray(l.sections));
             if (latestLayout && Array.isArray(latestLayout.sections)) {
-              setPages(prev => prev.map(p => p.id === 'home' ? { ...p, sections: latestLayout.sections, theme: latestLayout.theme || p.theme } : p));
+              setPages(prev => {
+                const homePage = prev.find(p => p.id === 'home');
+                if (homePage && JSON.stringify(homePage.sections) === JSON.stringify(latestLayout.sections)) {
+                  return prev; // Skip state mutation to avoid NS_BINDING_ABORTED image reloads
+                }
+                return prev.map(p => p.id === 'home' ? { ...p, sections: latestLayout.sections, theme: latestLayout.theme || p.theme } : p);
+              });
             }
           }
         }
@@ -506,8 +512,13 @@ export default function App() {
     };
 
     syncPublishedSite();
-    const interval = setInterval(syncPublishedSite, 5000);
-    return () => clearInterval(interval);
+
+    // Only run background interval for non-admin public visitors to prevent editing interruptions
+    const isAdminUser = localStorage.getItem('visual-builder-is-admin') === 'true';
+    if (!isAdminUser) {
+      const interval = setInterval(syncPublishedSite, 15000);
+      return () => clearInterval(interval);
+    }
   }, []);
 
   const [isLoading, setIsLoading] = useState(true);
