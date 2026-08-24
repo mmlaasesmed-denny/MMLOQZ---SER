@@ -503,6 +503,19 @@ export default function App() {
             });
             const latestLayout = sortedLayouts.find((l: any) => l && l.sections && Array.isArray(l.sections));
             if (latestLayout && Array.isArray(latestLayout.sections)) {
+              if (latestLayout.theme?.customLogoSrc) {
+                localStorage.setItem('mmloqz-custom-logo-src', latestLayout.theme.customLogoSrc);
+                if (latestLayout.theme.customLogoHeight) localStorage.setItem('mmloqz-custom-logo-height', String(latestLayout.theme.customLogoHeight));
+                if (latestLayout.theme.customLogoOffsetX !== undefined) localStorage.setItem('mmloqz-custom-logo-offset-x', String(latestLayout.theme.customLogoOffsetX));
+                window.dispatchEvent(new CustomEvent('mmloqz-logo-updated', { 
+                  detail: { 
+                    logoSrc: latestLayout.theme.customLogoSrc, 
+                    logoHeight: latestLayout.theme.customLogoHeight, 
+                    logoOffsetX: latestLayout.theme.customLogoOffsetX 
+                  } 
+                }));
+              }
+
               setPages(prev => {
                 const homePage = prev.find(p => p.id === 'home');
                 if (homePage && JSON.stringify(homePage.sections) === JSON.stringify(latestLayout.sections)) {

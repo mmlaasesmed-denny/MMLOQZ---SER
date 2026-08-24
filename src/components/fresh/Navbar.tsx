@@ -26,15 +26,20 @@ export default function Navbar({ editable = true }: NavbarProps) {
 
   useEffect(() => {
     localStorage.setItem('mmloqz-custom-logo-src', logoSrc);
-  }, [logoSrc]);
+    window.dispatchEvent(new CustomEvent('mmloqz-logo-updated', { detail: { logoSrc, logoHeight, logoOffsetX } }));
+  }, [logoSrc, logoHeight, logoOffsetX]);
 
   useEffect(() => {
-    localStorage.setItem('mmloqz-custom-logo-height', logoHeight.toString());
-  }, [logoHeight]);
-
-  useEffect(() => {
-    localStorage.setItem('mmloqz-custom-logo-offset-x', logoOffsetX.toString());
-  }, [logoOffsetX]);
+    const handleLogoSync = (e: any) => {
+      if (e.detail) {
+        if (e.detail.logoSrc) setLogoSrc(e.detail.logoSrc);
+        if (e.detail.logoHeight) setLogoHeight(Number(e.detail.logoHeight));
+        if (e.detail.logoOffsetX !== undefined) setLogoOffsetX(Number(e.detail.logoOffsetX));
+      }
+    };
+    window.addEventListener('mmloqz-logo-updated', handleLogoSync);
+    return () => window.removeEventListener('mmloqz-logo-updated', handleLogoSync);
+  }, []);
 
   // Handle local file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +48,11 @@ export default function Navbar({ editable = true }: NavbarProps) {
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
-          setLogoSrc(event.target.result as string);
+          const newSrc = event.target.result as string;
+          setLogoSrc(newSrc);
+          window.dispatchEvent(new CustomEvent('visual-builder-log', {
+            detail: { action: 'Logo Uploaded', details: `Uploaded new logo file: ${file.name}` }
+          }));
         }
       };
       reader.readAsDataURL(file);

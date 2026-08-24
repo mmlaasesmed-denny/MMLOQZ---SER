@@ -417,10 +417,19 @@ export default function SaveExportControls({
       const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
       const targetUrl = getCleanApiUrl(rawUrl);
       const titleStr = activePageName ? `Page: ${activePageName} (Synced Draft)` : 'MMLOQZ-WEBSITE-LAYOUT-DRAFT';
+      const customLogoSrc = localStorage.getItem('mmloqz-custom-logo-src') || '';
+      const customLogoHeight = localStorage.getItem('mmloqz-custom-logo-height') || '48';
+      const customLogoOffsetX = localStorage.getItem('mmloqz-custom-logo-offset-x') || '0';
+
       const payload = {
         title: titleStr,
         sections: sections,
-        theme: theme,
+        theme: {
+          ...theme,
+          customLogoSrc,
+          customLogoHeight,
+          customLogoOffsetX
+        },
         is_published: true
       };
       const resp = await fetch(`${targetUrl}/layouts/`, {
