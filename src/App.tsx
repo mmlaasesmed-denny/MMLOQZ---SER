@@ -496,7 +496,12 @@ export default function App() {
         if (resp.ok) {
           const dbLayouts = await resp.json();
           if (Array.isArray(dbLayouts) && dbLayouts.length > 0) {
-            const latestLayout = [...dbLayouts].reverse().find((l: any) => l && l.sections && Array.isArray(l.sections));
+            const sortedLayouts = [...dbLayouts].sort((a: any, b: any) => {
+              const timeA = a.updated_at ? new Date(a.updated_at).getTime() : (Number(a.id) || 0);
+              const timeB = b.updated_at ? new Date(b.updated_at).getTime() : (Number(b.id) || 0);
+              return timeB - timeA;
+            });
+            const latestLayout = sortedLayouts.find((l: any) => l && l.sections && Array.isArray(l.sections));
             if (latestLayout && Array.isArray(latestLayout.sections)) {
               setPages(prev => {
                 const homePage = prev.find(p => p.id === 'home');
@@ -1083,9 +1088,13 @@ export default function App() {
           if (Array.isArray(dbLayouts) && dbLayouts.length > 0) {
             setPages(prevPages => {
               const updatedPages = [...prevPages];
-              const reversed = [...dbLayouts].reverse();
+              const sorted = [...dbLayouts].sort((a: any, b: any) => {
+                const timeA = a.updated_at ? new Date(a.updated_at).getTime() : (Number(a.id) || 0);
+                const timeB = b.updated_at ? new Date(b.updated_at).getTime() : (Number(b.id) || 0);
+                return timeA - timeB; // Process oldest to newest so newest layout wins!
+              });
               
-              reversed.forEach((layout: any) => {
+              sorted.forEach((layout: any) => {
                 if (!layout.sections || !layout.theme) return;
                 
                 const titleStr = layout.title || '';
