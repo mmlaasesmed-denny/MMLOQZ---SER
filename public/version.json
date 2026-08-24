@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "a0c6a77",
-  "message": "Fix database layout record ordering so newest layout ID 58 is always loaded on initial render and cross-device sync",
+  "commit": "a48f120",
+  "message": "Package custom logo image uploads directly inside DB payload theme object for 100% cross-device logo sync",
   "branch": "main",
-  "deployedAt": "2026-08-24 18:30:54 UTC",
+  "deployedAt": "2026-08-24 18:45:22 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }

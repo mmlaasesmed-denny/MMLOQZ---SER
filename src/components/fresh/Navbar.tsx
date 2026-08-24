@@ -23,18 +23,34 @@ export default function Navbar({ editable = true }: NavbarProps) {
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isLocalUserEdit = useRef<boolean>(false);
 
   useEffect(() => {
     localStorage.setItem('mmloqz-custom-logo-src', logoSrc);
-    window.dispatchEvent(new CustomEvent('mmloqz-logo-updated', { detail: { logoSrc, logoHeight, logoOffsetX } }));
-  }, [logoSrc, logoHeight, logoOffsetX]);
+  }, [logoSrc]);
+
+  useEffect(() => {
+    localStorage.setItem('mmloqz-custom-logo-height', logoHeight.toString());
+  }, [logoHeight]);
+
+  useEffect(() => {
+    localStorage.setItem('mmloqz-custom-logo-offset-x', logoOffsetX.toString());
+  }, [logoOffsetX]);
 
   useEffect(() => {
     const handleLogoSync = (e: any) => {
       if (e.detail) {
+        // If user is currently editing/uploading locally, ignore old server sync overwrites
+        if (e.detail.source === 'server-sync' && (isLocalUserEdit.current || localStorage.getItem('mmloqz-logo-has-user-edit') === 'true')) {
+          return;
+        }
         if (e.detail.logoSrc) setLogoSrc(e.detail.logoSrc);
         if (e.detail.logoHeight) setLogoHeight(Number(e.detail.logoHeight));
         if (e.detail.logoOffsetX !== undefined) setLogoOffsetX(Number(e.detail.logoOffsetX));
+        if (e.detail.source === 'saved-to-server') {
+          isLocalUserEdit.current = false;
+          localStorage.removeItem('mmloqz-logo-has-user-edit');
+        }
       }
     };
     window.addEventListener('mmloqz-logo-updated', handleLogoSync);
@@ -49,6 +65,8 @@ export default function Navbar({ editable = true }: NavbarProps) {
       reader.onload = (event) => {
         if (event.target?.result) {
           const newSrc = event.target.result as string;
+          isLocalUserEdit.current = true;
+          localStorage.setItem('mmloqz-logo-has-user-edit', 'true');
           setLogoSrc(newSrc);
           window.dispatchEvent(new CustomEvent('visual-builder-log', {
             detail: { action: 'Logo Uploaded', details: `Uploaded new logo file: ${file.name}` }
@@ -60,6 +78,8 @@ export default function Navbar({ editable = true }: NavbarProps) {
   };
 
   const resetLogo = () => {
+    isLocalUserEdit.current = false;
+    localStorage.removeItem('mmloqz-logo-has-user-edit');
     setLogoSrc('/images/logo.png');
     setLogoHeight(48);
     setLogoOffsetX(0);

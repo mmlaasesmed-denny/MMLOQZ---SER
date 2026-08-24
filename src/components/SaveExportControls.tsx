@@ -441,6 +441,8 @@ export default function SaveExportControls({
         body: JSON.stringify(payload)
       });
       if (resp.ok) {
+        localStorage.removeItem('mmloqz-logo-has-user-edit');
+        window.dispatchEvent(new CustomEvent('mmloqz-logo-updated', { detail: { source: 'saved-to-server' } }));
         window.dispatchEvent(new CustomEvent('visual-builder-log', {
           detail: { action: 'Draft Saved & Synced', details: `Saved layout draft "${titleStr}" to server DB API (200 OK)` }
         }));
