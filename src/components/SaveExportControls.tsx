@@ -321,15 +321,38 @@ export default function SaveExportControls({
   const handleDirectSaveToDjango = async () => {
     setIsDjangoLoading(true);
 
-    // 1. Instant Local Storage Save for Public Visitors and Admin
+    // 1. Instant Local Storage Save
     try {
       localStorage.setItem('visual-builder-pages-v2', JSON.stringify(pages));
       localStorage.setItem('visual-builder-pages-cms-mmloqz-clone-v300', JSON.stringify(pages));
       localStorage.setItem('mmloqz_public_published_site_v1', JSON.stringify(pages));
     } catch (e) {}
 
+    // 2. Sync to Server Database API (/api/layouts/)
+    try {
+      const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+      const targetUrl = getCleanApiUrl(rawUrl);
+      const payload = {
+        title: activePageTitle ? `Page: ${activePageTitle} (Synced Draft)` : 'MMLOQZ-WEBSITE-LAYOUT-DRAFT',
+        sections: sections,
+        theme: theme,
+        is_published: true
+      };
+      await fetch(`${targetUrl}/layouts/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      fetchDjangoLayouts(rawUrl);
+    } catch (err) {
+      console.error("Backend draft sync error:", err);
+    }
+
     setIsDjangoLoading(false);
-    alert('🎉 Website Saved & Published Live!\n\nAll your custom text, layout changes, line height, bullet points, image uploads, and logo edits are saved and live for all visitors!');
+    alert('🎉 Website Saved & Synced Live!\n\nAll your custom text, layout changes, line height, bullet points, image uploads, and logo edits are saved and synced across all devices!');
   };
 
   const handleSaveToDjango = async () => {

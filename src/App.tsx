@@ -1092,6 +1092,10 @@ export default function App() {
                     break;
                   }
                 }
+
+                if (titleStr === 'MMLOQZ-WEBSITE-LAYOUT-DRAFT' || titleStr === 'mmloqz layout' || titleStr.includes('Home')) {
+                  foundPageIndex = updatedPages.findIndex(p => p.id === 'home');
+                }
                 
                 if (foundPageIndex === -1) {
                   let cleanName = titleStr.replace('Page: ', '').replace(' (Synced Draft)', '').trim();
