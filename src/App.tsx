@@ -7,7 +7,7 @@ import SaveExportControls from './components/SaveExportControls';
 import ImageSelectorModal from './components/ImageSelectorModal';
 import { Lock, Unlock, LogOut, Shield, Globe, Sparkles, Plus, Code } from 'lucide-react';
 import AdminLoginModal from './components/AdminLoginModal';
-import { compressImage, safeSetItem } from './utils/imageCompressor';
+import { compressImage, safeSetItem, cleanStorageOnStartup } from './utils/imageCompressor';
 
 interface SEOMetadata {
   metaTitle?: string;
@@ -460,6 +460,7 @@ export default function App() {
   const [visitorViewport, setVisitorViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
 
   useEffect(() => {
+    cleanStorageOnStartup();
     const currentPath = window.location.pathname.replace(/^\/|\/$/g, '');
     const isEditor = currentPath === 'admin-editor';
     if (isEditor) return;
