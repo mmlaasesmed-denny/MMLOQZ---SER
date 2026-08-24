@@ -417,8 +417,10 @@ export default function SaveExportControls({
     try {
       const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
       const targetUrl = getCleanApiUrl(rawUrl);
+      const currentPage = pages.find(p => p.id === activePageId) || pages[0];
+      const titleStr = currentPage ? `Page: ${currentPage.name || currentPage.title || 'Home'} (Synced Draft)` : 'MMLOQZ-WEBSITE-LAYOUT-DRAFT';
       const payload = {
-        title: activePageTitle ? `Page: ${activePageTitle} (Synced Draft)` : 'MMLOQZ-WEBSITE-LAYOUT-DRAFT',
+        title: titleStr,
         sections: sections,
         theme: theme,
         is_published: true
