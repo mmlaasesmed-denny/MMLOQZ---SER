@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "a48f120",
-  "message": "Package custom logo image uploads directly inside DB payload theme object for 100% cross-device logo sync",
+  "commit": "c3eeb48",
+  "message": "Lock local unsaved logo uploads so background server sync never reverts unsaved local image changes",
   "branch": "main",
-  "deployedAt": "2026-08-24 18:45:22 UTC",
+  "deployedAt": "2026-08-24 18:57:51 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }

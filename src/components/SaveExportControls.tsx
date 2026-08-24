@@ -421,6 +421,22 @@ export default function SaveExportControls({
       const customLogoHeight = localStorage.getItem('mmloqz-custom-logo-height') || '48';
       const customLogoOffsetX = localStorage.getItem('mmloqz-custom-logo-offset-x') || '0';
 
+      const freshPageConfig: Record<string, string> = {};
+      const freshKeys = [
+        'mmloqz-custom-logo-src', 'mmloqz-custom-logo-height', 'mmloqz-custom-logo-offset-x',
+        'mmloqz-hero-line1', 'mmloqz-hero-line2', 'mmloqz-hero-line3',
+        'mmloqz-hero-bg-shaded-src', 'mmloqz-hero-bg-width', 'mmloqz-hero-bg-rotate', 'mmloqz-hero-bg-opacity', 'mmloqz-hero-bg-offset-x', 'mmloqz-hero-bg-offset-y',
+        'mmloqz-hero-right-img-src', 'mmloqz-hero-right-img-width', 'mmloqz-hero-right-img-rotate', 'mmloqz-hero-right-img-opacity', 'mmloqz-hero-right-img-offset-x', 'mmloqz-hero-right-img-offset-y',
+        'mmloqz-brand-heading', 'mmloqz-brand-p1', 'mmloqz-brand-p2', 'mmloqz-brand-bullet1', 'mmloqz-brand-bullet2', 'mmloqz-brand-bullet3', 'mmloqz-brand-bullet4', 'mmloqz-brand-bottom-hl',
+        'mmloqz-brand-text-color', 'mmloqz-brand-line-height', 'mmloqz-brand-letter-spacing', 'mmloqz-brand-list-type', 'mmloqz-brand-font-family', 'mmloqz-brand-text-align',
+        'mmloqz-brand-section-img-src', 'mmloqz-brand-section-img-width'
+      ];
+
+      freshKeys.forEach(k => {
+        const v = localStorage.getItem(k);
+        if (v !== null) freshPageConfig[k] = v;
+      });
+
       const payload = {
         title: titleStr,
         sections: sections,
@@ -428,7 +444,8 @@ export default function SaveExportControls({
           ...theme,
           customLogoSrc,
           customLogoHeight,
-          customLogoOffsetX
+          customLogoOffsetX,
+          freshPageConfig
         },
         is_published: true
       };

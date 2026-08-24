@@ -54,6 +54,32 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
   useEffect(() => { localStorage.setItem('mmloqz-brand-font-family', fontFamilyVal); }, [fontFamilyVal]);
   useEffect(() => { localStorage.setItem('mmloqz-brand-text-align', textAlignVal); }, [textAlignVal]);
 
+  useEffect(() => {
+    const handleFreshPageSync = (e: any) => {
+      if (e.detail) {
+        const d = e.detail;
+        if (d['mmloqz-brand-heading']) setHeading(d['mmloqz-brand-heading']);
+        if (d['mmloqz-brand-p1']) setP1(d['mmloqz-brand-p1']);
+        if (d['mmloqz-brand-p2']) setP2(d['mmloqz-brand-p2']);
+        if (d['mmloqz-brand-bullet1']) setBullet1(d['mmloqz-brand-bullet1']);
+        if (d['mmloqz-brand-bullet2']) setBullet2(d['mmloqz-brand-bullet2']);
+        if (d['mmloqz-brand-bullet3']) setBullet3(d['mmloqz-brand-bullet3']);
+        if (d['mmloqz-brand-bullet4']) setBullet4(d['mmloqz-brand-bullet4']);
+        if (d['mmloqz-brand-bottom-hl']) setBottomHighlight(d['mmloqz-brand-bottom-hl']);
+        if (d['mmloqz-brand-section-img-src']) setImageSrc(d['mmloqz-brand-section-img-src']);
+        if (d['mmloqz-brand-section-img-width']) setImageWidth(Number(d['mmloqz-brand-section-img-width']));
+        if (d['mmloqz-brand-text-color']) setTextColor(d['mmloqz-brand-text-color']);
+        if (d['mmloqz-brand-line-height']) setLineHeightVal(d['mmloqz-brand-line-height']);
+        if (d['mmloqz-brand-letter-spacing']) setLetterSpacingVal(d['mmloqz-brand-letter-spacing']);
+        if (d['mmloqz-brand-list-type']) setListType(d['mmloqz-brand-list-type']);
+        if (d['mmloqz-brand-font-family']) setFontFamilyVal(d['mmloqz-brand-font-family']);
+        if (d['mmloqz-brand-text-align']) setTextAlignVal(d['mmloqz-brand-text-align']);
+      }
+    };
+    window.addEventListener('mmloqz-fresh-page-updated', handleFreshPageSync);
+    return () => window.removeEventListener('mmloqz-fresh-page-updated', handleFreshPageSync);
+  }, []);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {

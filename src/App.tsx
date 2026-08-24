@@ -503,6 +503,16 @@ export default function App() {
             });
             const latestLayout = sortedLayouts.find((l: any) => l && l.sections && Array.isArray(l.sections));
             if (latestLayout && Array.isArray(latestLayout.sections)) {
+              if (latestLayout.theme?.freshPageConfig && typeof latestLayout.theme.freshPageConfig === 'object') {
+                const cfg = latestLayout.theme.freshPageConfig;
+                Object.entries(cfg).forEach(([k, v]) => {
+                  if (typeof v === 'string') {
+                    localStorage.setItem(k, v);
+                  }
+                });
+                window.dispatchEvent(new CustomEvent('mmloqz-fresh-page-updated', { detail: cfg }));
+              }
+
               if (latestLayout.theme?.customLogoSrc && localStorage.getItem('mmloqz-logo-has-user-edit') !== 'true') {
                 localStorage.setItem('mmloqz-custom-logo-src', latestLayout.theme.customLogoSrc);
                 if (latestLayout.theme.customLogoHeight) localStorage.setItem('mmloqz-custom-logo-height', String(latestLayout.theme.customLogoHeight));

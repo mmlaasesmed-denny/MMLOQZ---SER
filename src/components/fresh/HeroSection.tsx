@@ -84,6 +84,31 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-x', rightImgOffsetX.toString()); }, [rightImgOffsetX]);
   useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-y', rightImgOffsetY.toString()); }, [rightImgOffsetY]);
 
+  useEffect(() => {
+    const handleFreshPageSync = (e: any) => {
+      if (e.detail) {
+        const d = e.detail;
+        if (d['mmloqz-hero-line1']) setHeroLine1(d['mmloqz-hero-line1']);
+        if (d['mmloqz-hero-line2']) setHeroLine2(d['mmloqz-hero-line2']);
+        if (d['mmloqz-hero-line3']) setHeroLine3(d['mmloqz-hero-line3']);
+        if (d['mmloqz-hero-bg-shaded-src']) setBgShadedSrc(d['mmloqz-hero-bg-shaded-src']);
+        if (d['mmloqz-hero-bg-width']) setBgWidth(Number(d['mmloqz-hero-bg-width']));
+        if (d['mmloqz-hero-bg-rotate']) setBgRotate(Number(d['mmloqz-hero-bg-rotate']));
+        if (d['mmloqz-hero-bg-opacity']) setBgOpacity(Number(d['mmloqz-hero-bg-opacity']));
+        if (d['mmloqz-hero-bg-offset-x'] !== undefined) setBgOffsetX(Number(d['mmloqz-hero-bg-offset-x']));
+        if (d['mmloqz-hero-bg-offset-y'] !== undefined) setBgOffsetY(Number(d['mmloqz-hero-bg-offset-y']));
+        if (d['mmloqz-hero-right-img-src']) setRightImgSrc(d['mmloqz-hero-right-img-src']);
+        if (d['mmloqz-hero-right-img-width']) setRightImgWidth(Number(d['mmloqz-hero-right-img-width']));
+        if (d['mmloqz-hero-right-img-rotate']) setRightImgRotate(Number(d['mmloqz-hero-right-img-rotate']));
+        if (d['mmloqz-hero-right-img-opacity']) setRightImgOpacity(Number(d['mmloqz-hero-right-img-opacity']));
+        if (d['mmloqz-hero-right-img-offset-x'] !== undefined) setRightImgOffsetX(Number(d['mmloqz-hero-right-img-offset-x']));
+        if (d['mmloqz-hero-right-img-offset-y'] !== undefined) setRightImgOffsetY(Number(d['mmloqz-hero-right-img-offset-y']));
+      }
+    };
+    window.addEventListener('mmloqz-fresh-page-updated', handleFreshPageSync);
+    return () => window.removeEventListener('mmloqz-fresh-page-updated', handleFreshPageSync);
+  }, []);
+
   // Upload Handlers
   const handleBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
