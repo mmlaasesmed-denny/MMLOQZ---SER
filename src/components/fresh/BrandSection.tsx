@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle2, Trash2, Upload, Sliders, Image as ImageIcon, RotateCcw, Check, X, Type } from 'lucide-react';
 import RichTextInspector from '../RichTextInspector';
+import { compressImage, safeSetItem } from '../../utils/imageCompressor';
 
 interface BrandSectionProps {
   editable?: boolean;
@@ -44,15 +45,15 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { localStorage.setItem('mmloqz-brand-section-img-src', imageSrc); }, [imageSrc]);
-  useEffect(() => { localStorage.setItem('mmloqz-brand-section-img-width', imageWidth.toString()); }, [imageWidth]);
+  useEffect(() => { safeSetItem('mmloqz-brand-section-img-src', imageSrc); }, [imageSrc]);
+  useEffect(() => { safeSetItem('mmloqz-brand-section-img-width', imageWidth.toString()); }, [imageWidth]);
 
-  useEffect(() => { localStorage.setItem('mmloqz-brand-text-color', textColor); }, [textColor]);
-  useEffect(() => { localStorage.setItem('mmloqz-brand-line-height', lineHeightVal); }, [lineHeightVal]);
-  useEffect(() => { localStorage.setItem('mmloqz-brand-letter-spacing', letterSpacingVal); }, [letterSpacingVal]);
-  useEffect(() => { localStorage.setItem('mmloqz-brand-list-type', listType); }, [listType]);
-  useEffect(() => { localStorage.setItem('mmloqz-brand-font-family', fontFamilyVal); }, [fontFamilyVal]);
-  useEffect(() => { localStorage.setItem('mmloqz-brand-text-align', textAlignVal); }, [textAlignVal]);
+  useEffect(() => { safeSetItem('mmloqz-brand-text-color', textColor); }, [textColor]);
+  useEffect(() => { safeSetItem('mmloqz-brand-line-height', lineHeightVal); }, [lineHeightVal]);
+  useEffect(() => { safeSetItem('mmloqz-brand-letter-spacing', letterSpacingVal); }, [letterSpacingVal]);
+  useEffect(() => { safeSetItem('mmloqz-brand-list-type', listType); }, [listType]);
+  useEffect(() => { safeSetItem('mmloqz-brand-font-family', fontFamilyVal); }, [fontFamilyVal]);
+  useEffect(() => { safeSetItem('mmloqz-brand-text-align', textAlignVal); }, [textAlignVal]);
 
   useEffect(() => {
     const handleFreshPageSync = (e: any) => {
@@ -84,8 +85,12 @@ export default function BrandSection({ editable = true, onDelete }: BrandSection
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) setImageSrc(ev.target.result as string);
+      reader.onload = async (ev) => {
+        if (ev.target?.result) {
+          const raw = ev.target.result as string;
+          const compressed = await compressImage(raw, 1200, 0.8);
+          setImageSrc(compressed);
+        }
       };
       reader.readAsDataURL(file);
     }

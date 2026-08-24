@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Upload, Sliders, RotateCcw, Check, X, Image as ImageIcon, MoveLeft, MoveRight, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
+import { compressImage, safeSetItem } from '../../utils/imageCompressor';
 
 interface HeroSectionProps {
   editable?: boolean;
@@ -70,19 +71,19 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
   const rightFileInputRef = useRef<HTMLInputElement>(null);
 
   // Persistence Effects
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-shaded-src', bgShadedSrc); }, [bgShadedSrc]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-width', bgWidth.toString()); }, [bgWidth]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-rotate', bgRotate.toString()); }, [bgRotate]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-opacity', bgOpacity.toString()); }, [bgOpacity]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-offset-x', bgOffsetX.toString()); }, [bgOffsetX]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-bg-offset-y', bgOffsetY.toString()); }, [bgOffsetY]);
+  useEffect(() => { safeSetItem('mmloqz-hero-bg-shaded-src', bgShadedSrc); }, [bgShadedSrc]);
+  useEffect(() => { safeSetItem('mmloqz-hero-bg-width', bgWidth.toString()); }, [bgWidth]);
+  useEffect(() => { safeSetItem('mmloqz-hero-bg-rotate', bgRotate.toString()); }, [bgRotate]);
+  useEffect(() => { safeSetItem('mmloqz-hero-bg-opacity', bgOpacity.toString()); }, [bgOpacity]);
+  useEffect(() => { safeSetItem('mmloqz-hero-bg-offset-x', bgOffsetX.toString()); }, [bgOffsetX]);
+  useEffect(() => { safeSetItem('mmloqz-hero-bg-offset-y', bgOffsetY.toString()); }, [bgOffsetY]);
 
-  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-src', rightImgSrc); }, [rightImgSrc]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-width', rightImgWidth.toString()); }, [rightImgWidth]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-rotate', rightImgRotate.toString()); }, [rightImgRotate]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-opacity', rightImgOpacity.toString()); }, [rightImgOpacity]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-x', rightImgOffsetX.toString()); }, [rightImgOffsetX]);
-  useEffect(() => { localStorage.setItem('mmloqz-hero-right-img-offset-y', rightImgOffsetY.toString()); }, [rightImgOffsetY]);
+  useEffect(() => { safeSetItem('mmloqz-hero-right-img-src', rightImgSrc); }, [rightImgSrc]);
+  useEffect(() => { safeSetItem('mmloqz-hero-right-img-width', rightImgWidth.toString()); }, [rightImgWidth]);
+  useEffect(() => { safeSetItem('mmloqz-hero-right-img-rotate', rightImgRotate.toString()); }, [rightImgRotate]);
+  useEffect(() => { safeSetItem('mmloqz-hero-right-img-opacity', rightImgOpacity.toString()); }, [rightImgOpacity]);
+  useEffect(() => { safeSetItem('mmloqz-hero-right-img-offset-x', rightImgOffsetX.toString()); }, [rightImgOffsetX]);
+  useEffect(() => { safeSetItem('mmloqz-hero-right-img-offset-y', rightImgOffsetY.toString()); }, [rightImgOffsetY]);
 
   useEffect(() => {
     const handleFreshPageSync = (e: any) => {
@@ -114,8 +115,12 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) setBgShadedSrc(ev.target.result as string);
+      reader.onload = async (ev) => {
+        if (ev.target?.result) {
+          const raw = ev.target.result as string;
+          const compressed = await compressImage(raw, 1200, 0.8);
+          setBgShadedSrc(compressed);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -125,8 +130,12 @@ export default function HeroSection({ editable = true, onDelete }: HeroSectionPr
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        if (ev.target?.result) setRightImgSrc(ev.target.result as string);
+      reader.onload = async (ev) => {
+        if (ev.target?.result) {
+          const raw = ev.target.result as string;
+          const compressed = await compressImage(raw, 1200, 0.8);
+          setRightImgSrc(compressed);
+        }
       };
       reader.readAsDataURL(file);
     }

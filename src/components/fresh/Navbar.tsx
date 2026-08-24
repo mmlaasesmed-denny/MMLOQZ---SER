@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, ChevronRight, Upload, MoveLeft, MoveRight, Sliders, RotateCcw, Check, Image as ImageIcon } from 'lucide-react';
+import { compressImage, safeSetItem } from '../../utils/imageCompressor';
 
 interface NavbarProps {
   editable?: boolean;
@@ -26,15 +27,15 @@ export default function Navbar({ editable = true }: NavbarProps) {
   const isLocalUserEdit = useRef<boolean>(false);
 
   useEffect(() => {
-    localStorage.setItem('mmloqz-custom-logo-src', logoSrc);
+    safeSetItem('mmloqz-custom-logo-src', logoSrc);
   }, [logoSrc]);
 
   useEffect(() => {
-    localStorage.setItem('mmloqz-custom-logo-height', logoHeight.toString());
+    safeSetItem('mmloqz-custom-logo-height', logoHeight.toString());
   }, [logoHeight]);
 
   useEffect(() => {
-    localStorage.setItem('mmloqz-custom-logo-offset-x', logoOffsetX.toString());
+    safeSetItem('mmloqz-custom-logo-offset-x', logoOffsetX.toString());
   }, [logoOffsetX]);
 
   useEffect(() => {
@@ -62,14 +63,15 @@ export default function Navbar({ editable = true }: NavbarProps) {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         if (event.target?.result) {
-          const newSrc = event.target.result as string;
+          const rawSrc = event.target.result as string;
+          const compressedSrc = await compressImage(rawSrc, 800, 0.85);
           isLocalUserEdit.current = true;
-          localStorage.setItem('mmloqz-logo-has-user-edit', 'true');
-          setLogoSrc(newSrc);
+          safeSetItem('mmloqz-logo-has-user-edit', 'true');
+          setLogoSrc(compressedSrc);
           window.dispatchEvent(new CustomEvent('visual-builder-log', {
-            detail: { action: 'Logo Uploaded', details: `Uploaded new logo file: ${file.name}` }
+            detail: { action: 'Logo Uploaded', details: `Uploaded & compressed logo: ${file.name}` }
           }));
         }
       };

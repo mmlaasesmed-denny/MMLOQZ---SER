@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "c3eeb48",
-  "message": "Lock local unsaved logo uploads so background server sync never reverts unsaved local image changes",
+  "commit": "7d5f904",
+  "message": "Package full page image uploads and text edits inside DB payload freshPageConfig for 100% cross-device editing",
   "branch": "main",
-  "deployedAt": "2026-08-24 18:57:51 UTC",
+  "deployedAt": "2026-08-24 19:05:31 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }

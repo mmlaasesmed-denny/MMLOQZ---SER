@@ -7,6 +7,7 @@ import SaveExportControls from './components/SaveExportControls';
 import ImageSelectorModal from './components/ImageSelectorModal';
 import { Lock, Unlock, LogOut, Shield, Globe, Sparkles, Plus, Code } from 'lucide-react';
 import AdminLoginModal from './components/AdminLoginModal';
+import { compressImage, safeSetItem } from './utils/imageCompressor';
 
 interface SEOMetadata {
   metaTitle?: string;
@@ -2183,11 +2184,12 @@ export default function App() {
     setIsImageModalOpen(true);
   };
 
-  const handleSelectImageSrc = (url: string) => {
+  const handleSelectImageSrc = async (url: string) => {
+    const compressedUrl = await compressImage(url, 1200, 0.8);
     if (activeImageId) {
       if (activeImageId.startsWith('section-')) {
         const sectionId = activeImageId.replace('section-', '');
-        handleUpdateSection(sectionId, { backgroundImage: url });
+        handleUpdateSection(sectionId, { backgroundImage: compressedUrl });
       } else if (activeImageId.includes('-overlay-')) {
         const [elementId, overlayId] = activeImageId.split('-overlay-');
         let foundElement: PageElement | null = null;
