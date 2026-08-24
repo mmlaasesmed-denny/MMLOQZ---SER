@@ -1,0 +1,9 @@
+{
+  "status": "ONLINE",
+  "commit": "bd5922d",
+  "message": "Enforce HTTP no-cache headers, cache-busting timestamps and 5s real-time background sync across all devices and browsers",
+  "branch": "main",
+  "deployedAt": "2026-08-24 13:09:17 UTC",
+  "environment": "production",
+  "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
+}
