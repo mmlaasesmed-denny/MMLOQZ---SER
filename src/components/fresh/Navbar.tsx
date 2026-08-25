@@ -128,15 +128,18 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
 
   // Add a page to the header menu
   const handleAddPageToMenu = (page: any) => {
-    const cleanName = page.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+    if (!page) return;
+    const pageName = page.name || page.title || 'Page';
+    const cleanName = typeof pageName === 'string' ? pageName.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '') : 'Page';
+    const pageSlug = page.slug || page.id || 'page';
     const newItem: HeaderMenuItem = {
-      id: `menu-page-${page.id}`,
+      id: `menu-page-${page.id || Date.now()}`,
       label: cleanName,
-      url: `/${page.slug}`,
+      url: `/${pageSlug}`,
       pageId: page.id
     };
 
-    if (menuItems.some(item => item.pageId === page.id || item.url === `/${page.slug}`)) {
+    if (menuItems.some(item => (page.id && item.pageId === page.id) || item.url === `/${pageSlug}`)) {
       alert(`"${cleanName}" is already in your header menu!`);
       return;
     }
@@ -444,16 +447,19 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
                     <p className="text-xs text-slate-400 italic">No custom pages created yet. Use 'Tilføj Ny Side' to create pages!</p>
                   ) : (
                     pages.map(page => {
-                      const cleanName = page.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
-                      const isInMenu = menuItems.some(i => i.pageId === page.id || i.url === `/${page.slug}`);
+                      if (!page) return null;
+                      const pageName = page.name || page.title || 'Page';
+                      const cleanName = typeof pageName === 'string' ? pageName.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '') : 'Page';
+                      const pageSlug = page.slug || page.id || '';
+                      const isInMenu = menuItems.some(i => (page.id && i.pageId === page.id) || (pageSlug && i.url === `/${pageSlug}`));
                       return (
                         <div
-                          key={page.id}
+                          key={page.id || Math.random()}
                           className="flex items-center justify-between p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"
                         >
                           <div>
                             <p className="font-bold text-slate-800 dark:text-slate-100">{cleanName}</p>
-                            <p className="text-[10px] text-slate-400 font-mono">/{page.slug}</p>
+                            <p className="text-[10px] text-slate-400 font-mono">/{pageSlug}</p>
                           </div>
                           <button
                             onClick={() => handleAddPageToMenu(page)}
