@@ -416,17 +416,18 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
 
       {/* WordPress-Style Header Navigation Menu Builder Modal */}
       {showMenuManager && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 text-slate-800 dark:text-slate-100">
-          <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto text-slate-800 dark:text-slate-100 animate-in fade-in duration-200">
+          <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] my-auto border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150">
             
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 shrink-0">
               <h3 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <Globe className="w-5 h-5 text-indigo-600" /> WordPress Appearance → Header Navigation Menu Builder
+                <Globe className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> WordPress Appearance → Header Navigation Menu Builder
               </h3>
               <button
                 onClick={() => setShowMenuManager(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1 cursor-pointer border-none bg-transparent"
+                className="w-8 h-8 rounded-full bg-slate-200/60 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer border-none"
+                title="Close Menu Builder"
               >
                 ✕
               </button>
