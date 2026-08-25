@@ -1806,8 +1806,11 @@ export default function App() {
     });
   };
 
-  // Add section to bottom of stage
-  const handleAddNewSection = (layout: 'single-col' | 'two-col' | 'three-col' | 'four-col' | '70-30' | 'footer' | string) => {
+  // Add section to stage (at specified position or bottom)
+  const handleAddNewSection = (
+    layout: 'single-col' | 'two-col' | 'three-col' | 'four-col' | '70-30' | 'footer' | string,
+    afterSectionId?: string
+  ) => {
     const targetPageId = getRenderedPage().id;
     const newSecId = `section-${Date.now()}`;
     const columnsArr: Column[] = [];
@@ -1957,9 +1960,21 @@ export default function App() {
     setPages(prevPages => {
       return prevPages.map(page => {
         if (page.id !== targetPageId) return page;
+        const copy = [...page.sections];
+        if (afterSectionId) {
+          const idx = copy.findIndex(s => s.id === afterSectionId);
+          if (idx !== -1) {
+            copy.splice(idx + 1, 0, ensureIndependentOverrides([newSection])[0]);
+            return {
+              ...page,
+              sections: copy
+            };
+          }
+        }
+        copy.push(ensureIndependentOverrides([newSection])[0]);
         return {
           ...page,
-          sections: [...page.sections, ensureIndependentOverrides([newSection])[0]]
+          sections: copy
         };
       });
     });
@@ -2724,6 +2739,8 @@ export default function App() {
             onChangeImageClick={handleChangeImageClick}
             onAddSectionBelow={handleAddSectionBelow}
             onAddSection={handleAddNewSection}
+            onMoveSection={handleMoveSection}
+            onDeleteSection={handleDeleteSection}
             viewportMode={viewportMode}
             pages={pages}
             activePageId={activePageId}
@@ -2766,6 +2783,8 @@ export default function App() {
                 onChangeImageClick={handleChangeImageClick}
                 onAddSectionBelow={handleAddSectionBelow}
                 onAddSection={handleAddNewSection}
+                onMoveSection={handleMoveSection}
+                onDeleteSection={handleDeleteSection}
                 viewportMode={viewportMode}
                 pages={pages}
                 activePageId={activePageId}

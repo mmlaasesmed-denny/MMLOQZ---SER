@@ -1124,19 +1124,19 @@ export default function Canvas({
             <div 
               key={section.id}
               onClick={(e) => {
-                e.stopPropagation();
-                if (!isPreviewMode) onSelectSection(section.id);
-              }}
-              className={`group/section relative transition-all border-y ${sectionVisibilityClasses} ${
-                isPreviewMode 
-                  ? 'border-transparent' 
-                  : isSectionSelected
-                    ? 'border-indigo-500 bg-indigo-50/5 ring-1 ring-indigo-500'
-                    : 'border-dashed border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700'
-              }`}
-              style={(!isPreviewMode && isSectionHiddenInViewport) ? { opacity: 0.35 } : undefined}
-              id={`section-${section.id}`}
-            >
+                  e.stopPropagation();
+                  if (!isPreviewMode) onSelectSection(section.id);
+                }}
+                className={`group/section relative transition-all border-y ${sectionVisibilityClasses} ${
+                  isPreviewMode 
+                    ? 'border-transparent' 
+                    : isSectionSelected
+                      ? 'border-indigo-500 bg-indigo-50/5 ring-1 ring-indigo-500'
+                      : 'border-dashed border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700'
+                }`}
+                style={(!isPreviewMode && isSectionHiddenInViewport) ? { opacity: 0.35 } : undefined}
+                id={`section-${section.id}`}
+              >
               {!isPreviewMode && isSectionHiddenInViewport && (
                 <div className="absolute top-3 left-3 z-30 bg-rose-500 text-white text-[9px] font-extrabold px-2 py-0.5 rounded shadow pointer-events-none select-none uppercase">
                   Hidden on {viewportMode}
@@ -3258,6 +3258,27 @@ export default function Canvas({
                   </div>
                 </div>
               </div>
+
+              {/* Inter-section Insert Divider Bar */}
+              {!isPreviewMode && (
+                <div className="py-2 flex items-center justify-center relative group/secdivider my-1 z-20 px-4">
+                  <div className="absolute inset-0 flex items-center px-4">
+                    <div className="w-full border-t border-dashed border-indigo-200 dark:border-indigo-900/50 group-hover/secdivider:border-indigo-500 transition-colors"></div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInsertSectionAfterId(section.id);
+                      setShowSectionPickerModal(true);
+                    }}
+                    className="relative z-10 px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 hover:text-white rounded-full text-[11px] font-extrabold shadow-xs hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer border border-indigo-200 dark:border-indigo-800 active:scale-95"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>➕ Tilføj sektion her i midten</span>
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
