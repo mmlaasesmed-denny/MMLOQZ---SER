@@ -1063,13 +1063,13 @@ export default function Canvas({
 
           if (section.id === 'fresh-webpage-section') {
             const isSectionSelected = selectedSectionId === section.id;
-            const sectionBg = activeSectionStyle.backgroundColor || 'transparent';
-            const customPadTop = activeSectionStyle.customPaddingTop;
-            const customPadBottom = activeSectionStyle.customPaddingBottom;
-            const customMarTop = activeSectionStyle.customMarginTop;
-            const customMarBottom = activeSectionStyle.customMarginBottom;
-            const customH = activeSectionStyle.customHeight;
-            const minH = activeSectionStyle.minHeight;
+            const sectionBg = section.backgroundColor || 'transparent';
+            const customPadTop = section.customPaddingTop;
+            const customPadBottom = section.customPaddingBottom;
+            const customMarTop = section.customMarginTop;
+            const customMarBottom = section.customMarginBottom;
+            const customH = section.customHeight;
+            const minH = section.minHeight;
 
             return (
               <div
