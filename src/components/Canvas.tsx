@@ -1062,7 +1062,35 @@ export default function Canvas({
                 : (viewportMode === 'mobile' ? 'px-4' : 'px-6'));
 
           if (section.id === 'fresh-webpage-section') {
-            return <FreshResponsiveWebpageComponent key={section.id} editable={!isPreviewMode && isAdmin} />;
+            const isSectionSelected = selectedSectionId === section.id;
+            const sectionBg = activeSectionStyle.backgroundColor || 'transparent';
+            const customPadTop = activeSectionStyle.customPaddingTop;
+            const customPadBottom = activeSectionStyle.customPaddingBottom;
+            const customMarTop = activeSectionStyle.customMarginTop;
+            const customMarBottom = activeSectionStyle.customMarginBottom;
+            const customH = activeSectionStyle.customHeight;
+            const minH = activeSectionStyle.minHeight;
+
+            return (
+              <div
+                key={section.id}
+                onClick={() => onSelectSection(section.id)}
+                style={{
+                  backgroundColor: sectionBg,
+                  paddingTop: customPadTop,
+                  paddingBottom: customPadBottom,
+                  marginTop: customMarTop,
+                  marginBottom: customMarBottom,
+                  height: customH,
+                  minHeight: minH,
+                  outline: !isPreviewMode && isSectionSelected ? '2px solid #3b82f6' : undefined,
+                  outlineOffset: '-2px'
+                }}
+                className="relative transition-all"
+              >
+                <FreshResponsiveWebpageComponent editable={!isPreviewMode && isAdmin} />
+              </div>
+            );
           }
 
           const isSectionHiddenInViewport = 

@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "8bcf695",
-  "message": "Register MMLOQZ-WEBSITE-THEME-LAYOUT as master template preset and add Apply to Active Page / Apply to ALL Pages controls",
+  "commit": "48ccd3e",
+  "message": "Auto-activate section inspector when clicking canvas so right sidebar inspector is never empty",
   "branch": "main",
-  "deployedAt": "2026-08-25 11:14:10 UTC",
+  "deployedAt": "2026-08-25 11:22:43 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }
