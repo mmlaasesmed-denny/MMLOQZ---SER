@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "4cd610d",
-  "message": "Lock unsaved local product image uploads against background server sync to eliminate NS_BINDING_ABORTED",
+  "commit": "afc8f5e",
+  "message": "Add Google Analytics tag (gtag.js G-NSB5N3QW4C) to index.html and configure rollback readiness",
   "branch": "main",
-  "deployedAt": "2026-08-25 09:46:55 UTC",
+  "deployedAt": "2026-08-25 10:30:00 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }
