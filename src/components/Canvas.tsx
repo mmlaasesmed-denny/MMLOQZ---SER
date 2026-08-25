@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { 
   Plus, Trash2, ArrowUp, ArrowDown, Copy, Edit3, Image as ImageIcon, 
   HelpCircle, AlignCenter, Columns, Heading, Type, FileImage, Layers,
@@ -619,6 +620,10 @@ export default function Canvas({
     colId: string;
     index: number;
   } | null>(null);
+
+  // Quick Block and Section Picker Modal States
+  const [addBlockTarget, setAddBlockTarget] = useState<{ sectionId: string; colId: string } | null>(null);
+  const [showSectionPickerModal, setShowSectionPickerModal] = useState<boolean>(false);
 
   // Local state to dynamically center fixed mobile elements relative to the mockup stage
   const [stageLeft, setStageLeft] = useState<number | null>(null);
@@ -1256,16 +1261,19 @@ export default function Canvas({
                         >
                         {/* Column Name label in Editor */}
                         {!isPreviewMode && col.elements.length === 0 && (
-                          <div className={`flex flex-col items-center justify-center py-10 rounded-xl text-center group cursor-pointer transition-all ${
-                            dragOverTarget?.colId === col.id
-                              ? 'bg-indigo-500/15 border-2 border-dashed border-indigo-500 shadow-lg text-indigo-600'
-                              : 'bg-slate-50/65 dark:bg-slate-900/65 border border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-300 hover:bg-indigo-50/10'
-                          }`}>
-                            <Plus className="w-5 h-5 mb-1.5 text-indigo-500 group-hover:text-indigo-500 transition-colors animate-bounce" />
+                          <div 
+                            onClick={() => setAddBlockTarget({ sectionId: section.id, colId: col.id })}
+                            className={`flex flex-col items-center justify-center py-10 rounded-xl text-center group cursor-pointer transition-all ${
+                              dragOverTarget?.colId === col.id
+                                ? 'bg-indigo-500/15 border-2 border-dashed border-indigo-500 shadow-lg text-indigo-600'
+                                : 'bg-slate-50/65 dark:bg-slate-900/65 border border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-400 hover:bg-indigo-50/15'
+                            }`}
+                          >
+                            <Plus className="w-5 h-5 mb-1.5 text-indigo-500 group-hover:text-indigo-600 transition-colors animate-bounce" />
                             <p className="text-xs uppercase font-extrabold tracking-widest text-indigo-600 dark:text-indigo-400">
-                              {dragOverTarget?.colId === col.id ? '➕ Slip for at placere element her' : '+ Drop Component Her'}
+                              {dragOverTarget?.colId === col.id ? '➕ Slip for at placere element her' : '➕ Klik for at tilføje element'}
                             </p>
-                            <span className="text-[10px] text-slate-400 max-w-[180px] mt-1 leading-relaxed">Træk og slip ethvert element direkte hertil.</span>
+                            <span className="text-[10px] text-slate-400 max-w-[200px] mt-1 leading-relaxed">Klik for at vælge Tekst, Billede, Knap, Video, Søgefelt eller Webshop</span>
                           </div>
                         )}
 
@@ -3254,6 +3262,20 @@ export default function Canvas({
           );
         })}
 
+        {/* Prominent Add Section Bar at bottom of stage */}
+        {!isPreviewMode && (
+          <div className="p-6 flex flex-col items-center justify-center border-2 border-dashed border-indigo-300 dark:border-indigo-900/60 rounded-2xl bg-indigo-50/30 dark:bg-indigo-950/20 my-6 transition-all hover:border-indigo-500 shadow-sm mx-4 sm:mx-8">
+            <button
+              onClick={() => setShowSectionPickerModal(true)}
+              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-2xl text-xs shadow-lg transition-all flex items-center gap-2 cursor-pointer border-none active:scale-95"
+            >
+              <Plus className="w-5 h-5" />
+              <span>➕ Tilføj Ny Sektion (Add New Section Grid)</span>
+            </button>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-2">Vælg 1 Kolonne, 2 Kolonner, 3 Kolonner, 4 Kolonner, Sidebar layout eller Footer</p>
+          </div>
+        )}
+
         {/* Bottom Helper inside Wix empty board */}
         {!isPreviewMode && sections.length === 0 && (
           <div className="flex flex-col items-center justify-center p-20 text-center space-y-4">
@@ -3878,6 +3900,277 @@ export default function Canvas({
             <option value="120">120px</option>
           </select>
         </div>
+      )}
+
+      {/* 1. Quick Element / Block Selector Modal */}
+      {addBlockTarget && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto text-slate-800 dark:text-slate-100 animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] my-auto border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 shrink-0">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm uppercase tracking-wider flex items-center gap-2">
+                  <Plus className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Vælg Element / Blok (Select Component to Add)
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Klik på det element, du ønsker at indsætte i din kolonne.</p>
+              </div>
+              <button
+                onClick={() => setAddBlockTarget(null)}
+                className="w-8 h-8 rounded-full bg-slate-200/60 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer border-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Grid of Blocks */}
+            <div className="p-6 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-4 text-slate-800 dark:text-slate-200">
+              
+              {/* Text Block */}
+              <button
+                onClick={() => {
+                  onAddElement(addBlockTarget.sectionId, addBlockTarget.colId, 'text');
+                  setAddBlockTarget(null);
+                }}
+                className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-2.5 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="p-3 bg-indigo-50 dark:bg-indigo-950 rounded-xl text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  <Type className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Tekst & Overskrift</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Overskrifter, brødtekst & lister</span>
+                </div>
+              </button>
+
+              {/* Image Block */}
+              <button
+                onClick={() => {
+                  onAddElement(addBlockTarget.sectionId, addBlockTarget.colId, 'image');
+                  setAddBlockTarget(null);
+                }}
+                className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-2.5 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950 rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                  <ImageIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Billede & Foto</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Upload fotos & billeder</span>
+                </div>
+              </button>
+
+              {/* Button & Link URL Block */}
+              <button
+                onClick={() => {
+                  onAddElement(addBlockTarget.sectionId, addBlockTarget.colId, 'button');
+                  setAddBlockTarget(null);
+                }}
+                className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-2.5 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="p-3 bg-amber-50 dark:bg-amber-950 rounded-xl text-amber-600 dark:text-amber-400 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                  <Link className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Knap & Link URL</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">CTA Knapper med links</span>
+                </div>
+              </button>
+
+              {/* Video Block */}
+              <button
+                onClick={() => {
+                  onAddElement(addBlockTarget.sectionId, addBlockTarget.colId, 'video');
+                  setAddBlockTarget(null);
+                }}
+                className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-2.5 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="p-3 bg-rose-50 dark:bg-rose-950 rounded-xl text-rose-600 dark:text-rose-400 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                  <PlayCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Videospiller</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">MP4 upload eller YouTube</span>
+                </div>
+              </button>
+
+              {/* Search Bar Block */}
+              <button
+                onClick={() => {
+                  onAddElement(addBlockTarget.sectionId, addBlockTarget.colId, 'search-box');
+                  setAddBlockTarget(null);
+                }}
+                className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-2.5 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="p-3 bg-sky-50 dark:bg-sky-950 rounded-xl text-sky-600 dark:text-sky-400 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                  <HelpCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Søgefelt</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Interaktiv søgefunktion</span>
+                </div>
+              </button>
+
+              {/* Webshop eCommerce Block */}
+              <button
+                onClick={() => {
+                  onAddElement(addBlockTarget.sectionId, addBlockTarget.colId, 'webshop');
+                  setAddBlockTarget(null);
+                }}
+                className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-2.5 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="p-3 bg-violet-50 dark:bg-violet-950 rounded-xl text-violet-600 dark:text-violet-400 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                  <ShoppingCart className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Webshop Butik</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Produkter & Varevisning</span>
+                </div>
+              </button>
+
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* 2. Section Layout Selector Modal */}
+      {showSectionPickerModal && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto text-slate-800 dark:text-slate-100 animate-in fade-in duration-200">
+          <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] my-auto border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 shrink-0">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm uppercase tracking-wider flex items-center gap-2">
+                  <Columns className="w-5 h-5 text-indigo-600 dark:text-indigo-400" /> Vælg Ny Sektions-layout (New Section Grid)
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Klik på det kolonne-grid, du vil tilføje på din side.</p>
+              </div>
+              <button
+                onClick={() => setShowSectionPickerModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-200/60 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center justify-center font-bold text-sm transition-colors cursor-pointer border-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Grid of Sections */}
+            <div className="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-slate-800 dark:text-slate-200">
+              
+              {/* 1 Column */}
+              <button
+                onClick={() => {
+                  onAddSection('single-col');
+                  setShowSectionPickerModal(false);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-3 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="w-full h-12 bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  100% Full Width
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">1 Kolonne (Single Row)</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Perfekt til hero banners & overskrifter</span>
+                </div>
+              </button>
+
+              {/* 2 Columns */}
+              <button
+                onClick={() => {
+                  onAddSection('two-col');
+                  setShowSectionPickerModal(false);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-3 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="w-full h-12 flex gap-1.5">
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[10px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">50%</div>
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[10px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">50%</div>
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">2 Kolonner (Split 50/50)</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Side-by-side tekst og foto</span>
+                </div>
+              </button>
+
+              {/* 3 Columns */}
+              <button
+                onClick={() => {
+                  onAddSection('three-col');
+                  setShowSectionPickerModal(false);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-3 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="w-full h-12 flex gap-1">
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[9px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">33%</div>
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[9px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">33%</div>
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[9px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">33%</div>
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">3 Kolonner (Grid)</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Ideel til features & services</span>
+                </div>
+              </button>
+
+              {/* 4 Columns */}
+              <button
+                onClick={() => {
+                  onAddSection('four-col');
+                  setShowSectionPickerModal(false);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-3 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="w-full h-12 flex gap-1">
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[8px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">25%</div>
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[8px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">25%</div>
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[8px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">25%</div>
+                  <div className="flex-1 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[8px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">25%</div>
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">4 Kolonner (Kvadrat Grid)</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Små ikoner, tal & statistik</span>
+                </div>
+              </button>
+
+              {/* Sidebar 70/30 */}
+              <button
+                onClick={() => {
+                  onAddSection('70-30');
+                  setShowSectionPickerModal(false);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-3 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="w-full h-12 flex gap-1.5">
+                  <div className="w-8/12 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[10px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">70% Main</div>
+                  <div className="w-4/12 h-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-300 dark:border-indigo-800 rounded-xl flex items-center justify-center text-[10px] font-bold text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">30%</div>
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Sidebar + Hovedindhold</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Blog, produkt-info & paneler</span>
+                </div>
+              </button>
+
+              {/* Footer Grid */}
+              <button
+                onClick={() => {
+                  onAddSection('footer');
+                  setShowSectionPickerModal(false);
+                }}
+                className="p-5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center text-center gap-3 transition-all group cursor-pointer hover:shadow-md active:scale-95 border-none"
+              >
+                <div className="w-full h-12 bg-slate-800 text-white rounded-xl flex items-center justify-center text-xs font-bold group-hover:bg-indigo-600 transition-colors">
+                  🦶 Footer Grid
+                </div>
+                <div>
+                  <span className="font-bold text-xs block text-slate-900 dark:text-slate-100">Footer Sektion</span>
+                  <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">Bundmenu, logo & kontakt-info</span>
+                </div>
+              </button>
+
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

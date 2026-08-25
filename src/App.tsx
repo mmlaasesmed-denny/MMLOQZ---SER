@@ -1807,7 +1807,7 @@ export default function App() {
   };
 
   // Add section to bottom of stage
-  const handleAddNewSection = (layout: 'single-col' | 'two-col' | 'three-col' | 'footer') => {
+  const handleAddNewSection = (layout: 'single-col' | 'two-col' | 'three-col' | 'four-col' | '70-30' | 'footer' | string) => {
     const targetPageId = getRenderedPage().id;
     const newSecId = `section-${Date.now()}`;
     const columnsArr: Column[] = [];
@@ -1828,6 +1828,18 @@ export default function App() {
         { id: `${newSecId}-col-1`, width: 'md:w-1/3', elements: [] },
         { id: `${newSecId}-col-2`, width: 'md:w-1/3', elements: [] },
         { id: `${newSecId}-col-3`, width: 'md:w-1/3', elements: [] }
+      );
+    } else if (layout === 'four-col') {
+      columnsArr.push(
+        { id: `${newSecId}-col-1`, width: 'md:w-1/4', elements: [] },
+        { id: `${newSecId}-col-2`, width: 'md:w-1/4', elements: [] },
+        { id: `${newSecId}-col-3`, width: 'md:w-1/4', elements: [] },
+        { id: `${newSecId}-col-4`, width: 'md:w-1/4', elements: [] }
+      );
+    } else if (layout === '70-30') {
+      columnsArr.push(
+        { id: `${newSecId}-col-1`, width: 'md:w-8/12', elements: [] },
+        { id: `${newSecId}-col-2`, width: 'md:w-4/12', elements: [] }
       );
     } else if (layout === 'footer') {
       const col1Id = `${newSecId}-col-1`;
