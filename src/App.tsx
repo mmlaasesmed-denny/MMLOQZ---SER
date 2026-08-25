@@ -465,7 +465,7 @@ export default function App() {
   ];
   
   const cleanedSections = hasFreshSection 
-    ? activePageSections.filter(s => s && !legacyDefaultIds.includes(s.id))
+    ? activePageSections.filter(s => s && !legacyDefaultIds.includes(s.id) && !s.id.startsWith('locksmith-'))
     : activePageSections;
 
   const activePage = {
