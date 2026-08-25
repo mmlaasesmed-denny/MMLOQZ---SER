@@ -141,282 +141,6 @@ const MAIN_RESPONSIVE_THEME_PAGES: SinglePageCMS[] = [
         fullWidth: true,
         paddingY: 'none',
         columns: []
-      },
-      {
-        id: 'mmloqz-nav-sec',
-        name: 'Header & Navigation',
-        fullWidth: true,
-        paddingY: 'sm',
-        columns: [
-          {
-            id: 'col-mmloqz-logo',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'mmloqz-logo-img',
-                type: 'image',
-                content: '/images/logo.png',
-                style: { height: '64px', width: 'auto', objectFit: 'contain' }
-              }
-            ]
-          },
-          {
-            id: 'col-mmloqz-navlinks',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'mmloqz-nav-text',
-                type: 'text',
-                content: 'Home         Contact',
-                style: { fontSize: '18px', fontWeight: '700', color: '#16a34a', textAlign: 'right' }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'mmloqz-green-hero',
-        name: 'Green Hero Banner',
-        fullWidth: true,
-        paddingY: 'lg',
-        bgColor: '#15803d',
-        columns: [
-          {
-            id: 'col-hero-text-green',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'hero-sub',
-                type: 'text',
-                content: 'SOON WE ARE',
-                style: { fontSize: '32px', fontWeight: '300', color: '#ffffff', letterSpacing: '0.05em', marginBottom: '8px' }
-              },
-              {
-                id: 'hero-title-1',
-                type: 'heading',
-                content: 'LAUNCHING',
-                style: { fontSize: '56px', fontWeight: '800', color: '#ffffff', lineHeight: '1.1', marginBottom: '4px' }
-              },
-              {
-                id: 'hero-title-2',
-                type: 'heading',
-                content: 'OUR NEW BRAND SITE',
-                style: { fontSize: '42px', fontWeight: '800', color: '#ffffff', lineHeight: '1.1' }
-              }
-            ]
-          },
-          {
-            id: 'col-hero-img-green',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'hero-lock-img',
-                type: 'image',
-                content: '/images/Hero.webp',
-                style: { width: '80%', margin: '0 auto', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.3))', transform: 'rotate(25deg)' }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'mmloqz-features-grid-sec',
-        name: '3-Column Features Grid',
-        fullWidth: false,
-        paddingY: 'lg',
-        bgColor: '#ffffff',
-        columns: [
-          {
-            id: 'col-feat-1',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'feat-1-title',
-                type: 'heading',
-                content: '🔑 Keyless Remote Access',
-                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
-              },
-              {
-                id: 'feat-1-desc',
-                type: 'text',
-                content: 'Always have instant access to your door or invite new users remotely without needing physical keys.',
-                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
-              }
-            ]
-          },
-          {
-            id: 'col-feat-2',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'feat-2-title',
-                type: 'heading',
-                content: '📱 Simple Mobile App',
-                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
-              },
-              {
-                id: 'feat-2-desc',
-                type: 'text',
-                content: 'Total control over door permissions with unlimited users and real-time activity tracking in our mobile app.',
-                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
-              }
-            ]
-          },
-          {
-            id: 'col-feat-3',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'feat-3-title',
-                type: 'heading',
-                content: '⚡ No Subscription Fees',
-                style: { fontSize: '20px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }
-              },
-              {
-                id: 'feat-3-desc',
-                type: 'text',
-                content: 'Fixed low prices with zero mandatory monthly subscription fees for standard battery-driven digital lock usage.',
-                style: { fontSize: '14px', color: '#64748b', lineHeight: '1.5' }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'mmloqz-content-sec',
-        name: 'Brand Content & Products Collage',
-        fullWidth: false,
-        paddingY: 'lg',
-        columns: [
-          {
-            id: 'col-content-text',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'content-main-title',
-                type: 'heading',
-                content: 'MMLoqz makes digital locks easy to use and to install!',
-                style: { fontSize: '26px', fontWeight: '700', color: '#111827', marginBottom: '20px' }
-              },
-              {
-                id: 'content-p1',
-                type: 'text',
-                content: 'MMLoqz is a Danish company that manuface a series of quality digital locks and products that interacts with our digital locks. We ensure that safety goes hand in hand with making life easier and ensure only the right people have abscess to the door. At the same time we fokus to make high quality digital locks and components available to everyone, at fixed low prices without subscriptions fees for the standard use of the locks.',
-                style: { fontSize: '15px', color: '#374151', lineHeight: '1.7', marginBottom: '16px' }
-              },
-              {
-                id: 'content-p2',
-                type: 'text',
-                content: 'Therefor you will find our products being sold online from our resellers but with an option for having the installation done by a professional services engineer onsite our via a video installation. At MMLoqz.com we also make installation guides available online, so that it is simple for our endusers to install battery driven digital locks. Our enduser',
-                style: { fontSize: '15px', color: '#374151', lineHeight: '1.7', marginBottom: '20px' }
-              },
-              {
-                id: 'bullet-1',
-                type: 'text',
-                content: '•  Always have access to the door or make in possilbe to invite new users to the door. This can even be done remotely.',
-                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '10px' }
-              },
-              {
-                id: 'bullet-2',
-                type: 'text',
-                content: '•  Have total control over who has access to the doors and can change this using our simple APP.',
-                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '10px' }
-              },
-              {
-                id: 'bullet-3',
-                type: 'text',
-                content: '•  No limits on the number of APP users in our APP.',
-                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '10px' }
-              },
-              {
-                id: 'bullet-4',
-                type: 'text',
-                content: '•  Resellers who can support them.',
-                style: { fontSize: '15px', color: '#374151', fontWeight: '500', marginBottom: '20px' }
-              },
-              {
-                id: 'closing-statement',
-                type: 'heading',
-                content: 'MMLoqz makes digital locks easy to use and to install!',
-                style: { fontSize: '18px', fontWeight: '600', color: '#374151', marginTop: '16px' }
-              }
-            ]
-          },
-          {
-            id: 'col-content-collage',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'collage-image',
-                type: 'image',
-                content: '/images/MMloqz%20products%20image.webp',
-                style: { width: '100%', objectFit: 'contain' }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'mmloqz-footer-sec',
-        name: 'MMLoqz Footer',
-        fullWidth: false,
-        paddingY: 'md',
-        columns: [
-          {
-            id: 'col-foot-brand',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'foot-logo-img',
-                type: 'image',
-                content: '/images/logo.png',
-                style: { height: '64px', width: 'auto', objectFit: 'contain', marginBottom: '8px' }
-              },
-              {
-                id: 'foot-sub',
-                type: 'text',
-                content: 'MMLoqz High quality products',
-                style: { fontSize: '14px', color: '#111827', fontWeight: '600' }
-              }
-            ]
-          },
-          {
-            id: 'col-foot-addr',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'foot-title-addr',
-                type: 'heading',
-                content: 'Adresse',
-                style: { fontSize: '16px', fontWeight: '600', color: '#111827', marginBottom: '8px' }
-              },
-              {
-                id: 'foot-text-addr',
-                type: 'text',
-                content: 'Kulvej 10, 2 TV\n2450 København\nDenmark',
-                style: { fontSize: '14px', color: '#4b5563', lineHeight: '1.6' }
-              }
-            ]
-          },
-          {
-            id: 'col-foot-info',
-            width: 'md:flex-1',
-            elements: [
-              {
-                id: 'foot-title-info',
-                type: 'heading',
-                content: 'Information',
-                style: { fontSize: '16px', fontWeight: '600', color: '#111827', marginBottom: '8px' }
-              },
-              {
-                id: 'foot-text-info',
-                type: 'text',
-                content: 'info@mmlasesmed.dk\n+45 31 11 11 15',
-                style: { fontSize: '14px', color: '#4b5563', lineHeight: '1.6' }
-              }
-            ]
-          }
-        ]
       }
     ]
   }
@@ -727,9 +451,26 @@ export default function App() {
     ? rawActivePage.sections 
     : MAIN_RESPONSIVE_THEME_PAGES[0].sections;
 
+  const hasFreshSection = activePageSections.some(s => s && s.id === 'fresh-webpage-section');
+  const legacyDefaultIds = [
+    'mmloqz-nav-sec', 
+    'mmloqz-green-hero', 
+    'mmloqz-features-grid-sec', 
+    'mmloqz-content-sec', 
+    'mmloqz-footer-sec', 
+    'sec-gem',
+    'sec-hero',
+    'sec-brand',
+    'sec-footer'
+  ];
+  
+  const cleanedSections = hasFreshSection 
+    ? activePageSections.filter(s => s && !legacyDefaultIds.includes(s.id))
+    : activePageSections;
+
   const activePage = {
     ...rawActivePage,
-    sections: (rawActivePage.id === 'home' || rawActivePage.slug === '') && !activePageSections.some(s => s && s.id === 'fresh-webpage-section')
+    sections: (rawActivePage.id === 'home' || rawActivePage.slug === '') && !hasFreshSection
       ? [
           {
             id: 'fresh-webpage-section',
@@ -738,9 +479,9 @@ export default function App() {
             paddingY: 'none',
             columns: []
           },
-          ...activePageSections
+          ...cleanedSections
         ]
-      : activePageSections
+      : cleanedSections
   };
 
   // Load pages state from Django backend on startup to keep users in sync
