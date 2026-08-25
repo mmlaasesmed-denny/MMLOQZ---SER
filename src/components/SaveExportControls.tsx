@@ -262,6 +262,54 @@ export default function SaveExportControls({
     alert(`🎉 Saved layout draft "${title}" successfully! You can reload or edit it anytime from your saved layouts list.`);
   };
 
+  const handleSaveAsThemeLayout = async () => {
+    const title = 'MMLOQZ-WEBSITE-THEME-LAYOUT';
+    const newDraft = {
+      id: 'draft_theme_' + Date.now(),
+      title: title,
+      updatedAt: Date.now(),
+      sections: sections,
+      theme: theme
+    };
+
+    const updated = [newDraft, ...localSavedDrafts.filter(d => d.title !== title)];
+    setLocalSavedDrafts(updated);
+
+    try {
+      const rawUrl = djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
+      const targetUrl = getCleanApiUrl(rawUrl);
+      await fetch(`${targetUrl}/layouts/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          title: title,
+          sections: sections,
+          theme: theme
+        })
+      });
+    } catch (e) {}
+
+    alert(`🌟 Saved layout "${title}" successfully! You can now apply this layout to ANY page from your Saved Layouts list or Sidebar Templates!`);
+  };
+
+  const handleApplyLayoutToActivePage = (draft: { title: string; sections: Section[]; theme: SiteTheme }) => {
+    window.dispatchEvent(new CustomEvent('apply-custom-template', {
+      detail: { sections: draft.sections, theme: draft.theme, applyToAllPages: false }
+    }));
+    setShowDjangoModal(false);
+    alert(`✅ Applied "${draft.title}" to active page!`);
+  };
+
+  const handleApplyLayoutToAllPages = (draft: { title: string; sections: Section[]; theme: SiteTheme }) => {
+    if (confirm(`Apply layout "${draft.title}" across ALL pages on the site?`)) {
+      window.dispatchEvent(new CustomEvent('apply-custom-template', {
+        detail: { sections: draft.sections, theme: draft.theme, applyToAllPages: true }
+      }));
+      setShowDjangoModal(false);
+      alert(`🌐 Applied "${draft.title}" to ALL pages across the site!`);
+    }
+  };
+
   const handleLoadLocalDraft = (draft: { id: string; title: string; sections: Section[]; theme: SiteTheme }) => {
     if (confirm(`Load layout draft "${draft.title}" into your workspace? Unsaved changes in your current view will be replaced.`)) {
       onImport(draft.sections, draft.theme);
@@ -4569,19 +4617,28 @@ export default function SaveExportControls({
               
               {/* Save New Layout Draft Box */}
               <div className="space-y-3 bg-emerald-50/50 dark:bg-emerald-950/20 p-5 rounded-2xl border border-emerald-200/80 dark:border-emerald-900/40">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
-                  <Database className="w-4 h-4 text-emerald-600" />
-                  <span>💾 Save New Layout Draft</span>
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
+                    <Database className="w-4 h-4 text-emerald-600" />
+                    <span>💾 Save New Layout Draft</span>
+                  </h4>
+                  <button
+                    onClick={handleSaveAsThemeLayout}
+                    className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-[11px] uppercase tracking-wide rounded-lg shadow-sm transition-all cursor-pointer border-none"
+                    title="Save current canvas layout as master MMLOQZ-WEBSITE-THEME-LAYOUT"
+                  >
+                    🌟 Save as "MMLOQZ-WEBSITE-THEME-LAYOUT"
+                  </button>
+                </div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-normal">
-                  Give your active website design a custom name to save it as a layout draft. You can load, update, or restore it anytime!
+                  Give your active website design a custom name to save it as a layout draft. You can load, update, or apply it to ANY page!
                 </p>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={newLayoutTitle}
                     onChange={(e) => setNewLayoutTitle(e.target.value)}
-                    placeholder="e.g. Summer Campaign V1, Coffee Landing..."
+                    placeholder="e.g. MMLOQZ-WEBSITE-THEME-LAYOUT, Summer Campaign V1..."
                     className="flex-1 bg-white dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-2 focus:ring-emerald-500 font-sans"
                   />
                   <button
@@ -4609,27 +4666,40 @@ export default function SaveExportControls({
                     {localSavedDrafts.map((draft) => (
                       <div
                         key={draft.id}
-                        className="p-4 flex items-center justify-between text-xs hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                        className="p-4 flex flex-col sm:flex-row sm:items-center justify-between text-xs hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors gap-3"
                       >
                         <div className="space-y-0.5">
-                          <p className="font-bold text-slate-900 dark:text-slate-100">{draft.title}</p>
+                          <p className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                            <span>{draft.title}</span>
+                            {draft.title === 'MMLOQZ-WEBSITE-THEME-LAYOUT' && (
+                              <span className="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Master Theme</span>
+                            )}
+                          </p>
                           <p className="text-[10px] text-slate-400 font-mono">
                             Saved: {draft.updatedAt ? new Date(draft.updatedAt).toLocaleDateString() : 'Today'}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <button
-                            onClick={() => handleLoadLocalDraft(draft)}
-                            className="px-3 py-1.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 hover:bg-indigo-100 text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
+                            onClick={() => handleApplyLayoutToActivePage(draft)}
+                            className="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer border-none flex items-center gap-1 shadow-xs"
+                            title="Apply this layout to the currently active page"
                           >
-                            Load Layout
+                            🎯 Apply to Active Page
+                          </button>
+                          <button
+                            onClick={() => handleApplyLayoutToAllPages(draft)}
+                            className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-100 text-[11px] font-bold rounded-lg transition-colors cursor-pointer border-none flex items-center gap-1 shadow-xs"
+                            title="Apply this layout across ALL pages on the site"
+                          >
+                            🌐 Apply to ALL Pages
                           </button>
                           <button
                             onClick={() => handleOverwriteLocalDraft(draft.id, draft.title)}
-                            className="px-3 py-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 hover:bg-emerald-100 text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
+                            className="px-2.5 py-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 hover:bg-emerald-100 text-[11px] font-bold rounded-lg transition-colors cursor-pointer border-none"
                             title="Overwrite this saved draft with current canvas design"
                           >
-                            Overwrite Design
+                            Overwrite
                           </button>
                           <button
                             onClick={() => handleDeleteLocalDraft(draft.id)}

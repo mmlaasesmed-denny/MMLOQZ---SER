@@ -98,6 +98,22 @@ export const STOCK_IMAGES = [
 
 export const TEMPLATES: { id: string; name: string; description: string; sections: Section[] }[] = [
   {
+    id: 'mmloqz-website-theme-layout',
+    name: '🌟 MMLOQZ-WEBSITE-THEME-LAYOUT',
+    description: 'Master MMLoqz Theme Layout with Green Hero Banner, Danish lock description, 4 bullet points, products collage, and custom header/footer. Apply to any page.',
+    sections: [
+      {
+        id: 'fresh-webpage-section',
+        name: '💚 Fresh Responsive Webpage (Clone)',
+        fullWidth: true,
+        paddingY: 'none',
+        columns: [],
+        tabletOverrides: { paddingY: 'none', fullWidth: true },
+        mobileOverrides: { paddingY: 'none', fullWidth: true }
+      }
+    ]
+  },
+  {
     id: 'mmloqz-brand-pdf',
     name: '💚 MMLoqz PDF Brand Layout',
     description: 'Official MMLoqz brand layout matching PDF designs: Green launch hero, Danish lock description, 4 bullet points, products collage, and footer.',

@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "8f537ae",
-  "message": "Synchronize all 69 production server database records into local SQLite database (ID 107)",
+  "commit": "5cfcf10",
+  "message": "Protect saved layouts keys from quota purger and add fallback to published_site.json",
   "branch": "main",
-  "deployedAt": "2026-08-25 10:44:44 UTC",
+  "deployedAt": "2026-08-25 10:56:34 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }
