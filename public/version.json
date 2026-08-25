@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "2e9095d",
-  "message": "Connect Inspector inputs, paddings, margins, background colors and height sliders to active page canvas",
+  "commit": "38e00f9",
+  "message": "Fix ReferenceError activeSectionStyle in Canvas.tsx to restore full page rendering",
   "branch": "main",
-  "deployedAt": "2026-08-25 11:23:56 UTC",
+  "deployedAt": "2026-08-25 11:56:28 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }

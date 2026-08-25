@@ -1088,7 +1088,12 @@ export default function Canvas({
                 }}
                 className="relative transition-all"
               >
-                <FreshResponsiveWebpageComponent editable={!isPreviewMode && isAdmin} />
+                <FreshResponsiveWebpageComponent 
+                  editable={!isPreviewMode && isAdmin} 
+                  pages={pages} 
+                  activePageId={activePageId} 
+                  onNavigatePage={onNavigatePage} 
+                />
               </div>
             );
           }

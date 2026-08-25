@@ -1,14 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronRight, Upload, MoveLeft, MoveRight, Sliders, RotateCcw, Check, Image as ImageIcon } from 'lucide-react';
+import { 
+  Menu, X, ChevronRight, Upload, MoveLeft, MoveRight, Sliders, RotateCcw, 
+  Check, Image as ImageIcon, Plus, Trash2, ArrowUp, ArrowDown, Settings, Globe, Link as LinkIcon
+} from 'lucide-react';
 import { compressImage, safeSetItem } from '../../utils/imageCompressor';
+
+export interface HeaderMenuItem {
+  id: string;
+  label: string;
+  url: string; // e.g. #hero, #contact, /amager, or page-id
+  pageId?: string;
+  isExternal?: boolean;
+}
 
 interface NavbarProps {
   editable?: boolean;
+  pages?: any[];
+  activePageId?: string;
+  onNavigatePage?: (pageId: string) => void;
 }
 
-export default function Navbar({ editable = true }: NavbarProps) {
+const DEFAULT_MENU_ITEMS: HeaderMenuItem[] = [
+  { id: 'menu-home', label: 'Home', url: '#hero' },
+  { id: 'menu-contact', label: 'Contact us', url: '#contact' }
+];
+
+export default function Navbar({ editable = true, pages = [], activePageId, onNavigatePage }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLogoControls, setShowLogoControls] = useState(false);
+  const [showMenuManager, setShowMenuManager] = useState(false);
 
   // Logo Settings state with localStorage persistence
   const [logoSrc, setLogoSrc] = useState<string>(() => {
@@ -22,6 +42,22 @@ export default function Navbar({ editable = true }: NavbarProps) {
     const saved = localStorage.getItem('mmloqz-custom-logo-offset-x');
     return saved ? parseInt(saved, 10) : 0;
   });
+
+  // Header Menu Items state with localStorage persistence
+  const [menuItems, setMenuItems] = useState<HeaderMenuItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('mmloqz-header-menu-items');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_MENU_ITEMS;
+  });
+
+  // Custom menu creation form state
+  const [customLabel, setCustomLabel] = useState('');
+  const [customUrl, setCustomUrl] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isLocalUserEdit = useRef<boolean>(false);
@@ -39,9 +75,12 @@ export default function Navbar({ editable = true }: NavbarProps) {
   }, [logoOffsetX]);
 
   useEffect(() => {
+    safeSetItem('mmloqz-header-menu-items', JSON.stringify(menuItems));
+  }, [menuItems]);
+
+  useEffect(() => {
     const handleLogoSync = (e: any) => {
       if (e.detail) {
-        // If user is currently editing/uploading locally, ignore old server sync overwrites
         if (e.detail.source === 'server-sync' && (isLocalUserEdit.current || localStorage.getItem('mmloqz-logo-has-user-edit') === 'true')) {
           return;
         }
@@ -70,9 +109,6 @@ export default function Navbar({ editable = true }: NavbarProps) {
           isLocalUserEdit.current = true;
           safeSetItem('mmloqz-logo-has-user-edit', 'true');
           setLogoSrc(compressedSrc);
-          window.dispatchEvent(new CustomEvent('visual-builder-log', {
-            detail: { action: 'Logo Uploaded', details: `Uploaded & compressed logo: ${file.name}` }
-          }));
         }
       };
       reader.readAsDataURL(file);
@@ -90,9 +126,88 @@ export default function Navbar({ editable = true }: NavbarProps) {
     localStorage.removeItem('mmloqz-custom-logo-offset-x');
   };
 
+  // Add a page to the header menu
+  const handleAddPageToMenu = (page: any) => {
+    const cleanName = page.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+    const newItem: HeaderMenuItem = {
+      id: `menu-page-${page.id}`,
+      label: cleanName,
+      url: `/${page.slug}`,
+      pageId: page.id
+    };
+
+    if (menuItems.some(item => item.pageId === page.id || item.url === `/${page.slug}`)) {
+      alert(`"${cleanName}" is already in your header menu!`);
+      return;
+    }
+
+    setMenuItems(prev => [...prev, newItem]);
+  };
+
+  // Add custom link item
+  const handleAddCustomLink = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customLabel.trim() || !customUrl.trim()) {
+      alert('Please enter both a menu label and a URL or section hash.');
+      return;
+    }
+    const newItem: HeaderMenuItem = {
+      id: `menu-custom-${Date.now()}`,
+      label: customLabel.trim(),
+      url: customUrl.trim()
+    };
+    setMenuItems(prev => [...prev, newItem]);
+    setCustomLabel('');
+    setCustomUrl('');
+  };
+
+  const handleRemoveMenuItem = (id: string) => {
+    setMenuItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const handleMoveMenuItem = (index: number, direction: 'up' | 'down') => {
+    const targetIdx = direction === 'up' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= menuItems.length) return;
+    const copy = [...menuItems];
+    const temp = copy[index];
+    copy[index] = copy[targetIdx];
+    copy[targetIdx] = temp;
+    setMenuItems(copy);
+  };
+
+  const handleItemClick = (item: HeaderMenuItem, e: React.MouseEvent) => {
+    if (item.pageId && onNavigatePage) {
+      e.preventDefault();
+      onNavigatePage(item.pageId);
+      setMobileMenuOpen(false);
+      return;
+    }
+
+    if (item.url.startsWith('/') && pages.length > 0) {
+      const pageSlug = item.url.replace(/^\//, '');
+      const matchPage = pages.find(p => p.slug === pageSlug || p.id === pageSlug);
+      if (matchPage && onNavigatePage) {
+        e.preventDefault();
+        onNavigatePage(matchPage.id);
+        setMobileMenuOpen(false);
+        return;
+      }
+    }
+
+    if (item.url.startsWith('#')) {
+      const targetEl = document.querySelector(item.url);
+      if (targetEl) {
+        e.preventDefault();
+        targetEl.scrollIntoView({ behavior: 'smooth' });
+        setMobileMenuOpen(false);
+      }
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
+        
         {/* Logo Container with Left/Right Movement */}
         <div 
           className="relative flex items-center group/logo"
@@ -111,7 +226,7 @@ export default function Navbar({ editable = true }: NavbarProps) {
           {editable && (
             <button
               onClick={() => setShowLogoControls(!showLogoControls)}
-              className="ml-3 px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-md opacity-80 group-hover/logo:opacity-100 transition-all flex items-center gap-1.5 cursor-pointer"
+              className="ml-3 px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-md opacity-80 group-hover/logo:opacity-100 transition-all flex items-center gap-1.5 cursor-pointer border-none"
               title="Customize Logo Image, Size & Position"
             >
               <Sliders className="w-3.5 h-3.5" />
@@ -129,13 +244,13 @@ export default function Navbar({ editable = true }: NavbarProps) {
                 </div>
                 <button
                   onClick={() => setShowLogoControls(false)}
-                  className="text-slate-400 hover:text-white p-1 rounded-md"
+                  className="text-slate-400 hover:text-white p-1 rounded-md cursor-pointer border-none bg-transparent"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* 1. Upload Logo */}
+              {/* Upload Logo */}
               <div className="space-y-2 mb-5">
                 <label className="block text-xs font-semibold text-slate-300">
                   Upload Custom Logo:
@@ -150,7 +265,7 @@ export default function Navbar({ editable = true }: NavbarProps) {
                   />
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm"
+                    className="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-sm border-none"
                   >
                     <Upload className="w-4 h-4" />
                     <span>Upload Image File</span>
@@ -158,7 +273,7 @@ export default function Navbar({ editable = true }: NavbarProps) {
                 </div>
               </div>
 
-              {/* 2. Resize Height Slider */}
+              {/* Resize Height Slider */}
               <div className="space-y-2 mb-5">
                 <div className="flex items-center justify-between text-xs font-semibold">
                   <span className="text-slate-300">Resize Height:</span>
@@ -174,7 +289,7 @@ export default function Navbar({ editable = true }: NavbarProps) {
                 />
               </div>
 
-              {/* 3. Left / Right Position Slider & Buttons */}
+              {/* Move Left / Right Position Slider */}
               <div className="space-y-2 mb-5">
                 <div className="flex items-center justify-between text-xs font-semibold">
                   <span className="text-slate-300">Move Left / Right:</span>
@@ -190,42 +305,20 @@ export default function Navbar({ editable = true }: NavbarProps) {
                   onChange={(e) => setLogoOffsetX(Number(e.target.value))}
                   className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                 />
-                <div className="flex items-center gap-2 pt-1">
-                  <button
-                    onClick={() => setLogoOffsetX(prev => Math.max(-100, prev - 20))}
-                    className="flex-1 py-1 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
-                  >
-                    <MoveLeft className="w-3 h-3" />
-                    <span>Move Left</span>
-                  </button>
-                  <button
-                    onClick={() => setLogoOffsetX(0)}
-                    className="py-1 px-2.5 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg text-slate-300 cursor-pointer"
-                  >
-                    Center
-                  </button>
-                  <button
-                    onClick={() => setLogoOffsetX(prev => Math.min(200, prev + 20))}
-                    className="flex-1 py-1 px-2 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg flex items-center justify-center gap-1 cursor-pointer"
-                  >
-                    <span>Move Right</span>
-                    <MoveRight className="w-3 h-3" />
-                  </button>
-                </div>
               </div>
 
-              {/* 4. Reset Button */}
+              {/* Reset Button */}
               <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
                 <button
                   onClick={resetLogo}
-                  className="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer"
+                  className="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer border-none bg-transparent"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset Default</span>
                 </button>
                 <button
                   onClick={() => setShowLogoControls(false)}
-                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer border-none"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>Done</span>
@@ -235,20 +328,45 @@ export default function Navbar({ editable = true }: NavbarProps) {
           )}
         </div>
 
-        {/* Desktop Nav Items (Home & Contact us aligned right) */}
-        <nav className="hidden md:flex items-center gap-8 font-bold text-slate-900 ml-auto">
-          <a href="#hero" className="hover:text-emerald-700 transition-colors text-base">
-            Home
-          </a>
-          <a href="#contact" className="hover:text-emerald-700 transition-colors text-base">
-            Contact us
-          </a>
-        </nav>
+        {/* Desktop Nav Items */}
+        <div className="hidden md:flex items-center gap-6 ml-auto">
+          <nav className="flex items-center gap-6 font-bold text-slate-900">
+            {menuItems.map(item => {
+              const isPageActive = item.pageId ? item.pageId === activePageId : false;
+              return (
+                <a
+                  key={item.id}
+                  href={item.url}
+                  onClick={(e) => handleItemClick(item, e)}
+                  className={`transition-colors text-sm font-semibold flex items-center gap-1 py-1 px-2.5 rounded-lg ${
+                    isPageActive 
+                      ? 'bg-emerald-50 text-emerald-800 font-bold border border-emerald-200/60' 
+                      : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                </a>
+              );
+            })}
+          </nav>
+
+          {/* WordPress-Style Header Menu Builder Trigger */}
+          {editable && (
+            <button
+              onClick={() => setShowMenuManager(true)}
+              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer border-none"
+              title="WordPress Appearance -> Menus Style Header Navigation Manager"
+            >
+              <Settings className="w-3.5 h-3.5 text-indigo-200" />
+              <span>⚙️ Edit Header Menu ({menuItems.length})</span>
+            </button>
+          )}
+        </div>
 
         {/* Mobile Hamburger Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors ml-auto"
+          className="md:hidden p-2.5 rounded-xl text-slate-700 hover:bg-slate-100 transition-colors ml-auto border-none bg-transparent"
           aria-label="Toggle Navigation Menu"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -257,21 +375,218 @@ export default function Navbar({ editable = true }: NavbarProps) {
 
       {/* Mobile Animated Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-slate-200 px-6 py-6 space-y-4 animate-in slide-in-from-top duration-200 shadow-xl">
-          <a
-            href="#hero"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-bold text-slate-900 hover:text-emerald-700 py-2 border-b border-slate-100"
-          >
-            Home
-          </a>
-          <a
-            href="#contact"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-bold text-slate-900 hover:text-emerald-700 py-2"
-          >
-            Contact us
-          </a>
+        <div className="md:hidden bg-white border-b border-slate-200 px-6 py-6 space-y-3 animate-in slide-in-from-top duration-200 shadow-xl">
+          {menuItems.map(item => {
+            const isPageActive = item.pageId ? item.pageId === activePageId : false;
+            return (
+              <a
+                key={item.id}
+                href={item.url}
+                onClick={(e) => handleItemClick(item, e)}
+                className={`block text-base font-bold py-2 border-b border-slate-100 transition-colors ${
+                  isPageActive ? 'text-emerald-700' : 'text-slate-900 hover:text-emerald-700'
+                }`}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+
+          {editable && (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setShowMenuManager(true);
+              }}
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 border-none mt-2"
+            >
+              <Settings className="w-4 h-4" />
+              <span>Edit Navigation Menu</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* WordPress-Style Header Navigation Menu Builder Modal */}
+      {showMenuManager && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-4 text-slate-800 dark:text-slate-100">
+          <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850">
+              <h3 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm uppercase tracking-wide">
+                <Globe className="w-5 h-5 text-indigo-600" /> WordPress Appearance → Header Navigation Menu Builder
+              </h3>
+              <button
+                onClick={() => setShowMenuManager(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1 cursor-pointer border-none bg-transparent"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 text-slate-800 dark:text-slate-200">
+              
+              {/* LEFT COLUMN: Add Pages to Menu */}
+              <div className="space-y-5 bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  <span>1. Add Created Pages to Menu</span>
+                </h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Click any page you created to add it directly into your top header navigation bar.
+                </p>
+
+                {/* List of Pages */}
+                <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                  {pages.length === 0 ? (
+                    <p className="text-xs text-slate-400 italic">No custom pages created yet. Use 'Tilføj Ny Side' to create pages!</p>
+                  ) : (
+                    pages.map(page => {
+                      const cleanName = page.name.replace(/^📄\s|^🛒\s|^🏠\s|^👥\s|^⚖️\s|^🥐\s|^☁️\s/, '');
+                      const isInMenu = menuItems.some(i => i.pageId === page.id || i.url === `/${page.slug}`);
+                      return (
+                        <div
+                          key={page.id}
+                          className="flex items-center justify-between p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs"
+                        >
+                          <div>
+                            <p className="font-bold text-slate-800 dark:text-slate-100">{cleanName}</p>
+                            <p className="text-[10px] text-slate-400 font-mono">/{page.slug}</p>
+                          </div>
+                          <button
+                            onClick={() => handleAddPageToMenu(page)}
+                            disabled={isInMenu}
+                            className={`px-3 py-1.5 text-[11px] font-bold rounded-lg transition-all border-none flex items-center gap-1 ${
+                              isInMenu 
+                                ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed'
+                                : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-xs active:scale-95'
+                            }`}
+                          >
+                            {isInMenu ? (
+                              <>
+                                <Check className="w-3 h-3 text-emerald-500" />
+                                <span>In Menu</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-3 h-3" />
+                                <span>+ Add to Menu</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Custom URL Item Input */}
+                <form onSubmit={handleAddCustomLink} className="space-y-2 pt-4 border-t border-slate-200 dark:border-slate-800">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Or Add Custom URL / Hash Link</span>
+                  <input
+                    type="text"
+                    value={customLabel}
+                    onChange={(e) => setCustomLabel(e.target.value)}
+                    placeholder="Menu Label (e.g. Services, Campaign)"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <input
+                    type="text"
+                    value={customUrl}
+                    onChange={(e) => setCustomUrl(e.target.value)}
+                    placeholder="Link URL or Section (e.g. #contact, https://...)"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer border-none"
+                  >
+                    + Add Custom Link
+                  </button>
+                </form>
+              </div>
+
+              {/* RIGHT COLUMN: Menu Structure & Reordering */}
+              <div className="space-y-5 bg-white dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center justify-between">
+                  <span>2. Header Menu Structure ({menuItems.length})</span>
+                  <button
+                    onClick={() => setMenuItems(DEFAULT_MENU_ITEMS)}
+                    className="text-[10px] text-rose-500 hover:text-rose-600 font-bold border-none bg-transparent cursor-pointer"
+                  >
+                    Reset Defaults
+                  </button>
+                </h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Re-order menu items or edit labels. Changes appear live on desktop & mobile navigation!
+                </p>
+
+                {/* Menu Items List */}
+                <div className="space-y-2 flex-1 overflow-y-auto max-h-80 pr-1">
+                  {menuItems.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between text-xs gap-3"
+                    >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="font-mono text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-950 px-1.5 py-0.5 rounded">
+                          #{index + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={item.label}
+                          onChange={(e) => {
+                            const newLabel = e.target.value;
+                            setMenuItems(prev => prev.map(i => i.id === item.id ? { ...i, label: newLabel } : i));
+                          }}
+                          className="font-bold text-slate-800 dark:text-slate-100 bg-transparent border border-transparent hover:border-slate-300 dark:hover:border-slate-700 rounded px-1 py-0.5 text-xs outline-none focus:bg-white dark:focus:bg-slate-950 focus:border-indigo-500"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => handleMoveMenuItem(index, 'up')}
+                          disabled={index === 0}
+                          className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-300 disabled:opacity-30 border-none bg-transparent cursor-pointer"
+                          title="Move Left/Up"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleMoveMenuItem(index, 'down')}
+                          disabled={index === menuItems.length - 1}
+                          className="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-300 disabled:opacity-30 border-none bg-transparent cursor-pointer"
+                          title="Move Right/Down"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleRemoveMenuItem(item.id)}
+                          className="p-1 hover:bg-rose-100 text-rose-500 rounded border-none bg-transparent cursor-pointer"
+                          title="Remove from Menu"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                  <button
+                    onClick={() => setShowMenuManager(false)}
+                    className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all cursor-pointer border-none shadow-md"
+                  >
+                    Save & Close Menu Builder
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
         </div>
       )}
     </header>

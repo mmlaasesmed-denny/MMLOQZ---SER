@@ -2186,6 +2186,23 @@ export default function App() {
     setActivePageId(newPageId);
     setSelectedElementId(null);
     setSelectedSectionId(null);
+
+    if (confirm(`Would you like to add "${name}" to your top header navigation menu?`)) {
+      try {
+        const saved = localStorage.getItem('mmloqz-header-menu-items');
+        const items = saved ? JSON.parse(saved) : [
+          { id: 'menu-home', label: 'Home', url: '#hero' },
+          { id: 'menu-contact', label: 'Contact us', url: '#contact' }
+        ];
+        items.push({
+          id: `menu-page-${newPageId}`,
+          label: name.trim(),
+          url: `/${slug.trim()}`,
+          pageId: newPageId
+        });
+        localStorage.setItem('mmloqz-header-menu-items', JSON.stringify(items));
+      } catch (e) {}
+    }
   };
 
   // Image replacement trigger
