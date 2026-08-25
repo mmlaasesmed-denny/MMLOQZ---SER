@@ -179,6 +179,8 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
   };
 
   const handleItemClick = (item: HeaderMenuItem, e: React.MouseEvent) => {
+    if (!item || typeof item.url !== 'string') return;
+
     if (item.pageId && onNavigatePage) {
       e.preventDefault();
       onNavigatePage(item.pageId);
@@ -188,7 +190,7 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
 
     if (item.url.startsWith('/') && pages.length > 0) {
       const pageSlug = item.url.replace(/^\//, '');
-      const matchPage = pages.find(p => p.slug === pageSlug || p.id === pageSlug);
+      const matchPage = pages.find(p => p && (p.slug === pageSlug || p.id === pageSlug));
       if (matchPage && onNavigatePage) {
         e.preventDefault();
         onNavigatePage(matchPage.id);
@@ -334,12 +336,13 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
         {/* Desktop Nav Items */}
         <div className="hidden md:flex items-center gap-6 ml-auto">
           <nav className="flex items-center gap-6 font-bold text-slate-900">
-            {menuItems.map(item => {
+            {Array.isArray(menuItems) && menuItems.map((item, idx) => {
+              if (!item) return null;
               const isPageActive = item.pageId ? item.pageId === activePageId : false;
               return (
                 <a
-                  key={item.id}
-                  href={item.url}
+                  key={item.id || idx}
+                  href={item.url || '#'}
                   onClick={(e) => handleItemClick(item, e)}
                   className={`transition-colors text-sm font-semibold flex items-center gap-1 py-1 px-2.5 rounded-lg ${
                     isPageActive 
@@ -347,7 +350,7 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
                       : 'text-slate-700 hover:text-emerald-700 hover:bg-slate-50'
                   }`}
                 >
-                  <span>{item.label}</span>
+                  <span>{item.label || 'Link'}</span>
                 </a>
               );
             })}
@@ -361,7 +364,7 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
               title="WordPress Appearance -> Menus Style Header Navigation Manager"
             >
               <Settings className="w-3.5 h-3.5 text-indigo-200" />
-              <span>⚙️ Edit Header Menu ({menuItems.length})</span>
+              <span>⚙️ Edit Header Menu ({Array.isArray(menuItems) ? menuItems.length : 0})</span>
             </button>
           )}
         </div>
@@ -379,18 +382,19 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
       {/* Mobile Animated Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-slate-200 px-6 py-6 space-y-3 animate-in slide-in-from-top duration-200 shadow-xl">
-          {menuItems.map(item => {
+          {Array.isArray(menuItems) && menuItems.map((item, idx) => {
+            if (!item) return null;
             const isPageActive = item.pageId ? item.pageId === activePageId : false;
             return (
               <a
-                key={item.id}
-                href={item.url}
+                key={item.id || idx}
+                href={item.url || '#'}
                 onClick={(e) => handleItemClick(item, e)}
                 className={`block text-base font-bold py-2 border-b border-slate-100 transition-colors ${
                   isPageActive ? 'text-emerald-700' : 'text-slate-900 hover:text-emerald-700'
                 }`}
               >
-                {item.label}
+                {item.label || 'Link'}
               </a>
             );
           })}

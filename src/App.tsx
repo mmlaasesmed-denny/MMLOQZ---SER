@@ -795,14 +795,14 @@ export default function App() {
     };
 
     // 2. Standard Metadata
-    setMetaTag('description', activePage.seoMetadata?.metaDescription);
-    setMetaTag('keywords', activePage.seoMetadata?.metaKeywords);
+    setMetaTag('description', activePage?.seoMetadata?.metaDescription);
+    setMetaTag('keywords', activePage?.seoMetadata?.metaKeywords);
 
     // 3. Custom Meta Tags (HTML)
     // Remove previously injected custom meta tags
     document.querySelectorAll('meta[data-custom-seo="true"]').forEach(el => el.remove());
     
-    if (activePage.seoMetadata?.metaTags) {
+    if (activePage?.seoMetadata?.metaTags) {
       try {
         const container = document.createElement('div');
         container.innerHTML = activePage.seoMetadata.metaTags;
@@ -816,7 +816,7 @@ export default function App() {
         console.error("Failed to parse custom meta tags:", e);
       }
     }
-  }, [activePage.id, activePage.name, activePage.title, activePage.seoMetadata]);
+  }, [activePage?.id, activePage?.name, activePage?.title, activePage?.seoMetadata]);
 
   // Dynamically resolve the sections and theme to render (handling Webshop custom templates)
   const getRenderLayout = () => {
