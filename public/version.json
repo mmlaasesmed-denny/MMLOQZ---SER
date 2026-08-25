@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "ed42d00",
-  "message": "Add cleanStorageOnStartup and aggressive quota purge for giant legacy base64 keys",
+  "commit": "4cd610d",
+  "message": "Lock unsaved local product image uploads against background server sync to eliminate NS_BINDING_ABORTED",
   "branch": "main",
-  "deployedAt": "2026-08-24 19:36:06 UTC",
+  "deployedAt": "2026-08-25 09:46:55 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }
