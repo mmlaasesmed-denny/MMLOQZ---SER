@@ -177,6 +177,8 @@ export default function SaveExportControls({
     const rawUrl = urlStr || djangoApiUrl || (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin);
     const targetUrl = getCleanApiUrl(rawUrl);
     const cacheBuster = `?t=${Date.now()}`;
+    let loadedData: any[] = [];
+
     try {
       const resp = await fetch(`${targetUrl}/layouts/${cacheBuster}`, {
         cache: 'no-store',
@@ -188,21 +190,36 @@ export default function SaveExportControls({
       });
       if (resp.ok) {
         const data = await resp.json();
-        if (Array.isArray(data)) {
-          const apiDrafts = data.map((item: any) => ({
-            id: String(item.id),
-            dbId: item.id,
-            title: item.title || 'Untitled Draft',
-            updatedAt: item.updated_at ? new Date(item.updated_at).getTime() : Date.now(),
-            sections: item.sections || [],
-            theme: item.theme || {}
-          }));
-
-          setLocalSavedDrafts(apiDrafts);
-          localStorage.setItem('visual-builder-local-saved-drafts', JSON.stringify(apiDrafts));
+        if (Array.isArray(data) && data.length > 0) {
+          loadedData = data;
         }
       }
     } catch (err) {}
+
+    if (loadedData.length === 0) {
+      try {
+        const resp2 = await fetch(`/published_site.json?t=${Date.now()}`);
+        if (resp2.ok) {
+          const data2 = await resp2.json();
+          if (Array.isArray(data2) && data2.length > 0) {
+            loadedData = data2;
+          }
+        }
+      } catch (err2) {}
+    }
+
+    if (loadedData.length > 0) {
+      const apiDrafts = loadedData.map((item: any) => ({
+        id: String(item.id),
+        dbId: item.id,
+        title: item.title || 'Untitled Draft',
+        updatedAt: item.updated_at ? new Date(item.updated_at).getTime() : Date.now(),
+        sections: item.sections || [],
+        theme: item.theme || {}
+      }));
+
+      setLocalSavedDrafts(apiDrafts);
+    }
   };
 
   React.useEffect(() => {

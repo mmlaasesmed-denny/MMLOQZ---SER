@@ -40,6 +40,21 @@ export const compressImage = (dataUrl: string, maxWidth = 800, quality = 0.7): P
 };
 
 /**
+ * Protected keys that MUST NEVER be purged from LocalStorage
+ */
+const PROTECTED_KEYS = [
+  'visual-builder-local-saved-drafts',
+  'visual-builder-pages-cms',
+  'visual-builder-is-admin',
+  'visual-builder-admin-passcode',
+  'published_site'
+];
+
+const isProtectedKey = (keyName: string): boolean => {
+  return PROTECTED_KEYS.some(p => keyName.includes(p));
+};
+
+/**
  * Safe LocalStorage setter that automatically purges giant legacy uncompressed Base64
  * keys if the browser's 5MB quota is reached.
  */
@@ -47,15 +62,15 @@ export const safeSetItem = (key: string, value: string): void => {
   try {
     localStorage.setItem(key, value);
   } catch (e) {
-    console.warn(`[STORAGE] LocalStorage quota limit reached for key: "${key}". Purging legacy large items...`);
+    console.warn(`[STORAGE] LocalStorage quota limit reached for key: "${key}". Purging legacy large images...`);
     try {
       const keysToRemove: string[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (k && k !== key) {
+        if (k && k !== key && !isProtectedKey(k)) {
           const val = localStorage.getItem(k);
-          // If value is a large base64 image or > 50KB, target for removal to free space
-          if (val && (val.startsWith('data:image') || val.length > 50000)) {
+          // Only purge large Base64 image data strings
+          if (val && val.startsWith('data:image')) {
             keysToRemove.push(k);
           }
         }
@@ -64,7 +79,7 @@ export const safeSetItem = (key: string, value: string): void => {
       keysToRemove.forEach(k => {
         try {
           localStorage.removeItem(k);
-          console.warn(`[STORAGE] Purged legacy large key to free quota: ${k}`);
+          console.warn(`[STORAGE] Purged legacy image key to free quota: ${k}`);
         } catch (err) {}
       });
 
@@ -77,7 +92,7 @@ export const safeSetItem = (key: string, value: string): void => {
 };
 
 /**
- * On application startup, purges any giant legacy base64 data URLs > 200KB from LocalStorage
+ * On application startup, purges any giant legacy uncompressed base64 data URLs > 200KB from LocalStorage
  * that were saved during previous uncompressed tests.
  */
 export const cleanStorageOnStartup = (): void => {
@@ -85,7 +100,7 @@ export const cleanStorageOnStartup = (): void => {
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k) {
+      if (k && !isProtectedKey(k)) {
         const val = localStorage.getItem(k);
         if (val && val.startsWith('data:image') && val.length > 200000) {
           keysToRemove.push(k);
