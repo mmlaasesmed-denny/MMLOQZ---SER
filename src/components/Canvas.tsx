@@ -199,6 +199,7 @@ interface CanvasProps {
   onAddSectionBelow: (afterSectionId: string) => void;
   onAddSection: (layout: 'single-col' | 'two-col' | 'three-col') => void;
   pages?: any[];
+  activePageId?: string;
   onNavigatePage?: (pageId: string) => void;
 }
 
@@ -606,6 +607,7 @@ export default function Canvas({
   onAddSectionBelow,
   onAddSection,
   pages = [],
+  activePageId,
   onNavigatePage
 }: CanvasProps) {
   // Local state for mobile menu responsiveness

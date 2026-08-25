@@ -2714,6 +2714,7 @@ export default function App() {
             onAddSection={handleAddNewSection}
             viewportMode={viewportMode}
             pages={pages}
+            activePageId={activePageId}
             onNavigatePage={(pageId) => {
               setActivePageId(pageId);
               setSelectedElementId(null);
@@ -2755,6 +2756,7 @@ export default function App() {
                 onAddSection={handleAddNewSection}
                 viewportMode={viewportMode}
                 pages={pages}
+                activePageId={activePageId}
                 onNavigatePage={(pageId) => {
                   setActivePageId(pageId);
                   setSelectedElementId(null);
