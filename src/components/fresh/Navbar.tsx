@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { 
   Menu, X, ChevronRight, Upload, MoveLeft, MoveRight, Sliders, RotateCcw, 
   Check, Image as ImageIcon, Plus, Trash2, ArrowUp, ArrowDown, Settings, Globe, Link as LinkIcon
@@ -414,9 +415,9 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
         </div>
       )}
 
-      {/* WordPress-Style Header Navigation Menu Builder Modal */}
-      {showMenuManager && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto text-slate-800 dark:text-slate-100 animate-in fade-in duration-200">
+      {/* WordPress-Style Header Navigation Menu Builder Modal (Rendered via Portal over body) */}
+      {showMenuManager && ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6 overflow-y-auto text-slate-800 dark:text-slate-100 animate-in fade-in duration-200">
           <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] my-auto border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150">
             
             {/* Modal Header */}
@@ -598,7 +599,8 @@ export default function Navbar({ editable = true, pages = [], activePageId, onNa
             </div>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );
