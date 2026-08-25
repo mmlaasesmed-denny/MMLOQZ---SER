@@ -1219,8 +1219,15 @@ export default function App() {
 
   // Find currently active section
   const getSelectedSection = (): Section | null => {
-    if (!selectedSectionId) return null;
-    return sections.find(s => s.id === selectedSectionId) || null;
+    if (selectedSectionId) {
+      const found = sections.find(s => s.id === selectedSectionId);
+      if (found) return found;
+    }
+    if (selectedElementId) {
+      const foundSec = sections.find(s => s.columns.some(col => col.elements.some(el => el.id === selectedElementId)));
+      if (foundSec) return foundSec;
+    }
+    return sections[0] || null;
   };
 
   const handleSelectElement = (elementId: string) => {

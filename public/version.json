@@ -1,9 +1,9 @@
 {
   "status": "ONLINE",
-  "commit": "5cfcf10",
-  "message": "Protect saved layouts keys from quota purger and add fallback to published_site.json",
+  "commit": "8bcf695",
+  "message": "Register MMLOQZ-WEBSITE-THEME-LAYOUT as master template preset and add Apply to Active Page / Apply to ALL Pages controls",
   "branch": "main",
-  "deployedAt": "2026-08-25 10:56:34 UTC",
+  "deployedAt": "2026-08-25 11:14:10 UTC",
   "environment": "production",
   "server": "138.68.170.96 (Nginx) & 206.189.20.29 (Django)"
 }
